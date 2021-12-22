@@ -1,12 +1,16 @@
 #Title{
-    background-color: orange;
+    background-color: #00bfFF;
     padding: 1%;
+    font-family: 'Courier New', monospace;
+    border-bottom: 2px solid black;
 }
+
 
 #sidebar{
     position: absolute;
     margin-right: 50%;
     border-right: 1px solid black;
+    background-color: paleturquoise;
 }
 
 #RP{
@@ -33,4 +37,15 @@ h2{
 
 #DWS{
     margin-bottom: 80%;
+}
+
+#RecentPosts{
+    border-right: 1px solid black;
+    display: inline;
+    padding-right: 7%;
+    padding-bottom: 45%;
+}
+
+#PostsNearMe{
+    display: inline;
 }

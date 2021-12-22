@@ -9,7 +9,6 @@ export default function Homepage(){
             <div id = "Title">
                 <h1>FindMyOwner</h1>
             </div>
-            <hr style={{backgroundColor: "black"}}></hr>
             <div id = "sidebar">
                 <a href = "#">
                     <h2>Found Pets</h2>
@@ -27,6 +26,12 @@ export default function Homepage(){
             <div id = "topbar">
                 <h3 id = "RP">Recent Posts</h3>
                 <h3 id = "PNM">Posts near me</h3>
+            </div>
+            <div id = "RecentPosts">
+                
+            </div>
+            <div id = "PostsNearMe">
+
             </div>
         </div>
     )
