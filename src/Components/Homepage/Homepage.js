@@ -10,7 +10,7 @@ export default function Homepage(){
                 <h1>FindMyOwner</h1>
             </div>
             <div id = "sidebar">
-                <a href = "#">
+                <a href = "/Found">
                     <h2>Found Pets</h2>
                 </a>
                 <a href = "#">
@@ -28,7 +28,7 @@ export default function Homepage(){
                 <h3 id = "PNM">Posts near me</h3>
             </div>
             <div id = "RecentPosts">
-                
+
             </div>
             <div id = "PostsNearMe">
 
