@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { auth, signInWithEmailAndPassword, signInWithGoogle } from "../../firebaseconfig";
+import { auth, signInWithEmailAndPassword, signInWithFacebook } from "../../firebaseconfig";
 import { useAuthState } from "react-firebase-hooks/auth";
 import "./Login.css";
 function Login() {
@@ -13,7 +13,7 @@ function Login() {
       // maybe trigger a loading screen
       return;
     }
-    if (user) history.replace("/dashboard");
+    if (user) history("/home");
   }, [user, loading]);
   return (
     <div className="login">
@@ -38,8 +38,8 @@ function Login() {
         >
           Login
         </button>
-        <button className="login__btn login__google" onClick={signInWithGoogle}>
-          Login with Google
+        <button className="login__btn login__google" onClick={signInWithFacebook}>
+          Login with Facebook
         </button>
         <div>
           <Link to="/reset">Forgot Password</Link>

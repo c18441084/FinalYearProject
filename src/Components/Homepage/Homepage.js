@@ -1,18 +1,24 @@
 //import react from "react";
 import './Homepage.css'
+import { logout } from "../../firebaseconfig";
 
 export default function Homepage(){
+
+    function found(){
+        window.location = "/found";
+    }
 
     return(
         <div>
             <title>FindMyOwner</title>
             <div id = "Title">
                 <h1>FindMyOwner</h1>
+                <button id = "logout" onClick = {logout} >Log out</button>
             </div>
             <div id = "sidebar">
-                <a href = "#">
+                <button id = "found" onClick={found}>
                     <h2>Found Pets</h2>
-                </a>
+                </button>
                 <a href = "#">
                     <h2>Lost Pets</h2>
                 </a>

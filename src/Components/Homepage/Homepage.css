@@ -5,6 +5,26 @@
     border-bottom: 2px solid black;
 }
 
+#Title h1{
+    text-align: center;
+}
+
+#logout{
+    margin-left: 93%;
+    position: absolute;
+    margin-top: -3%;
+}
+
+#found{
+    background-color: paleturquoise;
+    border: none;
+    text-align: center;
+}
+
+#found:hover{
+    background-color: green;
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+}
 
 #sidebar{
     position: absolute;
