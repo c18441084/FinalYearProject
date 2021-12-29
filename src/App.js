@@ -4,13 +4,19 @@ import Login from './Components/Login/Login'
 import Homepage from './Components/Homepage/Homepage';
 import Found from './Components/Found/Found';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from "./firebaseconfig";
 
 function App() {
+
+  //const [user] = useAuthState(auth);
+
   return (
     <div className ='app'>
       <BrowserRouter>
         <Routes>
           <Route path = "/" element = {<Login />} />
+          <Route path = "/home" element = {<Homepage />} />
           <Route path = "/found" element = {<Found />} />
         </Routes>
       </BrowserRouter>

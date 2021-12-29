@@ -1,6 +1,7 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import "firebase/compat/firestore";
+import { signInWithPopup, FacebookAuthProvider, signOut } from "firebase/auth";
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
@@ -24,10 +25,17 @@ const firebaseConfig = {
 const app = firebase.initializeApp(firebaseConfig);
 const auth = app.auth();
 const db = app.firestore();
-const googleProvider = new firebase.auth.GoogleAuthProvider();
-const signInWithGoogle = async () => {
-  try {
-    const res = await auth.signInWithPopup(googleProvider);
+
+const provider = new FacebookAuthProvider();
+
+provider.setCustomParameters({
+  'display': 'popup'
+});
+
+const signInWithFacebook = async () => {
+  try{
+    const res = await auth.signInWithPopup(provider);
+    console.log(provider);
     const user = res.user;
     const query = await db
       .collection("users")
@@ -37,18 +45,28 @@ const signInWithGoogle = async () => {
       await db.collection("users").add({
         uid: user.uid,
         name: user.displayName,
-        authProvider: "google",
+        authProvider: "facebook",
         email: user.email,
       });
     }
-  } catch (err) {
-    console.error(err);
-    alert(err.message);
+  }
+  catch (error){
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // The email of the user's account used.
+    const email = error.email;
+    // The AuthCredential type that was used.
+    const credential = FacebookAuthProvider.credentialFromError(error);
+
+    // ..
   }
 };
+
 const signInWithEmailAndPassword = async (email, password) => {
   try {
     await auth.signInWithEmailAndPassword(email, password);
+    console.log(auth);
   } catch (err) {
     console.error(err);
     alert(err.message);
@@ -79,12 +97,16 @@ const sendPasswordResetEmail = async (email) => {
   }
 };
 const logout = () => {
+  console.log(auth);
   auth.signOut();
+  console.log(auth);
+  //window.location = ("/");
 };
 export {
   auth,
   db,
-  signInWithGoogle,
+  signInWithPopup,
+  signInWithFacebook,
   signInWithEmailAndPassword,
   registerWithEmailAndPassword,
   sendPasswordResetEmail,
