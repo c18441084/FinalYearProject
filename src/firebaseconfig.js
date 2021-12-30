@@ -100,7 +100,7 @@ const logout = () => {
   console.log(auth);
   auth.signOut();
   console.log(auth);
-  //window.location = ("/");
+  window.location = ("/");
 };
 export {
   auth,

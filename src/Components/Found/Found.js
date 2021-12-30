@@ -1,10 +1,15 @@
-
+import { logout } from "../../firebaseconfig";
+import './Found.css'
 
 export default function Found(){
 
     return(
         <div>
-            <h1>HelloFuck </h1>
+            <title>FindMyOwner</title>
+            <div id = "Title">
+                <h1>FindMyOwner</h1>
+                <button id = "logout" onClick = {logout} >Log out</button>
+            </div>
         </div>
     )
 }

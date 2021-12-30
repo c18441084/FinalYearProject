@@ -1,0 +1,16 @@
+#Title{
+    background-color: #00bfFF;
+    padding: 1%;
+    font-family: 'Courier New', monospace;
+    border-bottom: 2px solid black;
+}
+
+#Title h1{
+    text-align: center;
+}
+
+#logout{
+    margin-left: 93%;
+    position: absolute;
+    margin-top: -3%;
+}
