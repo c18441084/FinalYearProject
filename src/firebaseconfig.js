@@ -97,9 +97,7 @@ const sendPasswordResetEmail = async (email) => {
   }
 };
 const logout = () => {
-  console.log(auth);
   auth.signOut();
-  console.log(auth);
   window.location = ("/");
 };
 export {

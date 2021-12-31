@@ -9,16 +9,12 @@ function Register() {
 
     function confirm(){
         if(password != confirmPassword){
-            console.log("passwords arent the same");
+            alert("Passwords are not the same");
         }
         else{
             registerWithEmailAndPassword(name, email, password);
-            console.log("worked");
-            window.location = "/";
         }
     }
-
-
 
     return(
         <div className="register">
@@ -57,7 +53,6 @@ function Register() {
                 <button id="register_btn" onClick={confirm}>
                     Confirm
                 </button>
-
             </div>
         </div>
     );
