@@ -10,17 +10,25 @@ import { auth } from "./firebaseconfig";
 
 function App() {
 
-  //const [user] = useAuthState(auth);
+  const [user] = useAuthState(auth);
+
+  console.log(user);
+
 
   return (
     <div className ='app'>
       <BrowserRouter>
-        <Routes>
-          <Route path = "/" element = {<Login />} />
-          <Route path = "/register" element = {<Register />} />
-          <Route path = "/home" element = {<Homepage />} />
-          <Route path = "/found" element = {<Found />} />
-        </Routes>
+      {user == null? 
+      <Routes>
+        <Route path = "/" element = {<Login />} />
+        <Route path = "/register" element = {<Register />} />
+      </Routes>
+      :
+      <Routes>
+        <Route path = "/home" element = {<Homepage />} />
+        <Route path = "/found" element = {<Found />} />
+      </Routes>
+    }
       </BrowserRouter>
     </div>
   );

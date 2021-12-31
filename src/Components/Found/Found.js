@@ -2,7 +2,6 @@ import { logout } from "../../firebaseconfig";
 import './Found.css'
 
 export default function Found(){
-
     return(
         <div>
             <title>FindMyOwner</title>
