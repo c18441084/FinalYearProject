@@ -23,7 +23,7 @@ export default function Homepage(){
                     <h2>Lost Pets</h2>
                 </a>
                 <a href = "#">
-                    <h2>About Us</h2>
+                    <h2>Pet Clinics</h2>
                 </a>
                 <a href = "#">
                     <h2 id = "DWS">Dog Warden Service</h2>
