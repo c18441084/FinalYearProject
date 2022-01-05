@@ -1,5 +1,6 @@
 import { useState } from "react"
 import './FoundPetDetails.css'
+import heightDiagram from './Height_Diagram.png'
 
 export default function FoundPetDetails(){
 
@@ -12,8 +13,7 @@ export default function FoundPetDetails(){
     const [breedList, setBreedList] = useState([]);
 
     async function componentDidMount(){
-        const Dog_Breeds_url = "https://dog.ceo/api/breeds/list/all";
-        const response = await fetch(Dog_Breeds_url);
+        const response = await fetch("https://dog.ceo/api/breeds/list/all");
         const data = await response.json();
         setBreedList(data.message);
     }
@@ -36,7 +36,7 @@ export default function FoundPetDetails(){
     }
 
     function heightGuide(){
-        alert("Measure from the front foot of the animal to the top of the head.")
+        alert("Measure from the front foot of the animal to the top of the head." + heightDiagram);
     }
 
 
@@ -65,6 +65,7 @@ export default function FoundPetDetails(){
                             )
                         })}
                     </select>
+                    <button>Need Help?</button>
                     <br/>
                 </div>
             : null}
