@@ -1,8 +1,8 @@
-#dogBreedHelp{
+#breed_guide{
     background-color: lightblue;
     color: white;
     margin-left: 20%;
-    margin-right: 15%;
+    margin-right: 25%;
     padding-left: 5%;
     padding-bottom: 5%;
 }
@@ -27,6 +27,12 @@
     margin-right: 15%;
     padding-left: 5%;
     padding-bottom: 5%;
+}
+
+#heightGuideImage{
+    height:200px;
+    width:400px;
+    margin-left: 10%;
 }
 
 #closeHeightGuideButton{
