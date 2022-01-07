@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState } from 'react' 
 import './FoundPetDetails.css'
 import heightDiagram from './Height_Diagram.png'
 
@@ -6,15 +6,21 @@ export default function FoundPetDetails(){
 
     const [type, setType] = useState("");
     const [dogBreed, setDogBreed] = useState("");
-    const [dogBreedHelp, setDogBreedHelp] = useState("");
+    const [height, setHeight] = useState("");
+    const [colour, setColour] = useState("");
+    const [fileImage, setFileImage] = useState("");
 
     const [showBreed, setShowBreed] = useState(false);
     const [showBreedGuide, setShowBreedGuide] = useState(false);
     const [showBreedHelpImages, setShowBreedHelpImages] = useState(false);
     const [showHeight, setShowHeight] = useState(false);
     const [showHeightGuide, setShowHeightGuide] = useState(false);
+    const [showColourChoice, setShowColourChoice] = useState(false);
+    const [showLocationPick, setShowLocationPick] = useState(false);
+    const [showFileUpload, setShowFileUpload] = useState(false);
 
     const [breedList, setBreedList] = useState([]);
+    const [dogBreedHelp, setDogBreedHelp] = useState("");
     const [breedListImages, setBreedListImages] = useState([]);
 
     async function componentDidMount(){
@@ -30,23 +36,40 @@ export default function FoundPetDetails(){
         setShowBreedHelpImages(true);
     }
 
+    async function Map(){
+        const response = await fetch("https://maps.googleapis.com/map/api/js?key=AIzaSyAYQTc2e1XUgfTFKbwnYhlymFx4treFAa8&callback=initMap");
+        const data = await response.json()
+        console.log("Map: " + data);
+    }
+
     function Type(){
         console.log(type);
         setShowBreed(false);
         setShowBreedGuide(false);
         setShowBreedHelpImages(false);
         setShowHeight(false);
+        setShowHeightGuide(false);
+        setShowColourChoice(false);
+        setShowLocationPick(false);
+        setShowFileUpload(false);
         if(type == "dog"){
             setShowBreed(true);
             componentDidMount();
+            Map();
         }
         else{
             setShowHeight(true);
+            setShowColourChoice(true);
+            setShowLocationPick(true);
+            setShowFileUpload(true);
         }
     }
 
     function DogBreed(){
         setShowHeight(true);
+        setShowColourChoice(true);
+        setShowLocationPick(true);
+        setShowFileUpload(true);
     }
 
     function BreedHelp(){
@@ -67,6 +90,10 @@ export default function FoundPetDetails(){
         setShowHeightGuide(false);
     }
 
+    function fileSubmitted(){
+        console.log(fileImage);
+    }
+
 
     return(
         <div>
@@ -82,7 +109,7 @@ export default function FoundPetDetails(){
             </div>
 
             {showBreed?
-                <div id = "dogBreed">
+                <div id = "breed">
                     <label for="Dbreed">Dog Breed: </label>  
                     <select name="dog" id="Dbreed" onChange={DogBreed} onInput = {(breed) => setDogBreed(breed.target.value)}>
                         <option value="" disabled selected hidden>Select a Dog Breed</option>
@@ -98,7 +125,7 @@ export default function FoundPetDetails(){
                 </div>
             : null}
             {showBreedGuide?
-                <div id = "dogBreedHelp">
+                <div id = "breed_guide">
                     <button id="closeBreedGuideButton" onClick={closeBreedHelp}>X</button>
                     <br/>
                     <label for="DbreedHelp">Select a Dog Breed to view image: </label>
@@ -126,8 +153,8 @@ export default function FoundPetDetails(){
             {showHeight? 
                 <div id="height">
                     <label for="heightInput">Height: </label>
-                    <input id="heightInput" type="number" min = "0" max = "200"/>
-                    <p id="centimetres">cm</p>
+                    <input id="heightInput" type="number" min = "0" max = "200" onInput={(height) => setHeight(height.target.value)}/>
+                    <label for="heightInput">cm</label>
                     <button id="heightHelp" onClick={heightGuide}>?</button>
                 </div> 
             : null}
@@ -138,6 +165,26 @@ export default function FoundPetDetails(){
                     <img id="heightGuideImage" src={heightDiagram}/>
                 </div>
             : null}
+
+            {showColourChoice? 
+                <div id="colour_choice">
+                    <label for="colourInput">Colour: </label>
+                    <input id="colourInput" type="text" min="0" max="20" onInput={(colour) => setColour(colour.target.value)}/>
+                </div>
+            : null}
+
+            {showLocationPick?
+                <div>
+
+                </div>
+            : null}
+
+            {showFileUpload?
+                <div id="file_upload">
+                    <input type="file" onChange={fileSubmitted} onInput={(image) => setFileImage(image.target.value)}/>
+                    <img src={fileImage}></img>
+                </div>
+            :null}
         </div>
     )
 }
