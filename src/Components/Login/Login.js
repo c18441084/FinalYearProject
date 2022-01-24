@@ -41,9 +41,9 @@ function Login() {
         <button className="login__btn login__google" onClick={signInWithFacebook}>
           Login with Facebook
         </button>
-        <div>
+        {/*<div>
           <Link to="/reset">Forgot Password</Link>
-        </div>
+        </div>*/}
         <div>
           Don't have an account? <Link to="/register">Register</Link> now.
         </div>
