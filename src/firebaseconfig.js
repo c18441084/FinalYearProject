@@ -82,6 +82,7 @@ const registerWithEmailAndPassword = async (name, email, password) => {
       authProvider: "local",
       email,
     });
+    window.location = ("/");
   } catch (err) {
     console.error(err);
     alert(err.message);

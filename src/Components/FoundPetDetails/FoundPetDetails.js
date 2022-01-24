@@ -8,7 +8,7 @@ export default function FoundPetDetails(){
     const [dogBreed, setDogBreed] = useState("");
     const [height, setHeight] = useState("");
     const [colour, setColour] = useState("");
-    const [fileImage, setFileImage] = useState("");
+    const [fileImagePic, setFileImagePic] = useState();
 
     const [showBreed, setShowBreed] = useState(false);
     const [showBreedGuide, setShowBreedGuide] = useState(false);
@@ -16,12 +16,14 @@ export default function FoundPetDetails(){
     const [showHeight, setShowHeight] = useState(false);
     const [showHeightGuide, setShowHeightGuide] = useState(false);
     const [showColourChoice, setShowColourChoice] = useState(false);
-    const [showLocationPick, setShowLocationPick] = useState(false);
     const [showFileUpload, setShowFileUpload] = useState(false);
+    const [showFilePic, setShowFilePic] = useState(false);
+    const [showLocationPick, setShowLocationPick] = useState(false);
 
     const [breedList, setBreedList] = useState([]);
     const [dogBreedHelp, setDogBreedHelp] = useState("");
     const [breedListImages, setBreedListImages] = useState([]);
+    const [fileImage, setFileImage] = useState("");
 
     async function componentDidMount(){
         const response = await fetch("https://dog.ceo/api/breeds/list/all");
@@ -52,6 +54,7 @@ export default function FoundPetDetails(){
         setShowColourChoice(false);
         setShowLocationPick(false);
         setShowFileUpload(false);
+        setShowFilePic(false);
         if(type == "dog"){
             setShowBreed(true);
             componentDidMount();
@@ -60,8 +63,8 @@ export default function FoundPetDetails(){
         else{
             setShowHeight(true);
             setShowColourChoice(true);
-            setShowLocationPick(true);
             setShowFileUpload(true);
+            setShowLocationPick(true);
         }
     }
 
@@ -90,9 +93,21 @@ export default function FoundPetDetails(){
         setShowHeightGuide(false);
     }
 
-    function fileSubmitted(){
-        console.log(fileImage);
+    function LocationPicker(){
+        
     }
+
+    function fileSubmitted(){
+        if(fileImage.type.includes('image'))
+        {
+            setFileImagePic(URL.createObjectURL(fileImage));
+            setShowFilePic(true); 
+        }
+        else{
+            alert("Please upload an image file");
+        }
+    }
+
 
 
     return(
@@ -132,6 +147,7 @@ export default function FoundPetDetails(){
                     <select name="dogimage" id="DbreedHelp" onChange={DogImages} onInput= {(breedhelp) => setDogBreedHelp(breedhelp.target.value)}>
                         <option value="" disabled selected hidden>Select a Dog Breed</option>
                         {Object.keys(breedList).map(function (element){
+                            console.log(element);
                             return (
                                 <option>{element}</option>
                             )
@@ -175,14 +191,18 @@ export default function FoundPetDetails(){
 
             {showLocationPick?
                 <div>
-
+                    
                 </div>
             : null}
 
             {showFileUpload?
                 <div id="file_upload">
-                    <input type="file" onChange={fileSubmitted} onInput={(image) => setFileImage(image.target.value)}/>
-                    <img src={fileImage}></img>
+                    <input type="file" onChange={fileSubmitted} onInput={(image) => setFileImage(image.target.files[0])}/>
+                </div>
+            :null}
+            {showFilePic?
+                <div id="show_image_submitted">
+                    <img src={fileImagePic}></img>
                 </div>
             :null}
         </div>
