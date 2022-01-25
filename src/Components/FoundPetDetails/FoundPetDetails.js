@@ -1,6 +1,9 @@
-import { useState } from 'react' 
-import './FoundPetDetails.css'
-import heightDiagram from './Height_Diagram.png'
+import { useState } from 'react';
+import './FoundPetDetails.css';
+import heightDiagram from './Height_Diagram.png';
+import GoogleMap from './GoogleMaps';
+
+/* Add in inputs from ISPCA  */
 
 export default function FoundPetDetails(){
 
@@ -94,7 +97,7 @@ export default function FoundPetDetails(){
     }
 
     function LocationPicker(){
-        
+
     }
 
     function fileSubmitted(){
@@ -107,8 +110,6 @@ export default function FoundPetDetails(){
             alert("Please upload an image file");
         }
     }
-
-
 
     return(
         <div>
@@ -191,7 +192,7 @@ export default function FoundPetDetails(){
 
             {showLocationPick?
                 <div>
-                    
+                    <GoogleMap />
                 </div>
             : null}
 
