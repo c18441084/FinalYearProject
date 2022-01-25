@@ -8,7 +8,7 @@ function Register() {
     const [confirmPassword, setConfirmPassword] = useState("");
 
     function confirm(){
-        if(password != confirmPassword){
+        if(password !== confirmPassword){
             alert("Passwords are not the same");
         }
         else{
