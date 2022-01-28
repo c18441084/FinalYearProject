@@ -1,42 +1,62 @@
 import React, { Component } from 'react';
-import { Map, InfoWindow, Marker, GoogleApiWrapper, google } from 'google-maps-react';
+import { Map, Marker, GoogleApiWrapper } from 'google-maps-react';
+
+const style = {
+    maxWidth: "75%",
+    height: "75%",
+    overflowX: "hidden",
+    overflowY: "hidden"
+};
 
 export class MapContainer extends Component {
     state = {
       showingInfoWindow: false,
       activeMarker: {},
       selectedPlace: {},
-    };
-   
-    onMarkerClick = (props, marker, e) =>
-      this.setState({
-        selectedPlace: props,
-        activeMarker: marker
-      });
-   
-    onMapClicked = (props) => {
-      if (this.state.showingInfoWindow) {
-        this.setState({
-          activeMarker: null
-        })
+      mapCenter: {
+        lat: 53.350140,
+        lng: -6.266155
       }
     };
-   
-    render() {
-      return (
-        <Map google={this.props.google}
-            initialCenter={{
-                lat: 53.350140,
-                lng: -6.266155
-            }}
-            onClick={this.onMapClicked}>
-          <Marker onClick={this.onMarkerClick}
-                  name={'Current location'} />
-        </Map>
-      )
-    }
-  }
 
-  export default GoogleApiWrapper({
-    apiKey: ('AIzaSyCwGo-9ejeEDZdnqjukoIYbBkknoPq-QFQ')
-  })(MapContainer)
+    onMapClicked = (props, marker, e) => {
+      console.log(marker.position);
+      this.setState({
+        selectedPlace: props,
+        mapCenter: {lat: e.latLng.lat(), lng: e.latLng.lng()}
+      }) 
+      console.log(this.state.selectedPlace);
+      console.log(this.state.mapCenter.lat);
+      console.log(this.state.mapCenter.lng);
+    };
+
+   
+  render() {
+    return (
+      <div>
+        <Map style = {style}
+          google={this.props.google}
+          onClick={this.onMapClicked}
+          initialCenter={{
+            lat: this.state.mapCenter.lat,
+            lng: this.state.mapCenter.lng
+          }}
+          center={{
+            lat: this.state.mapCenter.lat,
+            lng: this.state.mapCenter.lng
+          }}>
+          <Marker>
+            position = {{
+              lat: this.state.mapCenter.lat,
+              lng: this.state.mapCenter.lng
+            }}
+          </Marker>
+        </Map>
+      </div>
+    )
+  }
+}
+
+export default GoogleApiWrapper({
+  apiKey: ('AIzaSyCwGo-9ejeEDZdnqjukoIYbBkknoPq-QFQ')
+})(MapContainer)
