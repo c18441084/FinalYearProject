@@ -96,10 +96,6 @@ export default function FoundPetDetails(){
         setShowHeightGuide(false);
     }
 
-    function LocationPicker(){
-
-    }
-
     function fileSubmitted(){
         if(fileImage.type.includes('image'))
         {
@@ -109,6 +105,15 @@ export default function FoundPetDetails(){
         else{
             alert("Please upload an image file");
         }
+    }
+
+    function deleteImage(){
+        setShowFilePic(false);
+        setFileImagePic();
+    }
+
+    function LocationPicker(){
+
     }
 
     return(
@@ -190,12 +195,6 @@ export default function FoundPetDetails(){
                 </div>
             : null}
 
-            {showLocationPick?
-                <div>
-                    <GoogleMap />
-                </div>
-            : null}
-
             {showFileUpload?
                 <div id="file_upload">
                     <input type="file" onChange={fileSubmitted} onInput={(image) => setFileImage(image.target.files[0])}/>
@@ -203,9 +202,16 @@ export default function FoundPetDetails(){
             :null}
             {showFilePic?
                 <div id="show_image_submitted">
-                    <img src={fileImagePic}></img>
+                    <button id = "remove_image" onClick={deleteImage}>X</button>
+                    <img src={fileImagePic} height={"25%"} width={"25%"} ></img>
                 </div>
             :null}
+
+            {showLocationPick?
+                <div id="Map">
+                    <GoogleMap id = "googleMap" />
+                </div>
+            : null}
         </div>
     )
 }
