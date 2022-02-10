@@ -11,6 +11,7 @@ export default function FoundPetDetails(){
     const [dogBreed, setDogBreed] = useState("");
     const [height, setHeight] = useState("");
     const [colour, setColour] = useState("");
+    const [neutured, setNeutured] = useState("");
     const [fileImagePic, setFileImagePic] = useState();
 
     const [showBreed, setShowBreed] = useState(false);
@@ -19,6 +20,7 @@ export default function FoundPetDetails(){
     const [showHeight, setShowHeight] = useState(false);
     const [showHeightGuide, setShowHeightGuide] = useState(false);
     const [showColourChoice, setShowColourChoice] = useState(false);
+    const [showNeuturedChoice, setShowNeuturedChoice] = useState(false);
     const [showFileUpload, setShowFileUpload] = useState(false);
     const [showFilePic, setShowFilePic] = useState(false);
     const [showLocationPick, setShowLocationPick] = useState(false);
@@ -55,6 +57,7 @@ export default function FoundPetDetails(){
         setShowHeight(false);
         setShowHeightGuide(false);
         setShowColourChoice(false);
+        setShowNeuturedChoice(false)
         setShowLocationPick(false);
         setShowFileUpload(false);
         setShowFilePic(false);
@@ -66,6 +69,7 @@ export default function FoundPetDetails(){
         else{
             setShowHeight(true);
             setShowColourChoice(true);
+            setShowNeuturedChoice(true);
             setShowFileUpload(true);
             setShowLocationPick(true);
         }
@@ -74,6 +78,7 @@ export default function FoundPetDetails(){
     function DogBreed(){
         setShowHeight(true);
         setShowColourChoice(true);
+        setShowNeuturedChoice(true);
         setShowLocationPick(true);
         setShowFileUpload(true);
     }
@@ -118,7 +123,7 @@ export default function FoundPetDetails(){
 
     return(
         <div>
-            <h1>Howya</h1>
+            <h1>Enter Details</h1>
             <div id = "typeOfAnimal">
                 <label for="animal">Type of animal: </label>
                 <select name="animal" id="animal" required onChange={Type} onInput = {(e) => setType(e.target.value)}>
@@ -192,6 +197,17 @@ export default function FoundPetDetails(){
                 <div id="colour_choice">
                     <label for="colourInput">Colour: </label>
                     <input id="colourInput" type="text" min="0" max="20" onInput={(colour) => setColour(colour.target.value)}/>
+                </div>
+            : null}
+
+            {showNeuturedChoice?
+                <div id="neutured_choice">
+                    <label for="neutured">Neutured or Spayed(Optional)</label>
+                    <select name="neutured" id="neutured" onInput={(e) => setNeutured(e.target.value)}>
+                        <option value="unknown">Unknown</option>
+                        <option value="neutured">Neutured</option>
+                        <option value="spayed">Spayed</option>
+                    </select>
                 </div>
             : null}
 
