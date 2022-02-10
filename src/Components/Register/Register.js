@@ -13,6 +13,7 @@ function Register() {
         }
         else{
             registerWithEmailAndPassword(name, email, password);
+            alert("Account Created");
         }
     }
 
