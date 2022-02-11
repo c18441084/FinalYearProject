@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import './FoundPetDetails.css';
 import heightDiagram from './Height_Diagram.png';
-import GoogleMap from './GoogleMaps';
-
-/* Add in inputs from ISPCA  */
+import GoogleMap, {MapContainer} from './GoogleMaps';
+import firebase from '../../firebaseconfig';
 
 export default function FoundPetDetails(){
 
@@ -121,6 +120,20 @@ export default function FoundPetDetails(){
 
     }
 
+    function SubmitDetails(){
+        const db = firebase.database().ref("Posts");
+        const submit = {
+            type,
+            dogBreed,
+            height,
+            colour,
+            neutured,
+            fileImagePic,
+        }
+        console.log(submit);
+        db.push(submit);
+    }
+
     return(
         <div>
             <h1>Enter Details</h1>
@@ -225,6 +238,7 @@ export default function FoundPetDetails(){
 
             {showLocationPick?
                 <div id="Map">
+                    <button id="submitButton" onClick={SubmitDetails}>Submit</button>
                     <GoogleMap id = "googleMap" />
                 </div>
             : null}
