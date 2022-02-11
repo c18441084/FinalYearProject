@@ -112,3 +112,4 @@ export {
   sendPasswordResetEmail,
   logout,
 };
+export default firebase;
