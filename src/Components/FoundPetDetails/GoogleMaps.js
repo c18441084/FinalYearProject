@@ -9,6 +9,7 @@ const style = {
     overflowY: "hidden"
 };
 
+
 export class MapContainer extends Component {
     state = {
       showingInfoWindow: false,
@@ -21,14 +22,11 @@ export class MapContainer extends Component {
     };
 
     onMapClicked = (props, marker, e) => {
-      console.log(marker.position);
       this.setState({
         selectedPlace: props,
         mapCenter: {lat: e.latLng.lat(), lng: e.latLng.lng()}
-      }) 
-      console.log(this.state.selectedPlace);
-      console.log(this.state.mapCenter.lat);
-      console.log(this.state.mapCenter.lng);
+      })
+      console.log(e.latLng.name);
     };
 
    
@@ -42,15 +40,12 @@ export class MapContainer extends Component {
             lat: this.state.mapCenter.lat,
             lng: this.state.mapCenter.lng
           }}
-          center={{
-            lat: this.state.mapCenter.lat,
-            lng: this.state.mapCenter.lng
-          }}>
-          <Marker>
+          >
+          <Marker 
             position = {{
               lat: this.state.mapCenter.lat,
               lng: this.state.mapCenter.lng
-            }}
+            }}>
           </Marker>
         </Map>
       </div>
