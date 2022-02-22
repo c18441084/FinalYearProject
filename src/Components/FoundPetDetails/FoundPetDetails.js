@@ -124,38 +124,8 @@ export default function FoundPetDetails(){
 
     }
 
-    /*const SubmitDetails = (fileImage) => {
-        const storageRef = ref(storage, `/images/${fileImage.name}`);
-        const uploadTask = uploadBytesResumable(storageRef, fileImage);
-
-        uploadTask.on("state_changed", (snapshot) => {
-            const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-            setProgress(prog);
-        }, (err) => 
-        console.log(err),
-        () => {
-            const db = db2.ref("Posts");
-            getDownloadURL(uploadTask.snapshot.ref)
-            .then(async function (url) {
-                console.log(url);
-                const image = url;
-                const submit = {
-                    type,
-                    dogBreed,
-                    height,
-                    colour,
-                    neutured,
-                    image
-                };
-                await db.push(submit);
-                alert("Post Created");
-                window.location = ("/Found")
-            });
-        });
-    }*/
-
     function SubmitDetails(){
-        const storageRef = ref(storage, `/images/${fileImage.name}`);
+        const storageRef = ref(storage, `/images/${fileImage.name + new Date().getTime()}`);
         const uploadTask = uploadBytesResumable(storageRef, fileImage);
 
         uploadTask.on("state_changed", (snapshot) => {
