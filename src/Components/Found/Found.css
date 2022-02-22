@@ -14,3 +14,7 @@
     position: absolute;
     margin-top: -3%;
 }
+
+#showingPosts{
+    text-align: center;
+}

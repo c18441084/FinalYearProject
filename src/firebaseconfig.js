@@ -1,4 +1,5 @@
-import firebase from "firebase";
+import firebase from "firebase/compat/app";
+import 'firebase/compat/database';
 import "firebase/compat/auth";
 import "firebase/compat/firestore";
 import { signInWithPopup, FacebookAuthProvider} from "firebase/auth";
@@ -6,6 +7,7 @@ import { signInWithPopup, FacebookAuthProvider} from "firebase/auth";
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import { getDownloadURL } from "firebase/storage";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -18,13 +20,15 @@ const firebaseConfig = {
   storageBucket: "findmyowner-6abcb.appspot.com",
   messagingSenderId: "698389077056",
   appId: "1:698389077056:web:bf918b41b3192324da93a5",
-  measurementId: "G-QNWH88L143"
+  measurementId: "G-QNWH88L143",
+  databaseURL: "https://findmyowner-6abcb-default-rtdb.europe-west1.firebasedatabase.app"
 };
 
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
 const auth = app.auth();
 const db = app.firestore();
+const db2 = firebase.database();
 
 const provider = new FacebookAuthProvider();
 
@@ -111,5 +115,7 @@ export {
   registerWithEmailAndPassword,
   sendPasswordResetEmail,
   logout,
+  getDownloadURL,
 };
-export default firebase;
+
+export default db2;
