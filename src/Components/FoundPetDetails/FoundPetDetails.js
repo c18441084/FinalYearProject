@@ -124,25 +124,7 @@ export default function FoundPetDetails(){
 
     }
 
-    function SubmitDetails(){
-        /*console.log(fileImage);
-        const db = db2.ref("Posts");
-        const submit = {
-            type,
-            dogBreed,
-            height,
-            colour,
-            neutured,
-        }
-        db.push(submit);*/
-
-        upload(fileImage);
-
-        alert("Post Created");
-        //window.location = ("/Found");
-    }
-
-    const upload = (fileImage) => {
+    /*const SubmitDetails = (fileImage) => {
         const storageRef = ref(storage, `/images/${fileImage.name}`);
         const uploadTask = uploadBytesResumable(storageRef, fileImage);
 
@@ -152,22 +134,53 @@ export default function FoundPetDetails(){
         }, (err) => 
         console.log(err),
         () => {
-            const urlp = [];
-            (getDownloadURL(uploadTask.snapshot.ref)
-            .then((url) => 
-                urlp.push(url)
-            ));
-            console.log(urlp);
             const db = db2.ref("Posts");
-            const submit = {
-                type,
-                dogBreed,
-                height,
-                colour,
-                neutured,
-                picURL
-            }
-            db.push(submit);
+            getDownloadURL(uploadTask.snapshot.ref)
+            .then(async function (url) {
+                console.log(url);
+                const image = url;
+                const submit = {
+                    type,
+                    dogBreed,
+                    height,
+                    colour,
+                    neutured,
+                    image
+                };
+                await db.push(submit);
+                alert("Post Created");
+                window.location = ("/Found")
+            });
+        });
+    }*/
+
+    function SubmitDetails(){
+        const storageRef = ref(storage, `/images/${fileImage.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, fileImage);
+
+        uploadTask.on("state_changed", (snapshot) => {
+            const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+            setProgress(prog);
+        }, (err) => 
+        console.log(err),
+        () => {
+            const db = db2.ref("Posts");
+            getDownloadURL(uploadTask.snapshot.ref)
+            .then(async function (url) {
+                console.log(url);
+                const image = url;
+                const submit = {
+                    type,
+                    dogBreed,
+                    height,
+                    colour,
+                    neutured,
+                    image
+                };
+                await db.push(submit);
+                alert("Post Created");
+                window.location = ("/Found")
+            });
         });
     }
 

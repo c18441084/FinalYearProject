@@ -42,7 +42,7 @@ export default function Found(){
                     return(
                         <div id="showingPosts">
                             <div>{element.dogBreed}</div>
-                            {/*<img src={element.fileImagePic}></img>*/}
+                            <img src={element.image}></img>
                         </div>
                     )
                 })}
