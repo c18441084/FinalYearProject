@@ -1,13 +1,10 @@
 import db2, {logout, getDownloadURL} from "../../firebaseconfig";
 import './Found.css'
 import { useState, useEffect } from "react";
-import { resolvePath } from "react-router-dom";
 
 export default function Found(){
 
     const [posts, setPosts] = useState([]);
-
-    const [practiseImage, setPractiseImage] = useState([]);
 
     const db = db2.ref("Posts");
 
@@ -25,35 +22,9 @@ export default function Found(){
             }
             setPosts(postsArray);
         })
-
-        const array = []
-        posts.map(function(element){
-            array[element] = element;
-            console.log(array[element]);
-            let img = URL.createObjectURL(array[element].fileImagePic);
-            let pic = new Image()
-            pic.onload = () => {
-                URL.revokeObjectURL(img);
-                resolvePath(pic);
-            }
-            pic.src = img;
-            array[element].fileImagePic = pic.src;
-            console.log(array[element].fileImagePic)
-        })
-
-        setPosts(array);
         console.log(posts);
-        //changingImage();
-
     }, [])
 
-    async function changingImage(){
-        posts.map(function(element){
-            const imageURL = getDownloadURL(element.fileImagePic);
-            console.log(imageURL);
-            setPractiseImage[element] = imageURL;
-        })
-    }
 
     return(
         <div>
@@ -70,7 +41,8 @@ export default function Found(){
                 {posts.map(function(element){
                     return(
                         <div id="showingPosts">
-                            <img src={element.fileImagePic}></img>
+                            <div>{element.dogBreed}</div>
+                            {/*<img src={element.fileImagePic}></img>*/}
                         </div>
                     )
                 })}

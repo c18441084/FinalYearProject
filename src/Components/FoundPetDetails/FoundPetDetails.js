@@ -3,7 +3,8 @@ import './FoundPetDetails.css';
 import '../Found/Found';
 import heightDiagram from './Height_Diagram.png';
 import GoogleMap, {MapContainer, state} from './GoogleMaps';
-import db2, {getDownloadURL} from "../../firebaseconfig";
+import db2, {storage, ref, getDownloadURL} from "../../firebaseconfig";
+import { uploadBytes, uploadBytesResumable } from 'firebase/storage';
 
 export default function FoundPetDetails(){
 
@@ -12,7 +13,7 @@ export default function FoundPetDetails(){
     const [height, setHeight] = useState("");
     const [colour, setColour] = useState("");
     const [neutured, setNeutured] = useState("");
-    const [fileImagePic, setFileImagePic] = useState();
+    const [picURL, setPicURL] = useState("Alright");
 
     const [showBreed, setShowBreed] = useState(false);
     const [showBreedGuide, setShowBreedGuide] = useState(false);
@@ -29,6 +30,8 @@ export default function FoundPetDetails(){
     const [dogBreedHelp, setDogBreedHelp] = useState("");
     const [breedListImages, setBreedListImages] = useState([]);
     const [fileImage, setFileImage] = useState("");
+    const [fileImagePic, setFileImagePic] = useState();
+    const [progress, setProgress] = useState(0);
 
     async function componentDidMount(){
         const response = await fetch("https://dog.ceo/api/breeds/list/all");
@@ -114,7 +117,7 @@ export default function FoundPetDetails(){
 
     function deleteImage(){
         setShowFilePic(false);
-        setFileImagePic();
+        setFileImagePic("");
     }
 
     function LocationPicker(){
@@ -122,6 +125,7 @@ export default function FoundPetDetails(){
     }
 
     function SubmitDetails(){
+        /*console.log(fileImage);
         const db = db2.ref("Posts");
         const submit = {
             type,
@@ -129,13 +133,42 @@ export default function FoundPetDetails(){
             height,
             colour,
             neutured,
-            fileImagePic,
         }
-        console.log(db2);
-        console.log(submit);
-        db.push(submit);
+        db.push(submit);*/
+
+        upload(fileImage);
+
         alert("Post Created");
-        window.location = ("/Found");
+        //window.location = ("/Found");
+    }
+
+    const upload = (fileImage) => {
+        const storageRef = ref(storage, `/images/${fileImage.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, fileImage);
+
+        uploadTask.on("state_changed", (snapshot) => {
+            const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+            setProgress(prog);
+        }, (err) => 
+        console.log(err),
+        () => {
+            const urlp = [];
+            (getDownloadURL(uploadTask.snapshot.ref)
+            .then((url) => 
+                urlp.push(url)
+            ));
+            console.log(urlp);
+            const db = db2.ref("Posts");
+            const submit = {
+                type,
+                dogBreed,
+                height,
+                colour,
+                neutured,
+                picURL
+            }
+            db.push(submit);
+        });
     }
 
     return(
@@ -243,6 +276,7 @@ export default function FoundPetDetails(){
             {showLocationPick?
                 <div id="Map">
                     <button id="submitButton" onClick={SubmitDetails}>Submit</button>
+                    <h3>Uploaded {progress}%</h3>
                     <GoogleMap id = "googleMap" />
                 </div>
             : null}
