@@ -1,5 +1,7 @@
 import firebase from "firebase/compat/app";
 import 'firebase/compat/database';
+import 'firebase/compat/storage';
+import { ref } from 'firebase/storage';
 import "firebase/compat/auth";
 import "firebase/compat/firestore";
 import { signInWithPopup, FacebookAuthProvider} from "firebase/auth";
@@ -29,6 +31,7 @@ const app = firebase.initializeApp(firebaseConfig);
 const auth = app.auth();
 const db = app.firestore();
 const db2 = firebase.database();
+const storage = firebase.storage();
 
 const provider = new FacebookAuthProvider();
 
@@ -116,6 +119,8 @@ export {
   sendPasswordResetEmail,
   logout,
   getDownloadURL,
+  storage,
+  ref
 };
 
 export default db2;
