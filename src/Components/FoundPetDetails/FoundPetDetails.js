@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import './FoundPetDetails.css';
+import '../Found/Found';
 import heightDiagram from './Height_Diagram.png';
 import GoogleMap, {MapContainer, state} from './GoogleMaps';
-import firebase from "../../firebaseconfig";
+import db2, {getDownloadURL} from "../../firebaseconfig";
 
 export default function FoundPetDetails(){
 
@@ -121,7 +122,7 @@ export default function FoundPetDetails(){
     }
 
     function SubmitDetails(){
-        const db = firebase.database().ref("Posts");
+        const db = db2.ref("Posts");
         const submit = {
             type,
             dogBreed,
@@ -130,8 +131,11 @@ export default function FoundPetDetails(){
             neutured,
             fileImagePic,
         }
+        console.log(db2);
         console.log(submit);
         db.push(submit);
+        alert("Post Created");
+        window.location = ("/Found");
     }
 
     return(
