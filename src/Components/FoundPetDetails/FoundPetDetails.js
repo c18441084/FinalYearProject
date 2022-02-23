@@ -13,7 +13,6 @@ export default function FoundPetDetails(){
     const [height, setHeight] = useState("");
     const [colour, setColour] = useState("");
     const [neutured, setNeutured] = useState("");
-    const [picURL, setPicURL] = useState("Alright");
 
     const [showBreed, setShowBreed] = useState(false);
     const [showBreedGuide, setShowBreedGuide] = useState(false);
