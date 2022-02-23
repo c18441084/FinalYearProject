@@ -16,5 +16,30 @@
 }
 
 #showingPosts{
-    text-align: center;
+    border: 1px black solid;
+    border-radius: 25px;
+    margin-left: 20%;
+    margin-right: 20%;
+    box-shadow:  0 1.4rem 8rem rgb(0,0,0,.2);
+    display: flex;
+    margin-bottom: 20px;
+}
+
+#postImage{
+    height: 120px;
+    width: 150px;
+    margin-top: 15px;
+    margin-left: 20px;
+    margin-bottom: 15px;
+    border-radius: 25px;
+}
+
+#info{
+    display: inline;
+}
+
+#addComment{
+    margin-top: 30px;
+    margin-bottom: 10px;
+    margin-left: 30px;
 }
