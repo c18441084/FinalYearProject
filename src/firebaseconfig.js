@@ -73,7 +73,6 @@ const signInWithFacebook = async () => {
 const signInWithEmailAndPassword = async (email, password) => {
   try {
     await auth.signInWithEmailAndPassword(email, password);
-    console.log(auth);
   } catch (err) {
     console.error(err);
     alert(err.message);
@@ -84,12 +83,11 @@ const registerWithEmailAndPassword = async (name, email, password) => {
     const res = await auth.createUserWithEmailAndPassword(email, password);
     const user = res.user;
     window.location = ("/");
-    console.log("hi");
     await db.collection("users").add({
       uid: user.uid,
-      name,
       authProvider: "local",
       email,
+      displayName: 'name'
     });
   } catch (err) {
     console.error(err);

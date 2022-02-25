@@ -1,13 +1,19 @@
-import db2, {logout, getDownloadURL} from "../../firebaseconfig";
+import db2, {logout, getDownloadURL, ref} from "../../firebaseconfig";
 import './Found.css'
 import { useState, useEffect } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { Module } from "webpack";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { auth } from '../../firebaseconfig';
 
 export default function Found(){
 
     const [posts, setPosts] = useState([]);
-    const [showCommentTextArea, setShowCommentTextArea] = useState(false);
+    const [comment, setComment] = useState("");
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [newComment, setNewComment] = useState({});
+    const [showingComments, setShowingComments] = useState([]); 
+    const [displayComments, setDisplayComments] = useState(false);
 
     const db = db2.ref("Posts");
 
@@ -25,17 +31,44 @@ export default function Found(){
             }
             setPosts(postsArray);
         })
-        console.log(posts);
     }, [])
 
-    function addComment(){
-        setShowCommentTextArea(true);
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+  
+
+    async function addingComment(id){
+        const dbcomments = db2.ref(`Posts/${id}/comments`)
+        setName(auth.currentUser.displayName);
+        console.log(auth);
+        setEmail(auth.currentUser.email);
+        const submit = {
+            name,
+            email, 
+            comment
+        }
+        await dbcomments.push(submit);
+        handleClose();
     }
 
-    function addingComment(id){
-        console.log(id);
-        console.log("worked");
-        //setShowCommentTextArea(true);
+    async function showComments(id){
+        const dbcomments = db2.ref(`Posts/${id}/comments`);
+        dbcomments.on("value", (snapshot)=>{
+            const commentsFromDatabase = snapshot.val();
+            const commentsArray = [];
+            for(let id in commentsFromDatabase){
+                commentsArray.push(commentsFromDatabase[id]);
+            }
+            setShowingComments(commentsArray);
+            //console.log(commentsArray);
+        })
+        setDisplayComments(true);
+    }
+
+    function closeComments(){
+        setDisplayComments(false);
     }
 
 
@@ -61,46 +94,47 @@ export default function Found(){
                                 <div id="postHeight"><h3 style={{display: "inline"}}>Height: </h3>{element.height}cm</div>
                                 <div id="postColour"><h3 style={{display: "inline"}}>Colour: </h3>{element.colour}</div>
                                 <div id="postNeutured"><h3 style={{display: "inline"}}>The animal is: </h3>{element.neutured}</div>
-                                <button id="comment" onClick={() => addingComment(element.id)}>Add Comment</button>
-                                <Button onClick={() => addComment}>Add Comment</Button>
-                                <Modal show={showCommentTextArea} >
-                                    <Modal.Header>Comment Below</Modal.Header>
-                                    <Modal.Body><textarea id="comment" name="comment"></textarea></Modal.Body>
-                                    <Module.Footer>
-                                        <button onClick={() => addingComment(element.id)}></button>
-                                    </Module.Footer>
+                                <Button variant="primary" onClick={handleShow}>
+                                    Add Comment
+                                </Button>
+
+                                <Modal show={show} onHide={handleClose}>
+                                    <Modal.Header style={{background: "#F0F0F0"}}>
+                                    <Modal.Title>Comment Below</Modal.Title>
+                                    </Modal.Header>
+                                    <Modal.Body><textarea id="commentBox" name="commentBox" onChange={(e) => setComment(e.target.value)}></textarea></Modal.Body>
+                                    <Modal.Footer>
+                                    <Button variant="secondary" onClick={() => addingComment(element.id)}>
+                                        Submit
+                                    </Button>
+                                    <Button variant="primary" onClick={handleClose}>
+                                        Close
+                                    </Button>
+                                    </Modal.Footer>
                                 </Modal>
-                                
+                                {element.comments != null?
+                                <div>
+                                    <button id="CommentsButtons" onClick={() => showComments(element.id)}>Show Comments</button>
+                                    {displayComments?
+                                        <div>
+                                            <button id="CommentsButtons" onClick = {() => closeComments()}>Close Comments</button>
+                                            {showingComments.map(function(element){
+                                                return(
+                                                    <div>
+                                                        <h2>{element.name}</h2>
+                                                        <p>{element.comment}</p>
+                                                    </div>
+                                                )
+                                            })}
+                                        </div>
+                                    :null}
+                                </div>
+                                :null}
                             </div>
                         </div>
                     )
                 })}
             </div>
-
-            {/*{showCommentTextArea?
-                <div>
-                    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>
-
-                    <div id="myModal" class="modal fade" role="dialog">
-                    <div class="modal-dialog">
-
-                        <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Modal Header</h4>
-                        </div>
-                        <div class="modal-body">
-                            <p>Some text in the modal.</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        </div>
-                        </div>
-
-                    </div>
-                    </div>
-                </div>
-            :null}*/}
         </div>
     )
 }

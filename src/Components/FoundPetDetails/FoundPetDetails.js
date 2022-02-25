@@ -13,6 +13,7 @@ export default function FoundPetDetails(){
     const [height, setHeight] = useState("");
     const [colour, setColour] = useState("");
     const [neutured, setNeutured] = useState("");
+    const [comments, setComments] = useState({});
 
     const [showBreed, setShowBreed] = useState(false);
     const [showBreedGuide, setShowBreedGuide] = useState(false);
@@ -136,7 +137,6 @@ export default function FoundPetDetails(){
             const db = db2.ref("Posts");
             getDownloadURL(uploadTask.snapshot.ref)
             .then(async function (url) {
-                console.log(url);
                 const image = url;
                 const submit = {
                     type,
@@ -144,7 +144,12 @@ export default function FoundPetDetails(){
                     height,
                     colour,
                     neutured,
-                    image
+                    image,
+                    comments: {
+                        name: null,
+                        email: null,
+                        comment: null
+                    }
                 };
                 await db.push(submit);
                 alert("Post Created");
