@@ -38,6 +38,11 @@
     display: inline;
 }
 
+#postTime{
+    margin-left: 190px;
+    opacity: 0.5;
+}
+
 #addComment{
     margin-top: 30px;
     margin-bottom: 10px;
@@ -50,6 +55,32 @@
     height: 100%;
 }
 
-#CommentsButtons{
+#commentsButton{
     display: inline-block;
+}
+
+#showCommentsButton{
+    
+}
+
+#closeCommentsButton{
+    
+}
+
+#commentInfo{
+    padding-bottom: 5%;
+}
+
+/*#commentTime{
+    display: inline;
+    opacity: 0.5;
+    margin-left: 40%;
+    font-size: small;
+}*/
+
+#commentTime{
+    position: absolute;
+    opacity: 0.5;
+    font-size: small;
+    margin-left: 30%;
 }

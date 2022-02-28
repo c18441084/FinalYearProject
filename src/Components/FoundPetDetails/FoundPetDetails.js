@@ -13,7 +13,7 @@ export default function FoundPetDetails(){
     const [height, setHeight] = useState("");
     const [colour, setColour] = useState("");
     const [neutured, setNeutured] = useState("");
-    const [comments, setComments] = useState({});
+    const [postTime, setPostTime] = useState("");
 
     const [showBreed, setShowBreed] = useState(false);
     const [showBreedGuide, setShowBreedGuide] = useState(false);
@@ -127,6 +127,17 @@ export default function FoundPetDetails(){
     function SubmitDetails(){
         const storageRef = ref(storage, `/images/${fileImage.name + new Date().getTime()}`);
         const uploadTask = uploadBytesResumable(storageRef, fileImage);
+        
+        const date = Date().toLocaleString();
+        const datesplit = date.split(" ");
+        console.log(datesplit);
+        const day = datesplit[2];
+        const month = datesplit[1];
+        const year = datesplit[3];
+        const timeSeconds = datesplit[4];
+        const timesplit = timeSeconds.split(":");
+        const time = (timesplit[0]+":"+timesplit[1]);
+        const postTime = time+" "+day+"th "+month+" "+year;
 
         uploadTask.on("state_changed", (snapshot) => {
             const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
@@ -148,8 +159,10 @@ export default function FoundPetDetails(){
                     comments: {
                         name: null,
                         email: null,
-                        comment: null
-                    }
+                        comment: null,
+                        commentTime: null,
+                    },
+                    postTime,
                 };
                 await db.push(submit);
                 alert("Post Created");

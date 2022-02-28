@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Map, Marker, GoogleApiWrapper } from 'google-maps-react';
+import { Map, Marker, GoogleApiWrapper, Geocode } from 'google-maps-react';
 import { googleAPIkey } from '../../keys';
 
 const style = {
@@ -15,18 +15,31 @@ export class MapContainer extends Component {
       showingInfoWindow: false,
       activeMarker: {},
       selectedPlace: {},
+      address: " ",
       mapCenter: {
         lat: 53.350140,
         lng: -6.266155
       }
     };
 
-    onMapClicked = (props, marker, e) => {
+    onMapClicked = async (props, marker, e) => {
+      let gettingAddress = "";
+      Geocode.fromLatLng(e.latLng.lat(), e.latLng.lng()).then(
+        response => {
+          gettingAddress = response.results[0].formatted_address;
+          console.log(gettingAddress);
+        },
+        error => {
+          console.error(error);
+        }
+      );
+      //const gettingAddress = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${e.latLng.lat()},${e.latLng.lng()}&key=${googleAPIkey}`);
       this.setState({
         selectedPlace: props,
-        mapCenter: {lat: e.latLng.lat(), lng: e.latLng.lng()}
+        mapCenter: {lat: e.latLng.lat(), lng: e.latLng.lng()},
+        address: gettingAddress,
       })
-      console.log(e.latLng.name);
+      console.log(this.state.address);
     };
 
    
