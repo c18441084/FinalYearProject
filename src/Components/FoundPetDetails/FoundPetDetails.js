@@ -2,7 +2,7 @@ import { useState } from 'react';
 import './FoundPetDetails.css';
 import '../Found/Found';
 import heightDiagram from './Height_Diagram.png';
-import GoogleMap, {MapContainer, state} from './GoogleMaps';
+import GoogleMap, { MapContainer } from './GoogleMaps';
 import db2, {storage, ref, getDownloadURL} from "../../firebaseconfig";
 import { uploadBytes, uploadBytesResumable } from 'firebase/storage';
 
@@ -13,7 +13,6 @@ export default function FoundPetDetails(){
     const [height, setHeight] = useState("");
     const [colour, setColour] = useState("");
     const [neutured, setNeutured] = useState("");
-    const [postTime, setPostTime] = useState("");
 
     const [showBreed, setShowBreed] = useState(false);
     const [showBreedGuide, setShowBreedGuide] = useState(false);
@@ -46,11 +45,11 @@ export default function FoundPetDetails(){
         setShowBreedHelpImages(true);
     }
 
-    async function Map(){
+    /*async function Map(){
         const response = await fetch("https://maps.googleapis.com/map/api/js?key=AIzaSyAYQTc2e1XUgfTFKbwnYhlymFx4treFAa8&callback=initMap");
         const data = await response.json()
         console.log("Map: " + data);
-    }
+    }*/
 
     function Type(){
         console.log(type);
@@ -67,7 +66,7 @@ export default function FoundPetDetails(){
         if(type == "dog"){
             setShowBreed(true);
             componentDidMount();
-            Map();
+            //Map();
         }
         else{
             setShowHeight(true);
@@ -121,16 +120,34 @@ export default function FoundPetDetails(){
     }
 
     function LocationPicker(){
-
+        console.log("Hi");
+        //console.log(address);
     }
 
-    function SubmitDetails(){
+    async function SubmitDetails(){
         const storageRef = ref(storage, `/images/${fileImage.name + new Date().getTime()}`);
         const uploadTask = uploadBytesResumable(storageRef, fileImage);
-        
+        let postnum = 0;
+
+        await db2.ref("Posts").once('value', function(snapshot){
+            if(snapshot.exists()){
+                let last = 0;
+                const postsArray = [];
+                const postsFromDatabase = snapshot.val();
+                    for(let postID in postsFromDatabase){
+                        postsArray.push(postsFromDatabase[postID]);
+                    }
+                last = postsArray.pop();
+                postnum = last.postID + 1;
+            }
+            else{
+                postnum =  1;
+            }
+
+        })
+
         const date = Date().toLocaleString();
         const datesplit = date.split(" ");
-        console.log(datesplit);
         const day = datesplit[2];
         const month = datesplit[1];
         const year = datesplit[3];
@@ -150,6 +167,7 @@ export default function FoundPetDetails(){
             .then(async function (url) {
                 const image = url;
                 const submit = {
+                    postID: postnum,
                     type,
                     dogBreed,
                     height,
@@ -277,7 +295,7 @@ export default function FoundPetDetails(){
                 <div id="Map">
                     <button id="submitButton" onClick={SubmitDetails}>Submit</button>
                     <h3>Uploaded {progress}%</h3>
-                    <GoogleMap id = "googleMap" />
+                    <GoogleMap id = "googleMap" onChange={LocationPicker}/>
                 </div>
             : null}
         </div>
