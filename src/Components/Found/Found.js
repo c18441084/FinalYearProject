@@ -9,9 +9,6 @@ export default function Found(){
 
     const [posts, setPosts] = useState([]);
     const [comment, setComment] = useState("");
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [newComment, setNewComment] = useState({});
     const [showingComments, setShowingComments] = useState([]); 
     const [displayComments, setDisplayComments] = useState(false);
 
@@ -41,14 +38,24 @@ export default function Found(){
 
     async function addingComment(id){
         const dbcomments = db2.ref(`Posts/${id}/comments`)
-        setName(auth.currentUser.displayName);
-        console.log(auth);
-        setEmail(auth.currentUser.email);
+        //setName(auth.currentUser.displayName);
+        const name = auth.currentUser.displayName;
+        const email = auth.currentUser.email;
+        const date = Date().toLocaleString();
+        const datesplit = date.split(" ");
+        const day = datesplit[2];
+        const month = datesplit[1];
+        const timeSeconds = datesplit[4];
+        const timesplit = timeSeconds.split(":");
+        const time = (timesplit[0]+":"+timesplit[1]);
+        const commentTime = time+" "+day+"th "+month;
         const submit = {
             name,
             email, 
-            comment
+            comment,
+            commentTime
         }
+        console.log(name);
         await dbcomments.push(submit);
         handleClose();
     }
@@ -89,6 +96,7 @@ export default function Found(){
                         <div id="showingPosts">
                             <img id="postImage" src={element.image}></img>
                             <div id="info">
+                                <div id="postTime">{element.postTime}</div>
                                 <div id="postType"><h3 style={{display: "inline"}}>Type: </h3>{element.type}</div>
                                 <div id="postBreed"><h3 style={{display: "inline"}}>Breed: </h3>{element.dogBreed}</div>
                                 <div id="postHeight"><h3 style={{display: "inline"}}>Height: </h3>{element.height}cm</div>
@@ -113,22 +121,25 @@ export default function Found(){
                                     </Modal.Footer>
                                 </Modal>
                                 {element.comments != null?
-                                <div>
-                                    <button id="CommentsButtons" onClick={() => showComments(element.id)}>Show Comments</button>
-                                    {displayComments?
-                                        <div>
-                                            <button id="CommentsButtons" onClick = {() => closeComments()}>Close Comments</button>
-                                            {showingComments.map(function(element){
-                                                return(
-                                                    <div>
-                                                        <h2>{element.name}</h2>
-                                                        <p>{element.comment}</p>
-                                                    </div>
-                                                )
-                                            })}
-                                        </div>
-                                    :null}
-                                </div>
+                                    <div>
+                                        <button id="commentsButton showCommentsButton" onClick={() => showComments(element.id)}>Show Comments</button>
+                                    </div>
+                                :null}
+                                {displayComments?
+                                    <div>
+                                        <button id="commentsButton closeCommentsButton" onClick = {() => closeComments()}>Close Comments</button>
+                                        <br />
+                                        <br />
+
+                                        {showingComments.map(function(element){
+                                            return(
+                                                <div id="comment">
+                                                    <b id="commentUser">{element.name}: </b>
+                                                    <p id="commentInfo">{element.comment}<p id="commentTime">Commented on {element.commentTime}</p></p>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
                                 :null}
                             </div>
                         </div>
