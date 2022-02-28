@@ -38,7 +38,6 @@ export default function Found(){
 
     async function addingComment(id){
         const dbcomments = db2.ref(`Posts/${id}/comments`)
-        //setName(auth.currentUser.displayName);
         const name = auth.currentUser.displayName;
         const email = auth.currentUser.email;
         const date = Date().toLocaleString();
@@ -55,7 +54,6 @@ export default function Found(){
             comment,
             commentTime
         }
-        console.log(name);
         await dbcomments.push(submit);
         handleClose();
     }
@@ -69,7 +67,6 @@ export default function Found(){
                 commentsArray.push(commentsFromDatabase[id]);
             }
             setShowingComments(commentsArray);
-            //console.log(commentsArray);
         })
         setDisplayComments(true);
     }

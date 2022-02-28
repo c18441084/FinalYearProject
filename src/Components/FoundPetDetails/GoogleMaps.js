@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Map, Marker, GoogleApiWrapper, Geocode } from 'google-maps-react';
-import { googleAPIkey } from '../../keys';
+import { Map, Marker, GoogleApiWrapper } from 'google-maps-react';
+import { googleAPIkey, geocodeAPIkey } from '../../keys';
 
 const style = {
     maxWidth: "75%",
@@ -9,6 +9,7 @@ const style = {
     overflowY: "hidden"
 };
 
+const address="";
 
 export class MapContainer extends Component {
     state = {
@@ -23,26 +24,18 @@ export class MapContainer extends Component {
     };
 
     onMapClicked = async (props, marker, e) => {
-      let gettingAddress = "";
-      Geocode.fromLatLng(e.latLng.lat(), e.latLng.lng()).then(
-        response => {
-          gettingAddress = response.results[0].formatted_address;
-          console.log(gettingAddress);
-        },
-        error => {
-          console.error(error);
-        }
-      );
-      //const gettingAddress = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${e.latLng.lat()},${e.latLng.lng()}&key=${googleAPIkey}`);
+      const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${e.latLng.lat()},${e.latLng.lng()}&key=${geocodeAPIkey}`);
+      const addressObject = await response.json();
+      const gettingAddress = addressObject.results[0].formatted_address
+      //address = gettingAddress;
+      console.log(gettingAddress);
       this.setState({
         selectedPlace: props,
         mapCenter: {lat: e.latLng.lat(), lng: e.latLng.lng()},
         address: gettingAddress,
       })
-      console.log(this.state.address);
     };
-
-   
+    
   render() {
     return (
       <div>
@@ -67,5 +60,5 @@ export class MapContainer extends Component {
 }
 
 export default GoogleApiWrapper({
-  apiKey: googleAPIkey
+  apiKey: googleAPIkey,
 })(MapContainer)
