@@ -6,7 +6,9 @@
 }
 
 #titleName{
+    display: inline-block;
     text-align: center;
+    margin-left: 40%;
 }
 
 #logout{
@@ -15,8 +17,14 @@
     margin-top: -3%;
 }
 
+#SettingsButton{
+    height: 20%;
+    width: 5%; 
+    float: right;
+}
+
 #imageSettingsIcon{
-    height: 70%;
+    height: 20%;
     width: 70%;
 }
 
