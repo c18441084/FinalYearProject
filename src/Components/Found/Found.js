@@ -1,16 +1,20 @@
 import db2, {logout, getDownloadURL, ref} from "../../firebaseconfig";
 import './Found.css'
 import { useState, useEffect } from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Modal, Dropdown } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { auth } from '../../firebaseconfig';
+import settingsIcon from "../../SettingsIcon.png";
+
 
 export default function Found(){
 
     const [posts, setPosts] = useState([]);
+    const [show, setShow] = useState(false);
     const [comment, setComment] = useState("");
     const [showingComments, setShowingComments] = useState([]); 
     const [displayComments, setDisplayComments] = useState(false);
+    const [addingCommentClicked, setAddingCommentClicked] = useState(0);
 
     const db = db2.ref("Posts");
 
@@ -30,15 +34,25 @@ export default function Found(){
         })
     }, [])
 
-    const [show, setShow] = useState(false);
-
     const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const handleShow = (id) => {
+        setShow(true)
+        setAddingCommentClicked(id);
+    };
   
+    function home(){
+        window.location = "/home";
+    }
 
-    async function addingComment(id){
-        const dbcomments = db2.ref(`Posts/${id}/comments`)
-        const name = auth.currentUser.displayName;
+    async function addingComment(){
+        let postID = 0;
+        console.log(addingCommentClicked);
+        const dbcomments = db2.ref(`Posts/${addingCommentClicked}/comments`);
+        db2.ref(`Posts/${addingCommentClicked}`).once("value", snap => {
+            const infoFromPost = snap.val();
+            postID = infoFromPost.postID;
+        })
+        const commenterName = auth.currentUser.displayName;
         const email = auth.currentUser.email;
         const date = Date().toLocaleString();
         const datesplit = date.split(" ");
@@ -49,10 +63,11 @@ export default function Found(){
         const time = (timesplit[0]+":"+timesplit[1]);
         const commentTime = time+" "+day+"th "+month;
         const submit = {
-            name,
+            commenterName,
             email, 
             comment,
-            commentTime
+            commentTime,
+            postID,
         }
         await dbcomments.push(submit);
         handleClose();
@@ -75,31 +90,148 @@ export default function Found(){
         setDisplayComments(false);
     }
 
-
     return(
         <div>
             <title>FindMyOwner</title>
             <div id = "Title">
-                <h1>FindMyOwner</h1>
-                <button id = "logout" onClick = {logout} >Log out</button>
+                <h1 id="titleName" href="#" onClick={home}>FindMyOwner</h1>
+                {/*<button id = "logout" onClick = {logout} >Log out</button>*/}
+                <Dropdown>
+                    <Dropdown.Toggle style={{height: "20%", width: "5%", marginBottom: "5%", float: "right"}} id="dropdown-button-dark-example1" variant="warning">
+                        <img id="imageSettingsIcon" src={settingsIcon}></img>
+                    </Dropdown.Toggle>
+                </Dropdown>
             </div>
             <div>
                 <button id = "reportFoundPet" onClick = {reportFoundPet}>I found a stray</button>
             </div>
 
             <div>
-                {posts.map(function(element){
-                    return(
+                {posts.map(function(post){
+                    if(post.dogBreed != null){
+                        return(
+                            <div id="showingPosts">
+                                <img id="postImage" src={post.image}></img>
+                                <div id="info">
+                                    <div id="postTime">Posted by {post.posterName} at {post.postTime}</div>
+                                    <div id="postType"><h3 style={{display: "inline"}}>Type: </h3>{post.type}</div>
+                                    <div id="postBreed"><h3 style={{display: "inline"}}>Breed: </h3>{post.dogBreed}</div>
+                                    <div id="postHeight"><h3 style={{display: "inline"}}>Height: </h3>{post.height}cm</div>
+                                    <div id="postColour"><h3 style={{display: "inline"}}>Colour: </h3>{post.colour}</div>
+                                    <div id="postNeutured"><h3 style={{display: "inline"}}>The animal is: </h3>{post.neutured}</div>
+                                    <Button id={post.id} variant="primary" onClick={(element) => handleShow(element.target.id)}>
+                                        Add Comment
+                                    </Button>
+    
+                                    <Modal show={show} onHide={handleClose}>
+                                        <Modal.Header style={{background: "#F0F0F0"}}>
+                                        <Modal.Title>Comment Below</Modal.Title>
+                                        </Modal.Header>
+                                        <Modal.Body><textarea id="commentBox" commenterName="commentBox" onChange={(e) => setComment(e.target.value)}></textarea></Modal.Body>
+                                        <Modal.Footer>
+                                            <Button variant="secondary" onClick={() => addingComment()}>
+                                                Submit
+                                            </Button>
+                                            <Button variant="primary" onClick={handleClose}>
+                                                Close
+                                            </Button>
+                                        </Modal.Footer>
+                                    </Modal>
+                                    {post.comments != null?
+                                        <div>
+                                            <button id="commentsButton showCommentsButton" onClick={() => showComments(post.id)}>Show Comments</button>
+                                        </div>
+                                    :null}
+                                    {displayComments?
+                                        <div>
+                                            {showingComments.map(function(comment){
+                                                if(post.postID == comment.postID){
+                                                    return(
+                                                        <div>
+                                                            <button id="commentsButton closeCommentsButton" onClick = {() => closeComments()}>Close Comments</button>
+                                                            <br />
+                                                            <br />
+                                                            <div id="comment">
+                                                                <b id="commentUser">{comment.commenterName}: </b>
+                                                                <p id="commentInfo">{comment.comment}<p id="commentTime">Commented on {comment.commentTime}</p></p>
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                }
+                                            })}
+                                        </div>
+                                    :null}
+                                </div>
+                            </div>
+                        )
+                    }
+                    else{
+                        return(
+                            <div id="showingPosts">
+                                <img id="postImage" src={post.image}></img>
+                                <div id="info">
+                                    <div id="postTime">Posted by {post.posterName} at {post.postTime}</div>
+                                    <div id="postType"><h3 style={{display: "inline"}}>Type: </h3>{post.type}</div>
+                                    <div id="postHeight"><h3 style={{display: "inline"}}>Height: </h3>{post.height}cm</div>
+                                    <div id="postColour"><h3 style={{display: "inline"}}>Colour: </h3>{post.colour}</div>
+                                    <div id="postNeutured"><h3 style={{display: "inline"}}>The animal is: </h3>{post.neutured}</div>
+                                    <Button id={post.id} variant="primary" onClick={(element) => handleShow(element.target.id)}>
+                                        Add Comment
+                                    </Button>
+    
+                                    <Modal show={show} onHide={handleClose}>
+                                        <Modal.Header style={{background: "#F0F0F0"}}>
+                                        <Modal.Title>Comment Below</Modal.Title>
+                                        </Modal.Header>
+                                        <Modal.Body><textarea id="commentBox" commenterName="commentBox" onChange={(e) => setComment(e.target.value)}></textarea></Modal.Body>
+                                        <Modal.Footer>
+                                            <Button variant="secondary" onClick={() => addingComment()}>
+                                                Submit
+                                            </Button>
+                                            <Button variant="primary" onClick={handleClose}>
+                                                Close
+                                            </Button>
+                                        </Modal.Footer>
+                                    </Modal>
+                                    {post.comments != null?
+                                        <div>
+                                            <button id="commentsButton showCommentsButton" onClick={() => showComments(post.id)}>Show Comments</button>
+                                        </div>
+                                    :null}
+                                    {displayComments?
+                                        <div>
+                                            {showingComments.map(function(comment){
+                                                if(post.postID == comment.postID){
+                                                    return(
+                                                        <div>
+                                                            <button id="commentsButton closeCommentsButton" onClick = {() => closeComments()}>Close Comments</button>
+                                                            <br />
+                                                            <br />
+                                                            <div id="comment">
+                                                                <b id="commentUser">{comment.commenterName}: </b>
+                                                                <p id="commentInfo">{comment.comment}<p id="commentTime">Commented on {comment.commentTime}</p></p>
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                }
+                                            })}
+                                        </div>
+                                    :null}
+                                </div>
+                            </div>
+                        )
+                    }
+                    /*return(
                         <div id="showingPosts">
-                            <img id="postImage" src={element.image}></img>
+                            <img id="postImage" src={post.image}></img>
                             <div id="info">
-                                <div id="postTime">{element.postTime}</div>
-                                <div id="postType"><h3 style={{display: "inline"}}>Type: </h3>{element.type}</div>
-                                <div id="postBreed"><h3 style={{display: "inline"}}>Breed: </h3>{element.dogBreed}</div>
-                                <div id="postHeight"><h3 style={{display: "inline"}}>Height: </h3>{element.height}cm</div>
-                                <div id="postColour"><h3 style={{display: "inline"}}>Colour: </h3>{element.colour}</div>
-                                <div id="postNeutured"><h3 style={{display: "inline"}}>The animal is: </h3>{element.neutured}</div>
-                                <Button variant="primary" onClick={handleShow}>
+                                <div id="postTime">Posted by {post.posterName} at {post.postTime}</div>
+                                <div id="postType"><h3 style={{display: "inline"}}>Type: </h3>{post.type}</div>
+                                <div id="postBreed"><h3 style={{display: "inline"}}>Breed: </h3>{post.dogBreed}</div>
+                                <div id="postHeight"><h3 style={{display: "inline"}}>Height: </h3>{post.height}cm</div>
+                                <div id="postColour"><h3 style={{display: "inline"}}>Colour: </h3>{post.colour}</div>
+                                <div id="postNeutured"><h3 style={{display: "inline"}}>The animal is: </h3>{post.neutured}</div>
+                                <Button id={post.id} variant="primary" onClick={(element) => handleShow(element.target.id)}>
                                     Add Comment
                                 </Button>
 
@@ -107,40 +239,43 @@ export default function Found(){
                                     <Modal.Header style={{background: "#F0F0F0"}}>
                                     <Modal.Title>Comment Below</Modal.Title>
                                     </Modal.Header>
-                                    <Modal.Body><textarea id="commentBox" name="commentBox" onChange={(e) => setComment(e.target.value)}></textarea></Modal.Body>
+                                    <Modal.Body><textarea id="commentBox" commenterName="commentBox" onChange={(e) => setComment(e.target.value)}></textarea></Modal.Body>
                                     <Modal.Footer>
-                                    <Button variant="secondary" onClick={() => addingComment(element.id)}>
-                                        Submit
-                                    </Button>
-                                    <Button variant="primary" onClick={handleClose}>
-                                        Close
-                                    </Button>
+                                        <Button variant="secondary" onClick={() => addingComment()}>
+                                            Submit
+                                        </Button>
+                                        <Button variant="primary" onClick={handleClose}>
+                                            Close
+                                        </Button>
                                     </Modal.Footer>
                                 </Modal>
-                                {element.comments != null?
+                                {post.comments != null?
                                     <div>
-                                        <button id="commentsButton showCommentsButton" onClick={() => showComments(element.id)}>Show Comments</button>
+                                        <button id="commentsButton showCommentsButton" onClick={() => showComments(post.id)}>Show Comments</button>
                                     </div>
                                 :null}
                                 {displayComments?
                                     <div>
-                                        <button id="commentsButton closeCommentsButton" onClick = {() => closeComments()}>Close Comments</button>
-                                        <br />
-                                        <br />
-
-                                        {showingComments.map(function(element){
-                                            return(
-                                                <div id="comment">
-                                                    <b id="commentUser">{element.name}: </b>
-                                                    <p id="commentInfo">{element.comment}<p id="commentTime">Commented on {element.commentTime}</p></p>
-                                                </div>
-                                            )
+                                        {showingComments.map(function(comment){
+                                            if(post.postID == comment.postID){
+                                                return(
+                                                    <div>
+                                                        <button id="commentsButton closeCommentsButton" onClick = {() => closeComments()}>Close Comments</button>
+                                                        <br />
+                                                        <br />
+                                                        <div id="comment">
+                                                            <b id="commentUser">{comment.commenterName}: </b>
+                                                            <p id="commentInfo">{comment.comment}<p id="commentTime">Commented on {comment.commentTime}</p></p>
+                                                        </div>
+                                                    </div>
+                                                )
+                                            }
                                         })}
                                     </div>
                                 :null}
                             </div>
                         </div>
-                    )
+                    )*/
                 })}
             </div>
         </div>

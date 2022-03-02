@@ -129,7 +129,7 @@ export {
   logout,
   getDownloadURL,
   storage,
-  ref
+  ref,
 };
 
 export default db2;

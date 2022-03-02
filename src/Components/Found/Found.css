@@ -5,7 +5,7 @@
     border-bottom: 2px solid black;
 }
 
-#Title h1{
+#titleName{
     text-align: center;
 }
 
@@ -13,6 +13,11 @@
     margin-left: 93%;
     position: absolute;
     margin-top: -3%;
+}
+
+#imageSettingsIcon{
+    height: 70%;
+    width: 70%;
 }
 
 #showingPosts{
