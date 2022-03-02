@@ -1,3 +1,23 @@
+#Title{
+    background-color: #00bfFF;
+    padding: 1%;
+    font-family: 'Courier New', monospace;
+    border-bottom: 2px solid black;
+}
+
+#Title h1{
+    text-align: center;
+}
+
+#form{
+    text-align: center;
+    box-shadow: 0 1.4rem 8rem rgb(0,0,0,.2);
+    margin-left: 20%;
+    margin-right: 20%;
+    border: 1px black;
+    border-style: dashed;
+}
+
 #breed_guide{
     background-color: lightblue;
     color: white;
@@ -38,3 +58,9 @@
 #closeHeightGuideButton{
     margin-left: 95%;
 }
+
+/*#submitButton{
+    margin-top: 55%;
+    margin-bottom: 5%;
+}*/
+
