@@ -96,10 +96,16 @@ export default function Found(){
             <div id = "Title">
                 <h1 id="titleName" href="#" onClick={home}>FindMyOwner</h1>
                 {/*<button id = "logout" onClick = {logout} >Log out</button>*/}
-                <Dropdown>
-                    <Dropdown.Toggle style={{height: "20%", width: "5%", marginBottom: "5%", float: "right"}} id="dropdown-button-dark-example1" variant="warning">
+                <Dropdown id="SettingsButton">
+                    <Dropdown.Toggle id="dropdown-button-dark-example1" variant="warning">
                         <img id="imageSettingsIcon" src={settingsIcon}></img>
                     </Dropdown.Toggle>
+
+                    <Dropdown.Menu variant="dark">
+                        <Dropdown.Item href="/">My Account</Dropdown.Item>
+                        <Dropdown.Divider></Dropdown.Divider>
+                        <Dropdown.Item href="#" onClick={logout}>Logout</Dropdown.Item>
+                    </Dropdown.Menu>
                 </Dropdown>
             </div>
             <div>

@@ -82,8 +82,6 @@ const registerWithEmailAndPassword = async (name, email, password) => {
   try {
     const res = await auth.createUserWithEmailAndPassword(email, password);
     const user = res.user;
-    window.location = ("/");
-    console.log("heel");
     await db.collection("users").add({
       uid: user.uid,
       authProvider: "local",
@@ -103,6 +101,7 @@ const updateDisplayName = async (name) => {
   console.log(auth);
   await auth.currentUser.updateProfile(update);
   console.log("finished");
+  window.location = ("/");
 }
 
 const sendPasswordResetEmail = async (email) => {
