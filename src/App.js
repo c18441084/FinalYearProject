@@ -1,10 +1,11 @@
 import logo from './logo.svg';
 import './App.css';
-import Login from './Components/Login/Login'
+import Login from './Components/Login/Login';
 import Homepage from './Components/Homepage/Homepage';
 import Found from './Components/Found/Found';
-import Register from './Components/Register/Register'
-import FoundPetDetails from './Components/FoundPetDetails/FoundPetDetails'
+import Register from './Components/Register/Register';
+import FoundPetDetails from './Components/FoundPetDetails/FoundPetDetails';
+import MyAccount from './Components/MyAccount/MyAccount';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from "./firebaseconfig";
@@ -26,6 +27,7 @@ function App() {
         <Route path = "/home" element = {<Homepage />} />
         <Route path = "/found" element = {<Found />} />
         <Route path = "/found-pet-details" element = {<FoundPetDetails />} />
+        <Route path = "/account" element = {<MyAccount />} />
       </Routes>
     }
       </BrowserRouter>
