@@ -94,7 +94,6 @@ const registerWithEmailAndPassword = async (name, email, password) => {
   }
 };
 const updateDisplayName = async (name) => {
-  console.log("hi");
   const update = {
     displayName: name,
   };

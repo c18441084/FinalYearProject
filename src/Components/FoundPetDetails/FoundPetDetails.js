@@ -126,6 +126,7 @@ export default function FoundPetDetails(){
             const uploadTask = uploadBytesResumable(storageRef, fileImage);
             let postnum = 0;
             const posterName = auth.currentUser.displayName;
+            const posterEmail = auth.currentUser.email;
     
             await db2.ref("Posts").once('value', function(snapshot){
                 if(snapshot.exists()){
@@ -181,6 +182,7 @@ export default function FoundPetDetails(){
                         },
                         postTime,
                         posterName,
+                        posterEmail,
                     };
                     await db.push(submit);
                     alert("Post Created");
