@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import db2, { auth } from "../../firebaseconfig";
 import { mdiCommentText } from '@mdi/js';
 import { mdiCommentTextMultiple } from '@mdi/js';
+import { mdiCardsHeartOutline } from '@mdi/js';
 import Icon from '@mdi/react'
 import "./MyAccount.css"
 
@@ -80,7 +81,7 @@ export default function MyAccount(){
         setShow(true)
         setAddingCommentClicked(id);
         console.log(usersPosts);
-        console.log(commentsPosts);
+        console.log(commentsPosts)
     };
 
     async function addingComment(){
@@ -164,7 +165,7 @@ export default function MyAccount(){
                                         <div id="postHeight"><h3 style={{display: "inline"}}>Height: </h3>{post.height}cm</div>
                                         <div id="postColour"><h3 style={{display: "inline"}}>Colour: </h3>{post.colour}</div>
                                         <div id="postNeutured"><h3 style={{display: "inline"}}>The animal is: </h3>{post.neutured}</div>
-                                        <Button data-tip data-for="addComment" id={post.id} variant="outline-primary" onClick={(element) => handleShow(element.target.id)}>
+                                        <Button id={post.id} variant="outline-primary" onClick={(element) => handleShow(element.target.id)} data-tip data-for="addComment" >
                                             <Icon path={mdiCommentText} size={1}></Icon>                        
                                         </Button>
                                         <ReactTooltip id="addComment" place="top" effect="solid">Add Comment</ReactTooltip>  
@@ -184,14 +185,18 @@ export default function MyAccount(){
                                             </Modal.Footer>
                                         </Modal>
                                         {post.comments != null?
-                                            <div>
+                                            <div style={{display: "inline"}}>
                                                 {/*<button id="commentsButton" onClick={() => showComments(post.id)}>Show Comments</button>*/}
-                                                <Button data-tip data-for="showComment"style={{height: "14%"}} id={post.id} variant="outline-primary" onClick={() => showComments(post.id)}>
+                                                <Button data-tip data-for="showComment" id={post.id} variant="outline-primary" onClick={() => showComments(post.id)}>
                                                     <Icon path={mdiCommentTextMultiple} size={1}></Icon>
                                                 </Button>
                                                 <ReactTooltip id="showComment" place="top" effect="solid">View Comments</ReactTooltip>
                                             </div>
                                         :null}
+                                        <Button data-tip data-for="addFavourites" variant="outline-danger">
+                                            <Icon path={mdiCardsHeartOutline} size={1}></Icon>
+                                        </Button>
+                                        <ReactTooltip id="addFavourites" place="top" effect="solid">Add to Favourites</ReactTooltip>
                                         {displayComments?
                                             <div>
                                                 {showingComments.map(function(comment){
@@ -213,9 +218,6 @@ export default function MyAccount(){
                                         :null}
                                     </div>
                                 </div>
-                                <div>
-
-                                </div>
                             </div>
                         )
                     }
@@ -230,7 +232,7 @@ export default function MyAccount(){
                                         <div id="postHeight"><h3 style={{display: "inline"}}>Height: </h3>{post.height}cm</div>
                                         <div id="postColour"><h3 style={{display: "inline"}}>Colour: </h3>{post.colour}</div>
                                         <div id="postNeutured"><h3 style={{display: "inline"}}>The animal is: </h3>{post.neutured}</div>
-                                        <Button data-tip data-for="addComment" id={post.id} variant="outline-primary" onClick={(element) => handleShow(element.target.id)}>
+                                        <Button id={post.id} variant="outline-primary" onClick={(element) => handleShow(element.target.id)} data-tip data-for="addComment" >
                                             <Icon path={mdiCommentText} size={1}></Icon>                        
                                         </Button>
                                         <ReactTooltip id="addComment" place="top" effect="solid">Add Comment</ReactTooltip>  
@@ -251,12 +253,16 @@ export default function MyAccount(){
                                         </Modal>
                                         {post.comments != null?
                                             <div>
-                                                <Button data-tip data-for="showComment"style={{height: "14%"}} id={post.id} variant="outline-primary" onClick={() => showComments(post.id)}>
+                                                <Button data-tip data-for="showComment" id={post.id} variant="outline-primary" onClick={() => showComments(post.id)}>
                                                     <Icon path={mdiCommentTextMultiple} size={1}></Icon>
                                                 </Button>
                                                 <ReactTooltip id="showComment" place="top" effect="solid">View Comments</ReactTooltip>
                                             </div>
                                         :null}
+                                        <Button data-tip data-for="addFavourites" variant="outline-danger">
+                                            <Icon path={mdiCardsHeartOutline} size={1}></Icon>
+                                        </Button>
+                                        <ReactTooltip id="addFavourites" place="top" effect="solid">Add to Favourites</ReactTooltip>
                                         {displayComments?
                                             <div>
                                                 {showingComments.map(function(comment){
@@ -277,9 +283,6 @@ export default function MyAccount(){
                                             </div>
                                         :null}
                                     </div>
-                                </div>
-                                <div>
-                                    
                                 </div>
                             </div>
                         )

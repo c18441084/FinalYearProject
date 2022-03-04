@@ -8,6 +8,7 @@ import { auth } from '../../firebaseconfig';
 import settingsIcon from "../../SettingsIcon.png";
 import { mdiCommentText } from '@mdi/js';
 import { mdiCommentTextMultiple } from '@mdi/js';
+import { mdiCardsHeartOutline } from '@mdi/js';
 import Icon from '@mdi/react'
 
 
@@ -153,13 +154,17 @@ export default function Found(){
                                         </Modal.Footer>
                                     </Modal>
                                     {post.comments != null?
-                                        <div>
-                                            <Button data-tip data-for="showComment"style={{height: "14%"}} id={post.id} variant="outline-primary" onClick={() => showComments(post.id)}>
+                                        <div style={{display: "inline"}}>
+                                            <Button data-tip data-for="showComment" id={post.id} variant="outline-primary" onClick={() => showComments(post.id)}>
                                                 <Icon path={mdiCommentTextMultiple} size={1}></Icon>
                                             </Button>
                                             <ReactTooltip id="showComment" place="top" effect="solid">View Comments</ReactTooltip>
                                         </div>
                                     :null}
+                                    <Button data-tip data-for="addFavourites" variant="outline-danger">
+                                        <Icon path={mdiCardsHeartOutline} size={1}></Icon>
+                                    </Button>
+                                    <ReactTooltip id="addFavourites" place="top" effect="solid">Add to Favourites</ReactTooltip>
                                     {displayComments?
                                         <div>
                                             {showingComments.map(function(comment){
@@ -214,12 +219,16 @@ export default function Found(){
                                     </Modal>
                                     {post.comments != null?
                                         <div>
-                                            <Button data-tip data-for="showComment"style={{height: "14%"}} id={post.id} variant="outline-primary" onClick={() => showComments(post.id)}>
+                                            <Button data-tip data-for="showComment" id={post.id} variant="outline-primary" onClick={() => showComments(post.id)}>
                                                 <Icon path={mdiCommentTextMultiple} size={1}></Icon>
                                             </Button>
                                             <ReactTooltip id="showComment" place="top" effect="solid">View Comments</ReactTooltip>
                                         </div>
                                     :null}
+                                    <Button data-tip data-for="addFavourites" variant="outline-danger">
+                                        <Icon path={mdiCardsHeartOutline} size={1}></Icon>
+                                    </Button>
+                                    <ReactTooltip id="addFavourites" place="top" effect="solid">Add to Favourites</ReactTooltip>
                                     {displayComments?
                                         <div>
                                             {showingComments.map(function(comment){
