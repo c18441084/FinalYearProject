@@ -2,10 +2,12 @@ import db2, {logout, getDownloadURL, ref} from "../../firebaseconfig";
 import './Found.css'
 import { useState, useEffect } from "react";
 import { Button, Modal, Dropdown } from "react-bootstrap";
+import ReactTooltip from 'react-tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { auth } from '../../firebaseconfig';
 import settingsIcon from "../../SettingsIcon.png";
 import { mdiCommentText } from '@mdi/js';
+import { mdiCommentTextMultiple } from '@mdi/js';
 import Icon from '@mdi/react'
 
 
@@ -40,6 +42,7 @@ export default function Found(){
     const handleShow = (id) => {
         setShow(true)
         setAddingCommentClicked(id);
+        console.log(addingCommentClicked);
     };
   
     function home(){
@@ -130,9 +133,10 @@ export default function Found(){
                                     <div id="postHeight"><h3 style={{display: "inline"}}>Height: </h3>{post.height}cm</div>
                                     <div id="postColour"><h3 style={{display: "inline"}}>Colour: </h3>{post.colour}</div>
                                     <div id="postNeutured"><h3 style={{display: "inline"}}>The animal is: </h3>{post.neutured}</div>
-                                    <Button style={{height: "14%"}} id={post.id} variant="outline-primary" onClick={(element) => handleShow(element.target.id)}>
-                                        <Icon path={mdiCommentText} size={1}></Icon>
+                                    <Button id={post.id} variant="outline-primary" onClick={(element) => handleShow(element.target.id)} data-tip data-for="addComment">
+                                        <Icon path={mdiCommentText} size={1}></Icon>                        
                                     </Button>
+                                    <ReactTooltip id="addComment" place="top" effect="solid">Add Comment</ReactTooltip>  
     
                                     <Modal show={show} onHide={handleClose}>
                                         <Modal.Header style={{background: "#F0F0F0"}}>
@@ -150,7 +154,10 @@ export default function Found(){
                                     </Modal>
                                     {post.comments != null?
                                         <div>
-                                            <button id="commentsButton showCommentsButton" onClick={() => showComments(post.id)}>Show Comments</button>
+                                            <Button data-tip data-for="showComment"style={{height: "14%"}} id={post.id} variant="outline-primary" onClick={() => showComments(post.id)}>
+                                                <Icon path={mdiCommentTextMultiple} size={1}></Icon>
+                                            </Button>
+                                            <ReactTooltip id="showComment" place="top" effect="solid">View Comments</ReactTooltip>
                                         </div>
                                     :null}
                                     {displayComments?
@@ -186,9 +193,10 @@ export default function Found(){
                                     <div id="postHeight"><h3 style={{display: "inline"}}>Height: </h3>{post.height}cm</div>
                                     <div id="postColour"><h3 style={{display: "inline"}}>Colour: </h3>{post.colour}</div>
                                     <div id="postNeutured"><h3 style={{display: "inline"}}>The animal is: </h3>{post.neutured}</div>
-                                    <Button id={post.id} variant="outline-primary" onClick={(element) => handleShow(element.target.id)}>
-                                        <Icon path={mdiCommentText} size={1}></Icon>                                    
+                                    <Button data-tip data-for="addComment" id={post.id} variant="outline-primary" onClick={(element) => handleShow(element.target.id)}>
+                                        <Icon path={mdiCommentText} size={1}></Icon>                        
                                     </Button>
+                                    <ReactTooltip id="addComment" place="top" effect="solid">Add Comment</ReactTooltip>  
     
                                     <Modal show={show} onHide={handleClose}>
                                         <Modal.Header style={{background: "#F0F0F0"}}>
@@ -206,7 +214,10 @@ export default function Found(){
                                     </Modal>
                                     {post.comments != null?
                                         <div>
-                                            <button id="commentsButton showCommentsButton" onClick={() => showComments(post.id)}>Show Comments</button>
+                                            <Button data-tip data-for="showComment"style={{height: "14%"}} id={post.id} variant="outline-primary" onClick={() => showComments(post.id)}>
+                                                <Icon path={mdiCommentTextMultiple} size={1}></Icon>
+                                            </Button>
+                                            <ReactTooltip id="showComment" place="top" effect="solid">View Comments</ReactTooltip>
                                         </div>
                                     :null}
                                     {displayComments?
@@ -215,7 +226,7 @@ export default function Found(){
                                                 if(post.postID == comment.postID){
                                                     return(
                                                         <div>
-                                                            <button id="commentsButton closeCommentsButton" onClick = {() => closeComments()}>Close Comments</button>
+                                                            <button id="commentsButton" onClick = {() => closeComments()}>Close Comments</button>
                                                             <br />
                                                             <br />
                                                             <div id="comment">

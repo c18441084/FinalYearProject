@@ -1,40 +1,77 @@
 import { logout } from "../../firebaseconfig";
-import { Button, Modal, Dropdown } from "react-bootstrap";import 'bootstrap/dist/css/bootstrap.min.css';
+import { Button, Modal, Dropdown } from "react-bootstrap";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import ReactTooltip from 'react-tooltip';
 import settingsIcon from "../../SettingsIcon.png";
 import { useEffect, useState } from "react";
 import db2, { auth } from "../../firebaseconfig";
 import { mdiCommentText } from '@mdi/js';
+import { mdiCommentTextMultiple } from '@mdi/js';
 import Icon from '@mdi/react'
+import "./MyAccount.css"
 
 export default function MyAccount(){
 
-    const [email, setEmail] = useState();
     const [usersPosts, setUsersPosts] = useState([]);
+    const [tempArray, setTempArray] = useState([]);
+    const [commentsPosts, setCommentsPosts] = useState([]);
     const [show, setShow] = useState(false);
     const [addingCommentClicked, setAddingCommentClicked] = useState(0);
     const [comment, setComment] = useState("");
     const [showingComments, setShowingComments] = useState([]); 
     const [displayComments, setDisplayComments] = useState(false);
 
-    const dbUserPost = db2.ref(`Posts`);
+    const dbUser = db2.ref(`Posts`);
 
     useEffect(() => {
-        setEmail(auth.currentUser.email);
-        dbUserPost.on("value", (snap) => {
+        const emails = auth.currentUser.email;
+        dbUser.on("value", (snap) => {
             const postsFromDatabase = snap.val();
             const postsArray = [];
             for(let id in postsFromDatabase){
                 const checkPost = db2.ref(`Posts/${id}/posterEmail`);
                 checkPost.on("value", (snap) => {
                     const postEmail = snap.val();
-                    if(postEmail ==  email){
+                    if(postEmail ===  emails){
                         postsArray.push({id, ...postsFromDatabase[id]});
                     }
                 })
             }
             setUsersPosts(postsArray);
-        });
-        console.log(usersPosts); 
+        }); 
+
+        dbUser.on("value", (snap) => {
+            const commentsFromDatabase = snap.val();
+            const commentsArray = [];
+            for(let id in commentsFromDatabase){
+                const getcomment = db2.ref(`Posts/${id}/comments`);
+                getcomment.on("value", (snap) => {
+                    const comments = snap.val();
+                    for(let commentid in comments){
+                        const getemail = db2.ref(`Posts/${id}/comments/${commentid}`);
+                        getemail.on("value", (snap => {
+                            const commentemail = snap.val();
+                            if(commentemail.email === emails){
+                                commentsArray.push({id, ...commentsFromDatabase[id]});
+                            }
+                        }))
+                    }
+                })
+            }
+            setTempArray(commentsArray)
+        })
+        for(let i=0; i<tempArray.length; i++){
+            if(tempArray[i].posterEmail !== emails){
+                if(commentsPosts.length === 0){
+                    commentsPosts.push(tempArray[i]);
+                }
+                for(let j=0; j<commentsPosts.length; j++){
+                    if(tempArray[i].id !== commentsPosts[j].id){
+                        commentsPosts.push(tempArray[i]);
+                    }
+                }
+            }
+        }
     }, [])
     
 
@@ -42,28 +79,13 @@ export default function MyAccount(){
     const handleShow = (id) => {
         setShow(true)
         setAddingCommentClicked(id);
-    };
-    async function testing(){
         console.log(usersPosts);
-        /*setEmail(auth.currentUser.email);
-        dbUserPost.on("value", (snap) => {
-            const postsFromDatabase = snap.val();
-            const postsArray = [];
-            for(let id in postsFromDatabase){
-                const checkPost = db2.ref(`Posts/${id}/posterEmail`);
-                checkPost.on("value", (snap) => {
-                    const postEmail = snap.val();
-                    if(postEmail ==  email){
-                        postsArray.push({id, ...postsFromDatabase[id]});
-                    }
-                })
-            }
-            setUsersPosts(postsArray);
-        });*/ 
-    }
+        console.log(commentsPosts);
+    };
 
     async function addingComment(){
         let postID = 0;
+        console.log("Hello");
         console.log(addingCommentClicked);
         const dbcomments = db2.ref(`Posts/${addingCommentClicked}/comments`);
         db2.ref(`Posts/${addingCommentClicked}`).once("value", snap => {
@@ -129,117 +151,135 @@ export default function MyAccount(){
             </div>
 
             <div>
-                <button type="button" onClick={testing}>click</button>
                 {usersPosts.map(function(post){
                     if(post.dogBreed != null){
-                        return(
-                            <div id="showingPosts">
-                                <img id="postImage" src={post.image}></img>
-                                <div id="info">
-                                    <div id="postTime">Posted by {post.posterName} at {post.postTime}</div>
-                                    <div id="postType"><h3 style={{display: "inline"}}>Type: </h3>{post.type}</div>
-                                    <div id="postBreed"><h3 style={{display: "inline"}}>Breed: </h3>{post.dogBreed}</div>
-                                    <div id="postHeight"><h3 style={{display: "inline"}}>Height: </h3>{post.height}cm</div>
-                                    <div id="postColour"><h3 style={{display: "inline"}}>Colour: </h3>{post.colour}</div>
-                                    <div id="postNeutured"><h3 style={{display: "inline"}}>The animal is: </h3>{post.neutured}</div>
-                                    <Button style={{height: "14%"}} id={post.id} variant="outline-primary" onClick={(element) => handleShow(element.target.id)}>
-                                        <Icon path={mdiCommentText} size={1}></Icon>
-                                    </Button>
-    
-                                    <Modal show={show} onHide={handleClose}>
-                                        <Modal.Header style={{background: "#F0F0F0"}}>
-                                        <Modal.Title>Comment Below</Modal.Title>
-                                        </Modal.Header>
-                                        <Modal.Body><textarea id="commentBox" commenterName="commentBox" onChange={(e) => setComment(e.target.value)}></textarea></Modal.Body>
-                                        <Modal.Footer>
-                                            <Button variant="secondary" onClick={() => addingComment()}>
-                                                Submit
-                                            </Button>
-                                            <Button variant="primary" onClick={handleClose}>
-                                                Close
-                                            </Button>
-                                        </Modal.Footer>
-                                    </Modal>
-                                    {post.comments != null?
-                                        <div>
-                                            <button id="commentsButton showCommentsButton" onClick={() => showComments(post.id)}>Show Comments</button>
-                                        </div>
-                                    :null}
-                                    {displayComments?
-                                        <div>
-                                            {showingComments.map(function(comment){
-                                                if(post.postID == comment.postID){
-                                                    return(
-                                                        <div>
-                                                            <button id="commentsButton closeCommentsButton" onClick = {() => closeComments()}>Close Comments</button>
-                                                            <br />
-                                                            <br />
-                                                            <div id="comment">
-                                                                <b id="commentUser">{comment.commenterName}: </b>
-                                                                <p id="commentInfo">{comment.comment}<p id="commentTime">Commented on {comment.commentTime}</p></p>
+                        return(   
+                            <div>
+                                <div id="showingPosts">
+                                    <img id="postImage" src={post.image}></img>
+                                    <div id="info">
+                                        <div id="postTime">Posted by {post.posterName} at {post.postTime}</div>
+                                        <div id="postType"><h3 style={{display: "inline"}}>Type: </h3>{post.type}</div>
+                                        <div id="postBreed"><h3 style={{display: "inline"}}>Breed: </h3>{post.dogBreed}</div>
+                                        <div id="postHeight"><h3 style={{display: "inline"}}>Height: </h3>{post.height}cm</div>
+                                        <div id="postColour"><h3 style={{display: "inline"}}>Colour: </h3>{post.colour}</div>
+                                        <div id="postNeutured"><h3 style={{display: "inline"}}>The animal is: </h3>{post.neutured}</div>
+                                        <Button data-tip data-for="addComment" id={post.id} variant="outline-primary" onClick={(element) => handleShow(element.target.id)}>
+                                            <Icon path={mdiCommentText} size={1}></Icon>                        
+                                        </Button>
+                                        <ReactTooltip id="addComment" place="top" effect="solid">Add Comment</ReactTooltip>  
+        
+                                        <Modal show={show} onHide={handleClose}>
+                                            <Modal.Header style={{background: "#F0F0F0"}}>
+                                            <Modal.Title>Comment Below</Modal.Title>
+                                            </Modal.Header>
+                                            <Modal.Body><textarea id="commentBox" commenterName="commentBox" onChange={(e) => setComment(e.target.value)}></textarea></Modal.Body>
+                                            <Modal.Footer>
+                                                <Button variant="secondary" onClick={() => addingComment()}>
+                                                    Submit
+                                                </Button>
+                                                <Button variant="primary" onClick={handleClose}>
+                                                    Close
+                                                </Button>
+                                            </Modal.Footer>
+                                        </Modal>
+                                        {post.comments != null?
+                                            <div>
+                                                {/*<button id="commentsButton" onClick={() => showComments(post.id)}>Show Comments</button>*/}
+                                                <Button data-tip data-for="showComment"style={{height: "14%"}} id={post.id} variant="outline-primary" onClick={() => showComments(post.id)}>
+                                                    <Icon path={mdiCommentTextMultiple} size={1}></Icon>
+                                                </Button>
+                                                <ReactTooltip id="showComment" place="top" effect="solid">View Comments</ReactTooltip>
+                                            </div>
+                                        :null}
+                                        {displayComments?
+                                            <div>
+                                                {showingComments.map(function(comment){
+                                                    if(post.postID === comment.postID){
+                                                        return(
+                                                            <div>
+                                                                <button id="commentsButton" onClick = {() => closeComments()}>Close Comments</button>
+                                                                <br />
+                                                                <br />
+                                                                <div id="comment">
+                                                                    <b id="commentUser">{comment.commenterName}: </b>
+                                                                    <p id="commentInfo">{comment.comment}<p id="commentTime">Commented on {comment.commentTime}</p></p>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    )
-                                                }
-                                            })}
-                                        </div>
-                                    :null}
+                                                        )
+                                                    }
+                                                })}
+                                            </div>
+                                        :null}
+                                    </div>
+                                </div>
+                                <div>
+
                                 </div>
                             </div>
                         )
                     }
                     else{
                         return(
-                            <div id="showingPosts">
-                                <img id="postImage" src={post.image}></img>
-                                <div id="info">
-                                    <div id="postTime">Posted by {post.posterName} at {post.postTime}</div>
-                                    <div id="postType"><h3 style={{display: "inline"}}>Type: </h3>{post.type}</div>
-                                    <div id="postHeight"><h3 style={{display: "inline"}}>Height: </h3>{post.height}cm</div>
-                                    <div id="postColour"><h3 style={{display: "inline"}}>Colour: </h3>{post.colour}</div>
-                                    <div id="postNeutured"><h3 style={{display: "inline"}}>The animal is: </h3>{post.neutured}</div>
-                                    <Button id={post.id} variant="outline-primary" onClick={(element) => handleShow(element.target.id)}>
-                                        <Icon path={mdiCommentText} size={1}></Icon>                                    
-                                    </Button>
-    
-                                    <Modal show={show} onHide={handleClose}>
-                                        <Modal.Header style={{background: "#F0F0F0"}}>
-                                        <Modal.Title>Comment Below</Modal.Title>
-                                        </Modal.Header>
-                                        <Modal.Body><textarea id="commentBox" commenterName="commentBox" onChange={(e) => setComment(e.target.value)}></textarea></Modal.Body>
-                                        <Modal.Footer>
-                                            <Button variant="secondary" onClick={() => addingComment()}>
-                                                Submit
-                                            </Button>
-                                            <Button variant="primary" onClick={handleClose}>
-                                                Close
-                                            </Button>
-                                        </Modal.Footer>
-                                    </Modal>
-                                    {post.comments != null?
-                                        <div>
-                                            <button id="commentsButton showCommentsButton" onClick={() => showComments(post.id)}>Show Comments</button>
-                                        </div>
-                                    :null}
-                                    {displayComments?
-                                        <div>
-                                            {showingComments.map(function(comment){
-                                                if(post.postID == comment.postID){
-                                                    return(
-                                                        <div>
-                                                            <button id="commentsButton closeCommentsButton" onClick = {() => closeComments()}>Close Comments</button>
-                                                            <br />
-                                                            <br />
-                                                            <div id="comment">
-                                                                <b id="commentUser">{comment.commenterName}: </b>
-                                                                <p id="commentInfo">{comment.comment}<p id="commentTime">Commented on {comment.commentTime}</p></p>
+                            <div>
+                                <div id="showingPosts">
+                                    <img id="postImage" src={post.image}></img>
+                                    <div id="info">
+                                        <div id="postTime">Posted by {post.posterName} at {post.postTime}</div>
+                                        <div id="postType"><h3 style={{display: "inline"}}>Type: </h3>{post.type}</div>
+                                        <div id="postHeight"><h3 style={{display: "inline"}}>Height: </h3>{post.height}cm</div>
+                                        <div id="postColour"><h3 style={{display: "inline"}}>Colour: </h3>{post.colour}</div>
+                                        <div id="postNeutured"><h3 style={{display: "inline"}}>The animal is: </h3>{post.neutured}</div>
+                                        <Button data-tip data-for="addComment" id={post.id} variant="outline-primary" onClick={(element) => handleShow(element.target.id)}>
+                                            <Icon path={mdiCommentText} size={1}></Icon>                        
+                                        </Button>
+                                        <ReactTooltip id="addComment" place="top" effect="solid">Add Comment</ReactTooltip>  
+        
+                                        <Modal show={show} onHide={handleClose}>
+                                            <Modal.Header style={{background: "#F0F0F0"}}>
+                                            <Modal.Title>Comment Below</Modal.Title>
+                                            </Modal.Header>
+                                            <Modal.Body><textarea id="commentBox" commenterName="commentBox" onChange={(e) => setComment(e.target.value)}></textarea></Modal.Body>
+                                            <Modal.Footer>
+                                                <Button variant="secondary" onClick={() => addingComment()}>
+                                                    Submit
+                                                </Button>
+                                                <Button variant="primary" onClick={handleClose}>
+                                                    Close
+                                                </Button>
+                                            </Modal.Footer>
+                                        </Modal>
+                                        {post.comments != null?
+                                            <div>
+                                                <Button data-tip data-for="showComment"style={{height: "14%"}} id={post.id} variant="outline-primary" onClick={() => showComments(post.id)}>
+                                                    <Icon path={mdiCommentTextMultiple} size={1}></Icon>
+                                                </Button>
+                                                <ReactTooltip id="showComment" place="top" effect="solid">View Comments</ReactTooltip>
+                                            </div>
+                                        :null}
+                                        {displayComments?
+                                            <div>
+                                                {showingComments.map(function(comment){
+                                                    if(post.postID === comment.postID){
+                                                        return(
+                                                            <div>
+                                                                <button id="commentsButton closeCommentsButton" onClick = {() => closeComments()}>Close Comments</button>
+                                                                <br />
+                                                                <br />
+                                                                <div id="comment">
+                                                                    <b id="commentUser">{comment.commenterName}: </b>
+                                                                    <p id="commentInfo">{comment.comment}<p id="commentTime">Commented on {comment.commentTime}</p></p>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    )
-                                                }
-                                            })}
-                                        </div>
-                                    :null}
+                                                        )
+                                                    }
+                                                })}
+                                            </div>
+                                        :null}
+                                    </div>
+                                </div>
+                                <div>
+                                    
                                 </div>
                             </div>
                         )
