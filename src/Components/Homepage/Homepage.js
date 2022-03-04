@@ -1,19 +1,34 @@
 //import react from "react";
 import './Homepage.css'
 import { logout } from "../../firebaseconfig";
-
+import { Dropdown } from "react-bootstrap";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import settingsIcon from "../../SettingsIcon.png";
 export default function Homepage(){
 
     function found(){
         window.location = "/found";
     }
 
+    function myAccount(){
+        window.location = "/account";
+    }
+
     return(
         <div>
             <title>FindMyOwner</title>
             <div id = "Title">
-                <h1>FindMyOwner</h1>
-                <button id = "logout" onClick = {logout} >Log out</button>
+                <h1 id="titleName">FindMyOwner</h1>
+                <Dropdown id="SettingsButton">
+                    <Dropdown.Toggle id="dropdown-button-dark-example1" variant="warning">
+                        <img id="imageSettingsIcon" src={settingsIcon}></img>
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu variant="dark">
+                        <Dropdown.Item href="#" onClick={myAccount}>My Account</Dropdown.Item>
+                        <Dropdown.Divider></Dropdown.Divider>
+                        <Dropdown.Item href="#" onClick={logout}>Logout</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
             </div>
             <div id = "sidebar">
                 <button id = "found" onClick={found}>

@@ -121,40 +121,41 @@ export default function FoundPetDetails(){
     }
 
     async function SubmitDetails(){
+        const storageRef = ref(storage, `/images/${fileImage.name + new Date().getTime()}`);
+        const uploadTask = uploadBytesResumable(storageRef, fileImage);
+        let postnum = 0;
+        const posterName = auth.currentUser.displayName;
+        const posterEmail = auth.currentUser.email;
+
+        await db2.ref("Posts").once('value', function(snapshot){
+            if(snapshot.exists()){
+                let last = 0;
+                const postsArray = [];
+                const postsFromDatabase = snapshot.val();
+                    for(let postID in postsFromDatabase){
+                        postsArray.push(postsFromDatabase[postID]);
+                    }
+                last = postsArray.pop();
+                postnum = last.postID + 1;
+            }
+            else{
+                postnum =  1;
+            }
+
+        })
+
+        const date = Date().toLocaleString();
+        const datesplit = date.split(" ");
+        const day = datesplit[2];
+        const month = datesplit[1];
+        const year = datesplit[3];
+        const timeSeconds = datesplit[4];
+        const timesplit = timeSeconds.split(":");
+        const time = (timesplit[0]+":"+timesplit[1]);
+        const postTime = time+" "+day+"th "+month+" "+year;
+
+        
         if(type == "dog"){
-            const storageRef = ref(storage, `/images/${fileImage.name + new Date().getTime()}`);
-            const uploadTask = uploadBytesResumable(storageRef, fileImage);
-            let postnum = 0;
-            const posterName = auth.currentUser.displayName;
-            const posterEmail = auth.currentUser.email;
-    
-            await db2.ref("Posts").once('value', function(snapshot){
-                if(snapshot.exists()){
-                    let last = 0;
-                    const postsArray = [];
-                    const postsFromDatabase = snapshot.val();
-                        for(let postID in postsFromDatabase){
-                            postsArray.push(postsFromDatabase[postID]);
-                        }
-                    last = postsArray.pop();
-                    postnum = last.postID + 1;
-                }
-                else{
-                    postnum =  1;
-                }
-    
-            })
-    
-            const date = Date().toLocaleString();
-            const datesplit = date.split(" ");
-            const day = datesplit[2];
-            const month = datesplit[1];
-            const year = datesplit[3];
-            const timeSeconds = datesplit[4];
-            const timesplit = timeSeconds.split(":");
-            const time = (timesplit[0]+":"+timesplit[1]);
-            const postTime = time+" "+day+"th "+month+" "+year;
-    
             uploadTask.on("state_changed", (snapshot) => {
                 const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
                 setProgress(prog);
@@ -191,38 +192,6 @@ export default function FoundPetDetails(){
             }); 
         }
         else{
-            const storageRef = ref(storage, `/images/${fileImage.name + new Date().getTime()}`);
-            const uploadTask = uploadBytesResumable(storageRef, fileImage);
-            let postnum = 0;
-            const posterName = auth.currentUser.displayName;
-
-            await db2.ref("Posts").once('value', function(snapshot){
-                if(snapshot.exists()){
-                    let last = 0;
-                    const postsArray = [];
-                    const postsFromDatabase = snapshot.val();
-                        for(let postID in postsFromDatabase){
-                            postsArray.push(postsFromDatabase[postID]);
-                        }
-                    last = postsArray.pop();
-                    postnum = last.postID + 1;
-                }
-                else{
-                    postnum =  1;
-                }
-
-            })
-
-            const date = Date().toLocaleString();
-            const datesplit = date.split(" ");
-            const day = datesplit[2];
-            const month = datesplit[1];
-            const year = datesplit[3];
-            const timeSeconds = datesplit[4];
-            const timesplit = timeSeconds.split(":");
-            const time = (timesplit[0]+":"+timesplit[1]);
-            const postTime = time+" "+day+"th "+month+" "+year;
-
             uploadTask.on("state_changed", (snapshot) => {
                 const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
                 setProgress(prog);
@@ -249,6 +218,7 @@ export default function FoundPetDetails(){
                         },
                         postTime,
                         posterName,
+                        posterEmail,
                     };
                     await db.push(submit);
                     alert("Post Created");
