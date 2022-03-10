@@ -1,4 +1,4 @@
-#Title{
+/*#Title{
     background-color: #00bfFF;
     padding: 1%;
     font-family: 'Courier New', monospace;
@@ -31,4 +31,89 @@
     box-shadow:  0 1.4rem 8rem rgb(0,0,0,.2);
     display: flex;
     margin-bottom: 20px;
+}*/
+
+#Title{
+    background-color: #00bfFF;
+    padding: 1%;
+    font-family: 'Courier New', monospace;
+    border-bottom: 2px solid black;
+}
+
+#titleName{
+    display: inline-block;
+    text-align: center;
+    margin-left: 40%;
+}
+
+#SettingsButton{
+    height: 20%;
+    width: 5%; 
+    float: right;
+}
+
+#imageSettingsIcon{
+    height: 20%;
+    width: 70%;
+}
+
+#showingPostsForAccount{
+    border: 1px black solid;
+    border-radius: 25px;
+    margin-left: 2%;
+    box-shadow:  0 1.4rem 8rem rgb(0,0,0,.2);
+    display: flex;
+    margin-bottom: 20px;
+    width: 30%;
+    float: left;
+    overflow-x: auto;
+}
+
+#showingCommentedPostsForAccount{
+    border: 1px black solid;
+    border-radius: 25px;
+    margin-left: 2%;
+    box-shadow:  0 1.4rem 8rem rgb(0,0,0,.2);
+    display: flex;
+    margin-bottom: 20px;
+    width: 30%;
+    float:none;
+}
+
+#postImageForAccount{
+    height: 120px;
+    width: 150px;
+    margin-top: 15px;
+    margin-left: 20px;
+    margin-bottom: 15px;
+    border-radius: 25px;
+}
+
+#infoForAccount{
+    display: inline;
+}
+
+#postTimeForAccount{
+    margin-left: 190px;
+    opacity: 0.5;
+}
+
+#commentBoxForAccount{
+    resize: none;
+    width: 100%;
+    height: 100%;
+}
+
+#commentsButton{
+    display: inline-block;
+}
+
+#commentInfoForAccount{
+    padding-bottom: 5%;
+}
+
+#commentTimeForAccount{
+    opacity: 0.5;
+    font-size: small;
+    margin-left: 30%;
 }

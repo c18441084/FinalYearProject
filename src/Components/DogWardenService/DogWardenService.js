@@ -1,0 +1,83 @@
+import { mdiNoteMultipleOutline } from "@mdi/js";
+import { useState, useEffect } from "react";
+import { Button, Modal, Dropdown } from "react-bootstrap";
+import settingsIcon from "../../SettingsIcon.png";
+import { logout } from "../../firebaseconfig";
+import "./DogWardenService.css"
+
+
+export default function DogWardenService(){
+
+    const [dogWardenInfo, setDogWardenInfo] = useState([]);
+
+    function home(){
+        window.location = "/home";
+    }
+
+    function myAccount(){
+        window.location = "/account";
+    }
+
+    useEffect(() => {
+        setDogWardenInfo([
+            {county: "Carlow", number: "059 917 0300", email: "community@carlowcoco.ie", url:"https://www.carlow.ie"},
+            {county: "Cavan", number: " 049 4378300", email: "info@cavancoco.ie", url:"http://www.cavancocouncil.ie"},
+            {county: "Clare", number: "065 6821616", email: "customerservices@clarecoco.ie", url:"http://www.clarecoco.ie"},
+            {county: "Cork", number: "0214276891", email: "vets@corkcoco.ie", url:"http://www.corkcoco.ie"},
+            {county: "Donegal", number: "074 91 53900", email: "info@donegalcoco.ie", url: "https://www.donegalcoco.ie"},
+            {county: "Dublin City Council", number: "01 222 2222", email: "customerservices@dublincity.ie", url: "http://www.dublincity.ie"},
+            {county: "Dublin South", number: "01 4149000", email: "info@sdublincoco.ie", url: "http://www.sdcc.ie"},
+            {county: "Galway", number: "091 509000", email: "customerservices@galwaycoco.ie", url: "http://www.galway.ie"},
+            {county: "Kerry", number: "066 7183500", email: "info@kerrycoco.ie", url: "http://www.kerrycoco.ie"},
+            {county: "Kildare", number: "045 980200", email: "customercare@kildarecoco.ie", url: "https://kildare.ie/Countycouncil/index.html"},
+            {county: "Kilkenny", number: "056 779 4000", email: "info@kilkennycoco.ie", url: "https://kilkennycoco.ie"},
+            {county: "Laois", number: "057 86 64000", email: "laoisdogwarden@topmail.ie", url: "https://laois.ie"},
+            {county: "Leitrim", number: "071 9620005", email: "customerservices@leitrimcoco.ie", url: "http://www.leitrimcoco.ie"},
+            {county: "Longford", number: "043 33 43300", email: "customerservices@longfordcoco.ie", url: "http://www.longfordcoco.ie"},
+            {county: "Louth", number: "042-9335457", email: "info@louthcoco.ie", url: "http://www.louthcoco.ie"},
+            {county: "Mayo", number: "094 906 4000", email: "info@mayo.ie", url: "http://www.mayococo.ie"},
+            {county: "Meath", number: "0469097000", email: "customerservice@meathcoco.ie", url: "http://www.meathcoco.ie"},
+            {county: "Monaghan", number: "04730592", email: "info@monaghancoco.ie", url: "http://www.monaghancoco.ie"},
+            {county: "Offaly", number: "057 9346800", email: "customerservices@offalycoco.ie", url: "http://www.offaly.ie/eng/"},
+            {county: "Roscommon", number: "0906 637122", email: "bduffy@roscommoncoco.ie", url: "http://www.roscommoncoco.ie"},
+            {county: "Sligo", number: "071 9111 111", email: "info@sligococo.ie", url: "http://www.sligococo.ie"},
+            {county: "Tipperary", number: "+353(0)818 06 5000", email: "customerservices@tipperarycoco.ie", url: "https://www.tipperarycoco.ie"},
+            {county: "Westmeath", number: "0449332000", email: "secretar@westmeathcoco.ie", url: "http://www.westmeathcoco.ie"},
+            {county: "Waterford", number: "0818 102 020", email: "contact@waterfordcouncil.ie", url: "http://www.waterfordcoco.ie"},
+            {county: "Wexford", number: "053 9196000", email: "customerservice@wexfordcoco.ie", url: "http://www.wexford.ie"},
+            {county: "Wicklow", number: "0404 20100", email: "customerService@wicklowcoco.ie", url: "https://www.wicklow.ie"}
+        ])
+    }, [])
+
+    return(
+        <div>
+            <title>FindMyOwner</title>
+            <div id = "Title">
+                <h1 id="titleName" href="#" onClick={home}>FindMyOwner</h1>
+                <Dropdown id="SettingsButton">
+                    <Dropdown.Toggle id="dropdown-button-dark-example1" variant="warning">
+                        <img id="imageSettingsIcon" src={settingsIcon}></img>
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu variant="dark">
+                        <Dropdown.Item href="#" onClick={myAccount}>My Account</Dropdown.Item>
+                        <Dropdown.Divider></Dropdown.Divider>
+                        <Dropdown.Item href="#" onClick={logout}>Logout</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
+            </div>
+            {dogWardenInfo.map(function(info){
+                return(
+                    <div>
+                        <div id="showCounilsInfo">
+                            <div id= "county"><h3>{info.county}</h3></div>
+                            <div>Number: {info.number}</div>
+                            <div>Email: {info.email}</div>
+                            <div>URL: {info.url}</div>
+                        </div>
+                    </div>
+                )
+            })}
+        </div>
+    )
+}

@@ -6,6 +6,7 @@ import Found from './Components/Found/Found';
 import Register from './Components/Register/Register';
 import FoundPetDetails from './Components/FoundPetDetails/FoundPetDetails';
 import MyAccount from './Components/MyAccount/MyAccount';
+import DogWardenService from './Components/DogWardenService/DogWardenService';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from "./firebaseconfig";
@@ -28,6 +29,7 @@ function App() {
         <Route path = "/found" element = {<Found />} />
         <Route path = "/found-pet-details" element = {<FoundPetDetails />} />
         <Route path = "/account" element = {<MyAccount />} />
+        <Route path = "/dog-warden-service" element={<DogWardenService />} />
       </Routes>
     }
       </BrowserRouter>

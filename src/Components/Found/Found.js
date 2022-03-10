@@ -40,10 +40,10 @@ export default function Found(){
     }, [])
 
     const handleClose = () => setShow(false);
-    const handleShow = (id) => {
-        setShow(true)
+    const handleShow = async (id) => {
+        console.log("id: " +id);
+        setShow(true);
         setAddingCommentClicked(id);
-        console.log(addingCommentClicked);
     };
   
     function home(){
@@ -60,7 +60,9 @@ export default function Found(){
         const dbcomments = db2.ref(`Posts/${addingCommentClicked}/comments`);
         db2.ref(`Posts/${addingCommentClicked}`).once("value", snap => {
             const infoFromPost = snap.val();
+            console.log(infoFromPost);
             postID = infoFromPost.postID;
+            console.log("postId: " + postID)
         })
         const commenterName = auth.currentUser.displayName;
         const email = auth.currentUser.email;
@@ -79,6 +81,11 @@ export default function Found(){
             commentTime,
             postID,
         }
+        console.log(submit.commenterName);
+        console.log(submit.email);
+        console.log(submit.comment);
+        console.log(submit.commentTime);
+        console.log(submit.postID);
         await dbcomments.push(submit);
         handleClose();
     }
@@ -134,7 +141,7 @@ export default function Found(){
                                     <div id="postHeight"><h3 style={{display: "inline"}}>Height: </h3>{post.height}cm</div>
                                     <div id="postColour"><h3 style={{display: "inline"}}>Colour: </h3>{post.colour}</div>
                                     <div id="postNeutured"><h3 style={{display: "inline"}}>The animal is: </h3>{post.neutured}</div>
-                                    <Button id={post.id} variant="outline-primary" onClick={(element) => handleShow(element.target.id)} data-tip data-for="addComment">
+                                    <Button data-tip data-for="addComment" id={post.id} variant="outline-primary" onClick={() => handleShow(post.id)}>
                                         <Icon path={mdiCommentText} size={1}></Icon>                        
                                     </Button>
                                     <ReactTooltip id="addComment" place="top" effect="solid">Add Comment</ReactTooltip>  
@@ -198,7 +205,7 @@ export default function Found(){
                                     <div id="postHeight"><h3 style={{display: "inline"}}>Height: </h3>{post.height}cm</div>
                                     <div id="postColour"><h3 style={{display: "inline"}}>Colour: </h3>{post.colour}</div>
                                     <div id="postNeutured"><h3 style={{display: "inline"}}>The animal is: </h3>{post.neutured}</div>
-                                    <Button data-tip data-for="addComment" id={post.id} variant="outline-primary" onClick={(element) => handleShow(element.target.id)}>
+                                    <Button data-tip data-for="addComment" id={post.id} variant="outline-primary" onClick={() => handleShow(post.id)}>
                                         <Icon path={mdiCommentText} size={1}></Icon>                        
                                     </Button>
                                     <ReactTooltip id="addComment" place="top" effect="solid">Add Comment</ReactTooltip>  
@@ -218,7 +225,7 @@ export default function Found(){
                                         </Modal.Footer>
                                     </Modal>
                                     {post.comments != null?
-                                        <div>
+                                        <div style={{display: "inline"}}>
                                             <Button data-tip data-for="showComment" id={post.id} variant="outline-primary" onClick={() => showComments(post.id)}>
                                                 <Icon path={mdiCommentTextMultiple} size={1}></Icon>
                                             </Button>

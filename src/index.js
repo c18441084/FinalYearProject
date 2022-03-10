@@ -1,12 +1,30 @@
-import React from 'react';
+/*import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+import reportWebVitals from './reportWebVitals';*/
+
+import React from 'react'; 
+import ReactDOM from 'react-dom'; 
+import './index.css'; 
+import App from './App'; 
+import reportWebVitals from './reportWebVitals';  
+/*import rootReducer from './Store/root-reducer';  
+import { createStore, applyMiddleware } from 'redux'; 
+import createSagaMiddleware from 'redux-saga'; 
+import "regenerator-runtime/runtime"; 
+import {Provider} from 'react-redux'; 
+import rootSaga from './Store/root-saga'; 
+import { actionTypes } from './Store/actions';  
+const sagaMiddleware = createSagaMiddleware(); 
+export const store = createStore(rootReducer, applyMiddleware(sagaMiddleware));
+sagaMiddleware.run(rootSaga);*/
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    {/*<Provider store={store}>*/}
+      <App />
+    {/*</Provider>*/}
   </React.StrictMode>,
   document.getElementById('root')
 );
