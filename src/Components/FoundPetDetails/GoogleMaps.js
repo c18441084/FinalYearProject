@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Map, Marker, GoogleApiWrapper } from 'google-maps-react';
 import { googleAPIkey, geocodeAPIkey } from '../../keys';
+import { actionCreators } from '../../Store/googleMaps/actions';
 
 const style = {
     maxWidth: "57%",
@@ -35,6 +36,7 @@ export class MapContainer extends Component {
       mapCenter: {lat: e.latLng.lat(), lng: e.latLng.lng()},
       address: gettingAddress,
     })
+    //actionCreators.getRequest(state);
   };
     
   render() {

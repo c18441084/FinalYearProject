@@ -14,6 +14,10 @@ export default function Homepage(){
         window.location = "/account";
     }
 
+    function dogWardenService(){
+        window.location = "/dog-warden-service";
+    }
+
     return(
         <div>
             <title>FindMyOwner</title>
@@ -40,7 +44,7 @@ export default function Homepage(){
                 <a href = "#">
                     <h2>Pet Clinics</h2>
                 </a>
-                <a href = "#">
+                <a href = "#" onClick={dogWardenService}>
                     <h2 id = "DWS">Dog Warden Service</h2>
                 </a>
             </div>
