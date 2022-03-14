@@ -1,16 +1,18 @@
 import { useState } from 'react';
 import './FoundPetDetails.css';
 import '../Found/Found';
-import { Button }  from "react-bootstrap";
+import { Button, Modal, Dropdown } from "react-bootstrap";
+import settingsIcon from "../../SettingsIcon.png";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import heightDiagram from './Height_Diagram.png';
 import GoogleMap, { MapContainer } from './GoogleMaps';
-import db2, {storage, ref, getDownloadURL} from "../../firebaseconfig";
+import db2, {storage, ref, getDownloadURL, logout} from "../../firebaseconfig";
 import { uploadBytes, uploadBytesResumable } from 'firebase/storage';
 import { auth } from '../../firebaseconfig';
 
 export default function FoundPetDetails(){
 
+    const [status, setStatus] = useState("");
     const [type, setType] = useState("");
     const [dogBreed, setDogBreed] = useState("");
     const [height, setHeight] = useState("");
@@ -49,7 +51,6 @@ export default function FoundPetDetails(){
     }
 
     function Type(){
-        console.log(type);
         setShowBreed(false);
         setShowBreedGuide(false);
         setShowBreedHelpImages(false);
@@ -152,8 +153,8 @@ export default function FoundPetDetails(){
         const timeSeconds = datesplit[4];
         const timesplit = timeSeconds.split(":");
         const time = (timesplit[0]+":"+timesplit[1]);
-        const postTime = time+" "+day+"th "+month+" "+year;
-
+        const postTime = time+" "+day+"/"+month+"/"+year;
+        setColour(colour.toLowerCase());
         
         if(type == "dog"){
             uploadTask.on("state_changed", (snapshot) => {
@@ -167,6 +168,7 @@ export default function FoundPetDetails(){
                 .then(async function (url) {
                     const image = url;
                     const submit = {
+                        status: status,
                         postID: postnum,
                         type,
                         dogBreed,
@@ -184,6 +186,10 @@ export default function FoundPetDetails(){
                         postTime,
                         posterName,
                         posterEmail,
+                        favourites: {
+                            name: null,
+                            email: null,
+                        }
                     };
                     await db.push(submit);
                     alert("Post Created");
@@ -229,15 +235,42 @@ export default function FoundPetDetails(){
         
     }
 
+    function home(){
+        window.location = "/home";
+    }
+
+    function myAccount(){
+        window.location = "/account";
+    }
+
     return(
         <div id="wholePage">
             <title>FindMyOwner</title>
             <div id = "Title">
-                <h1>FindMyOwner</h1>
+                <h1 id="titleName" href="#" onClick={home}>FindMyOwner</h1>
+                <Dropdown id="SettingsButton">
+                    <Dropdown.Toggle id="dropdown-button-dark-example1" variant="warning">
+                        <img id="imageSettingsIcon" src={settingsIcon}></img>
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu variant="dark">
+                        <Dropdown.Item href="#" onClick={myAccount}>My Account</Dropdown.Item>
+                        <Dropdown.Divider></Dropdown.Divider>
+                        <Dropdown.Item href="#" onClick={logout}>Logout</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
             </div>
             <br/>
             <div id="form">
                 <h2 id="PostInfo">Enter Details Form</h2>
+                <div id="missingFound">
+                    <label for="status">Status</label>
+                    <select name="status" id="status" required /*onChange={Status}*/ onInput = {(e) => setStatus(e.target.value)}>
+                        <option value="" disabled selected hidden>Missing or Found</option>
+                        <option value="missing">Missing</option>
+                        <option value="found">Found</option>
+                    </select>
+                </div>
                 <div id = "typeOfAnimal">
                     <label for="animal">Type of animal: </label>
                     <select name="animal" id="animal" required onChange={Type} onInput = {(e) => setType(e.target.value)}>
@@ -264,6 +297,12 @@ export default function FoundPetDetails(){
                         <br/>
                     </div>
                 : null}
+                {type == "other"?
+                    <div style={{marginBottom: "1%"}}>
+                        <label for="otherType">Enter Animal: </label>
+                        <input id="otherType" type="text" min="0" max="20" onInput={(e) => setType(e.target.value)}/>
+                    </div>
+                :null}
                 {showBreedGuide?
                     <div id = "breed_guide">
                         <button id="closeBreedGuideButton" onClick={closeBreedHelp}>X</button>

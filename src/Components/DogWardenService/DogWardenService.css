@@ -2,8 +2,8 @@
     border: 2px black solid;
     border-radius: 25px;
     box-shadow:  0 1.4rem 8rem rgb(0,0,0,.2);
-    margin-left: 10%;
-    width: 20%;
+    margin-left: 7%;
+    width: 23%;
     float: left;
     margin-top: 1%;
 }
@@ -14,4 +14,8 @@
     background-color: #FFC107;
     border-top-left-radius: 25px;
     border-top-right-radius: 25px;
+}
+
+#DWSinfo{
+    margin-left: 5%;
 }

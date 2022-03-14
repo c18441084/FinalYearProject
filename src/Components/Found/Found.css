@@ -95,3 +95,8 @@
     font-size: small;
     margin-left: 30%;
 }
+
+#noPosts{
+    text-align: center;
+    /*opacity: 0.5;*/
+}
