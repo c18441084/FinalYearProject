@@ -207,11 +207,10 @@ export default function MyAccount(){
                 <h4>Posts made by me</h4>
                 <Row>
                 {usersPosts.map(function(post){
-                    let status = post.status.toUpperCase();
                     return(
                         <Col className="col-sm-3 ml-7">
                             <Card className="shadow-lg" border="info" style={{ width: '100%', borderRadius: "25px"/*, marginLeft:"1%"*/}}>
-                                <Card.Header style={{textAlign: "center"}}><h5>{status}</h5></Card.Header>
+                                <Card.Header style={{textAlign: "center"}}><h5>{post.status}</h5></Card.Header>
                                 <Card.Text style={{opacity: "0.5", textAlign: "center"}}>Posted by {post.posterName} at {post.postTime}</Card.Text>
                                 <Card.Img  variant="top" src={post.image} style={{border: "1px solid black", marginRight: "auto", marginLeft: "auto", height: "30vh", width: "20vw", borderRadius: "25px"}}/>
                                 <Card.Body>
