@@ -1,7 +1,7 @@
 import db2, {logout, getDownloadURL, ref} from "../../firebaseconfig";
 import './Found.css'
 import { useState, useEffect } from "react";
-import { Button, Modal, Dropdown, DropdownButton } from "react-bootstrap";
+import { Button, Modal, Dropdown, DropdownButton, Navbar, Nav, Container } from "react-bootstrap";
 import ReactTooltip from 'react-tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { auth } from '../../firebaseconfig';

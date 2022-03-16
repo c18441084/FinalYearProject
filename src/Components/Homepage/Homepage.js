@@ -1,7 +1,7 @@
 //import react from "react";
 import './Homepage.css'
 import { logout } from "../../firebaseconfig";
-import { Dropdown } from "react-bootstrap";
+import { Dropdown, Navbar, Container, Nav } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import settingsIcon from "../../SettingsIcon.png";
 export default function Homepage(){
@@ -34,7 +34,7 @@ export default function Homepage(){
                     </Dropdown.Menu>
                 </Dropdown>
             </div>
-            <div id = "sidebar">
+            {/*<div id = "sidebar">
                 <button id = "found" onClick={found}>
                     <h2>Found Pets</h2>
                 </button>
@@ -47,7 +47,18 @@ export default function Homepage(){
                 <a href = "#" onClick={dogWardenService}>
                     <h2 id = "DWS">Dog Warden Service</h2>
                 </a>
-            </div>
+            </div>*/}
+            <Nav id="sidebar" defaultActiveKey="/home" className='flex-column'>
+                <Nav.Item>
+                    <Nav.Link id="navButton" onClick={found}>Found</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Nav.Link id="navButton" >Lost</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                <Nav.Link id="navButton" onClick={dogWardenService}>DWS</Nav.Link>
+                </Nav.Item>
+            </Nav>
             <div id = "topbar">
                 <h3 id = "RP">Recent Posts</h3>
                 <h3 id = "PNM">Posts near me</h3>
