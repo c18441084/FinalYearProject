@@ -12,8 +12,8 @@ import { auth } from '../../firebaseconfig';
 import beagle  from '../../beagle.jpg';
 
 //-------------------------------------------------------------------------
-import AWS from 'aws-sdk';
-/*
+/*import AWS from 'aws-sdk';
+
 // Import required AWS SDK clients and commands for Node.js.
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 //import { s3Client } from "./libs/s3Client.js"; // Helper function that creates an Amazon S3 service client module.
@@ -43,8 +43,7 @@ export const run = async () => {
     console.log("Error", err);
   }
 };
-run();
-*/
+run();*/
 
 //----------------------------------------------------------------------------------------------
 
@@ -54,7 +53,7 @@ export default function FoundPetDetails(){
     const [type, setType] = useState("");
     const [dogBreed, setDogBreed] = useState("");
     const [height, setHeight] = useState("");
-    const [colour, setColour] = useState("");
+    const [colour, setColour] = useState([]);
     const [neutured, setNeutured] = useState("");
 
     const [showType, setShowType] = useState(false);
@@ -64,6 +63,7 @@ export default function FoundPetDetails(){
     const [showHeight, setShowHeight] = useState(false);
     const [showHeightGuide, setShowHeightGuide] = useState(false);
     const [showColourChoice, setShowColourChoice] = useState(false);
+    const [showColourList, setShowColourList] = useState(false);
     const [showNeuturedChoice, setShowNeuturedChoice] = useState(false);
     const [showFileUpload, setShowFileUpload] = useState(false);
     const [showFilePic, setShowFilePic] = useState(false);
@@ -159,6 +159,11 @@ export default function FoundPetDetails(){
         setShowHeightGuide(false);
     }
 
+    function colourList(c){
+        colour.push(c);
+        setShowColourList(true);
+    }
+
     function fileSubmitted(){
         if(fileImage.type.includes('image'))
         {
@@ -237,7 +242,7 @@ export default function FoundPetDetails(){
                     .then(async function (url) {
                         const image = url;
                         const submit = {
-                            status: status,
+                            status: status.toUpperCase(),
                             postID: postnum,
                             type,
                             dogBreed,
@@ -316,7 +321,7 @@ export default function FoundPetDetails(){
     //------------------------------------------------------------------------------------------------
     useEffect(() => {
         
-        //var AWS = require('aws-sdk');
+        var AWS = require('aws-sdk');
 
         const bucket = 'bucket';
         const photo = beagle;
@@ -479,9 +484,31 @@ export default function FoundPetDetails(){
                 {showColourChoice? 
                     <div id="colour_choice">
                         <label for="colourInput">Colour: </label>
-                        <input id="colourInput" type="text" min="0" max="20" onInput={(colour) => setColour(colour.target.value)}/>
+                        <select name="colourInput" id="colourInput" onInput={(color) => colourList(color.target.value)}>
+                            <option value="" disabled selected hidden>Select a Colour</option>       
+                            <option value="Black">Black</option>
+                            <option value="White">White</option>
+                            <option value="Brown">Brown</option>   
+                            <option value="Red">Red</option>     
+                            <option value="Gold">Gold</option>    
+                            <option value="Gray">Gray</option> 
+                        </select>
                     </div>
                 : null}
+                {console.log(colour.length)}
+                {showColourList?
+                    <div /*style={{display: "inline"}}*/>
+                        <br></br>
+                        {colour.map(function(color){
+                            console.log(color);
+                            <div>
+                                <p>
+                                    {color}<Button>X</Button>
+                                </p>
+                            </div>
+                        })}
+                    </div>
+                :null}
 
                 {showNeuturedChoice?
                     <div id="neutured_choice">

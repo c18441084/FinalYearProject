@@ -1,7 +1,7 @@
 import db2, {logout, getDownloadURL, ref} from "../../firebaseconfig";
 import './Found.css'
 import { useState, useEffect } from "react";
-import { Button, Modal, Dropdown, DropdownButton, Navbar, Nav, Container } from "react-bootstrap";
+import { Button, Modal, Dropdown, DropdownButton, Card, ListGroup, Form } from "react-bootstrap";
 import ReactTooltip from 'react-tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { auth } from '../../firebaseconfig';
@@ -20,6 +20,11 @@ export default function Found(){
     const [showingComments, setShowingComments] = useState([]); 
     const [displayComments, setDisplayComments] = useState(false);
     const [addingCommentClicked, setAddingCommentClicked] = useState(0);
+    const [filterSearch, setFilterSearch] = useState([]);
+    const [showFilterChoices, setShowFilterChoices] = useState(false);
+    const [breedList, setBreedList] = useState([]);
+    const [heightRange, setHeightRange] = useState([]);
+
 
     const db = db2.ref("Posts");
 
@@ -37,6 +42,12 @@ export default function Found(){
             }
             setPosts(postsArray);
         })
+        componentDidMount();
+        async function componentDidMount(){
+            const response = await fetch("https://dog.ceo/api/breeds/list/all");
+            const data = await response.json();
+            setBreedList(data.message);
+        }
     }, [])
 
     const handleClose = () => setShow(false);
@@ -139,38 +150,202 @@ export default function Found(){
         }
     }
 
-    function filter(item){
-        console.log(item)
+    function filter(item, arrayNum, minHeight, maxHeight){
+        console.log(item);
+        let originalPosts = [];
+        let filterType = [];
+        let filterBreed = [];
+        let filterHeight = [];
+        let filterColour = []; 
+        let filterNeutured = [];
+        let tempArray = [];
+        let itemsFilteredNum = 0;
+        db.on("value", (snapshot)=>{
+            const postsFromDatabase = snapshot.val();
+
+            const postsArray = [];
+            for(let id in postsFromDatabase){
+                postsArray.push({id, ...postsFromDatabase[id]});
+            }
+            setPosts(postsArray);
+            originalPosts = postsArray;
+        })
+
         if(item == "reset"){
-            db.on("value", (snapshot)=>{
-                const postsFromDatabase = snapshot.val();
-    
-                const postsArray = [];
-                for(let id in postsFromDatabase){
-                    postsArray.push({id, ...postsFromDatabase[id]});
-                }
-                setPosts(postsArray);
-            })
-        }
-        else{
-            let filter = db2.ref(`Posts`);
-            filter.on("value", (snap) => {
-                const postsFromDatabase = snap.val();
-                const filteredArray = [];
-                for(let id in postsFromDatabase){
-                    const type = db2.ref(`Posts/${id}/type`)
-                    type.on("value", (snap) => {
-                        const typeValue = snap.val();
-                        if(typeValue == item){
-                            filteredArray.push({id, ...postsFromDatabase[id]})
-                        }
-                    })
-                }
-                setPosts(filteredArray);
-            })
+            setFilterSearch([]);
+            return;
         }
 
-        console.log(posts);
+        filterSearch[arrayNum] = item;
+
+        if(filterSearch[3] === ""){
+            filterSearch[3] = undefined;
+        }
+
+        for(let i=0; i<filterSearch.length; i++){
+            if(i === 0){
+                if(filterSearch[i] != undefined){
+                    itemsFilteredNum = itemsFilteredNum + 1;
+                    let filter = db2.ref(`Posts`);
+                    filter.on("value", (snap) => {
+                        const postsFromDatabase = snap.val();
+                        const filteredArray = [];
+                        for(let id in postsFromDatabase){
+                            const type = db2.ref(`Posts/${id}/type`)
+                            type.on("value", (snap) => {
+                                const typeValue = snap.val();
+                                if(typeValue == filterSearch[i]){
+                                    filteredArray.push({id, ...postsFromDatabase[id]})
+                                }
+                            })
+                        }
+                        filterType = filteredArray;
+                    })
+                }
+            }
+
+            if(i === 1){
+                if(filterSearch[i] != undefined){
+                    itemsFilteredNum = itemsFilteredNum + 1;
+                    let filter = db2.ref(`Posts`);
+                    filter.on("value", (snap) => {
+                        const postsFromDatabase = snap.val();
+                        const filteredArray = [];
+                        for(let id in postsFromDatabase){
+                            const type = db2.ref(`Posts/${id}/dogBreed`)
+                            type.on("value", (snap) => {
+                                const typeValue = snap.val();
+                                if(typeValue == filterSearch[i]){
+                                    filteredArray.push({id, ...postsFromDatabase[id]})
+                                }
+                            })
+                        }
+                        filterBreed = filteredArray;
+                    })
+                }
+            }
+
+            if(i === 2){
+                if(filterSearch[i] != undefined){
+                    itemsFilteredNum = itemsFilteredNum + 1;
+                    let filter = db2.ref(`Posts`);
+                    filter.on("value", (snap) => {
+                        const postsFromDatabase = snap.val();
+                        const filteredArray = [];
+                        for(let id in postsFromDatabase){
+                            const type = db2.ref(`Posts/${id}/colour`)
+                            type.on("value", (snap) => {
+                                const typeValue = snap.val();
+                                if(typeValue == filterSearch[i]){
+                                    filteredArray.push({id, ...postsFromDatabase[id]})
+                                }
+                            })
+                        }
+                        filterColour = filteredArray;
+                    })
+                }
+            }
+
+            if(i === 3){
+                if(filterSearch[i] != undefined || filterSearch[i] == ""){
+                    if(filterSearch[i] === "height"){
+                        itemsFilteredNum = itemsFilteredNum + 1;
+                        let filter = db2.ref(`Posts`);
+                        filter.on("value", (snap) => {
+                            const postsFromDatabase = snap.val();
+                            const filteredArray = [];
+                            for(let id in postsFromDatabase){
+                                const type = db2.ref(`Posts/${id}/height`)
+                                type.on("value", (snap) => {
+                                    const typeValue = snap.val();
+                                    if(typeValue > minHeight && typeValue < maxHeight){
+                                        filteredArray.push({id, ...postsFromDatabase[id]})
+                                    }
+                                })
+                            }
+                            filterHeight = filteredArray;
+                        })
+                        heightRange[0] = minHeight;
+                        heightRange[1] = maxHeight;
+                    }
+                    else{
+                        itemsFilteredNum = itemsFilteredNum + 1;
+                        let filter = db2.ref(`Posts`);
+                        filter.on("value", (snap) => {
+                            const postsFromDatabase = snap.val();
+                            const filteredArray = [];
+                            for(let id in postsFromDatabase){
+                                const type = db2.ref(`Posts/${id}/height`)
+                                type.on("value", (snap) => {
+                                    const typeValue = snap.val();
+                                    if(typeValue == filterSearch[i]){
+                                        filteredArray.push({id, ...postsFromDatabase[id]})
+                                    }
+                                })
+                            }
+                            filterHeight = filteredArray;
+                        })
+                    }
+                }
+            }
+
+            if(i === 4){
+                if(filterSearch[i] != undefined){
+                    itemsFilteredNum = itemsFilteredNum + 1;
+                    let filter = db2.ref(`Posts`);
+                    filter.on("value", (snap) => {
+                        const postsFromDatabase = snap.val();
+                        const filteredArray = [];
+                        for(let id in postsFromDatabase){
+                            const type = db2.ref(`Posts/${id}/neutured`)
+                            type.on("value", (snap) => {
+                                const typeValue = snap.val();
+                                if(typeValue == filterSearch[i]){
+                                    filteredArray.push({id, ...postsFromDatabase[id]})
+                                }
+                            })
+                        }
+                        filterNeutured = filteredArray;
+                    })
+                }
+            }
+        }
+
+        for(let i=0; i<originalPosts.length; i++){
+            let id = originalPosts[i].id;
+            let counter = 0;
+            for(let j=0; j<filterType.length; j++){
+                if(id === filterType[j].id){
+                    counter = counter + 1;
+                }
+            }
+            for(let j=0; j<filterBreed.length; j++){
+                if(id === filterBreed[j].id){
+                    counter = counter + 1;
+                }
+            }
+            for(let j=0; j<filterHeight.length; j++){
+                if(id === filterHeight[j].id){
+                    counter = counter + 1;
+                }
+            }
+            for(let j=0; j<filterColour.length; j++){
+                if(id === filterColour[j].id){
+                    counter = counter + 1;
+                }
+            }
+            for(let j=0; j<filterNeutured.length; j++){
+                if(id === filterNeutured[i].id){
+                    counter = counter + 1;
+                }
+            }
+
+            if(counter === itemsFilteredNum){
+                tempArray.push(originalPosts[i]);
+            }
+        }
+        setPosts(tempArray);
+        setShowFilterChoices(true);
     }
 
     return(
@@ -190,28 +365,69 @@ export default function Found(){
                     </Dropdown.Menu>
                 </Dropdown>
             </div>
+            <button id = "reportFoundPet" onClick = {reportFoundPet}>I found a stray</button>
             <div>
-                <button id = "reportFoundPet" onClick = {reportFoundPet}>I found a stray</button>
-                <Dropdown id="filter">
+                <Dropdown id="filter" style={{display: "inline"}}>
                     <Dropdown.Toggle id="dropdown-button-dark-example1" variant="success">
                         <h5>Filter</h5>
                     </Dropdown.Toggle>
 
                     <Dropdown.Menu variant="dark">
                         <DropdownButton id="dropdown-button-dark-example2" variant="dark" style={{color: "white"}} drop="end" title="Animal">
-                            <Dropdown.Item  eventKey="1" style={{color: "black"}} onClick={() => filter("dog")}>Dog</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="2" onClick={() => filter("cat")}>Cat</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="3" onClick={() => filter("other")}>Other</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="1" onClick={() => filter("dog", 0)}>Dog</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="2" onClick={() => filter("cat", 0)}>Cat</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="3" onClick={() => filter("other" , 0)}>Other</Dropdown.Item>
+                        </DropdownButton>
+                        <DropdownButton id="dropdown-button-dark-example2" variant="dark" style={{color: "white"}} drop="end" title="Breed">
+                            <ListGroup style={{overflow: "scroll", maxheight: "50%"}}>
+                            {Object.keys(breedList).map(function (element){
+                                return (
+                                    <ListGroup.Item  eventKey="1" style={{color: "black"}} onClick={() => filter(element, 1)}>
+                                        {element}
+                                    </ListGroup.Item>
+                                )
+                            })}
+                            </ListGroup>
                         </DropdownButton>
                         <DropdownButton id="dropdown-button-dark-example3" variant="dark" style={{color: "white"}} drop="end" title="Colour">
-                            <Dropdown.Item  eventKey="1" style={{color: "black"}} onClick={() => filter("brown")}>Brown</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="2" onClick={() => filter("Black")}>Black</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="3" onClick={() => filter("white")}>White</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="1" onClick={() => filter("Black", 2)}>Black</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="2" onClick={() => filter("Brown", 2)}>Brown</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="3" onClick={() => filter("Gold", 2)}>Gold</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="4" onClick={() => filter("Gray", 2)}>Gray</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="5" onClick={() => filter("Red", 2)}>Red</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="6" onClick={() => filter("White", 2)}>White</Dropdown.Item>
+                        </DropdownButton>
+                        <DropdownButton id="dropdown-button-dark-example2" variant="dark" style={{color: "white"}} drop="end" title="Height">
+                            <Form.Control type="number" placeholder="Enter Height" onChange={(element) => filter(element.target.value, 3)}/>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="2" onClick={() => filter("height", 3,  0, 10)}>0cm-10cm</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="3" onClick={() => filter("height", 3, 10, 20)}>10cm-20cm</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="4" onClick={() => filter("height", 3, 20, 30)}>20cm-30cm</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="5" onClick={() => filter("height", 3, 30, 40)}>30cm-40cm</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="6" onClick={() => filter("height", 3, 40, 50)}>40cm-50cm</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="7" onClick={() => filter("height", 3, 50, 60)}>50cm-60cm</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="8" onClick={() => filter("height", 3, 60, 70)}>60cm-70cm</Dropdown.Item>
                         </DropdownButton>
                         <Dropdown.Divider></Dropdown.Divider>
                         <Dropdown.Item href="#"  onClick={() => filter("reset")}>Reset</Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
+                {showFilterChoices?  
+                    filterSearch.map(function(item){
+                        if(item != undefined){
+                            if(item === "height"){
+
+                            }
+                            else{
+                                return(
+                                    <Card style={{width: "8%", borderRadius: "15px", display: "inline"}}>
+                                        {item}
+                                        <Button size="sm" id={item}>X</Button>
+                                    </Card>
+                                )
+                            }
+                        }
+                    })
+                :null}
             </div>
 
             <div>
