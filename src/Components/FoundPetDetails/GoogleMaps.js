@@ -4,8 +4,9 @@ import { googleAPIkey, geocodeAPIkey } from '../../keys';
 import { googleMapsState } from '../GlobalState/states'
 
 const style = {
-    maxWidth: "57%",
-    height: "57%",
+    maxWidth: "90%",
+    height: "90%",
+    textAlign: "center",
     overflowX: "hidden",
     overflowY: "hidden",
     marginLeft: "1.6%",
@@ -32,7 +33,6 @@ export class MapContainer extends Component {
     let props2 = props;
     let latitude = e.latLng.lat();
     let longitude = e.latLng.lng();
-    //console.log(gettingAddress);
     this.setState({
       selectedPlace: props,
       mapCenter: {lat: e.latLng.lat(), lng: e.latLng.lng()},

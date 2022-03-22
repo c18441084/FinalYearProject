@@ -27,6 +27,7 @@ export default function Found(){
     const [breedList, setBreedList] = useState([]);
     const [heightRange, setHeightRange] = useState([]);
     const [commentShowCounter, setCommentShowCounter] = useState(0);
+    const [timeShow, setTimeShow] = useState(0);
 
     const db = db2.ref("Posts");
 
@@ -165,7 +166,7 @@ export default function Found(){
     }
     
     function filter(item, arrayNum, minHeight, maxHeight){
-        console.log(arrayNum);
+        console.log(item);
         let originalPosts = [];
         let filterType = [];
         let filterBreed = [];
@@ -174,6 +175,12 @@ export default function Found(){
         let filterNeutured = [];
         let tempArray = [];
         let itemsFilteredNum = 0;
+        if(item === "oldest"){
+            setTimeShow(1);
+        }
+        if(item === "Most Recent"){
+            setTimeShow(0);
+        }
         db.on("value", (snapshot)=>{
             const postsFromDatabase = snapshot.val();
 
@@ -195,7 +202,7 @@ export default function Found(){
         if(filterSearch[3] === ""){
             filterSearch[3] = undefined;
         }
-        console.log(filterSearch)
+
         for(let i=0; i<filterSearch.length; i++){
             if(i === 0){
                 if(filterSearch[i] != undefined){
@@ -362,6 +369,11 @@ export default function Found(){
             }
         }
         setPosts(tempArray);
+        console.log(timeShow);
+        if(timeShow === 1){
+            setPosts(posts.reverse());
+        }
+        console.log(posts);
         setShowFilterChoices(true);
     }
 
@@ -428,6 +440,10 @@ export default function Found(){
                             <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="1" onClick={() => filter("neutured", 4)}>Neutured</Dropdown.Item>
                             <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="2" onClick={() => filter("spayed", 4)}>Spayed</Dropdown.Item>
                         </DropdownButton>
+                        <DropdownButton id="dropdown-button-dark-example2" variant="dark" style={{color: "white"}} drop="end" title="Time">
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="1" onClick={() => filter("newest")}>Most Recent</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="2" onClick={() => filter("oldest")}>Oldest</Dropdown.Item>
+                        </DropdownButton>
                         <Dropdown.Divider></Dropdown.Divider>
                         <Dropdown.Item href="#"  onClick={() => filter("reset")}>Reset</Dropdown.Item>
                     </Dropdown.Menu>
@@ -438,7 +454,7 @@ export default function Found(){
                             if(item === "height"){
                                 console.log(index);
                                 return(
-                                    <Card style={{width: "8%", borderRadius: "15px", display: "inline"}}>
+                                    <Card style={{width: "8%", borderRadius: "15px", display: "inline", padding: "5%"}}>
                                         {heightRange[0]}cm-{heightRange[1]}cm
                                         <Button size="sm" id={item} onClick={()=>filter(undefined, index)}>X</Button>
                                     </Card>
@@ -446,9 +462,9 @@ export default function Found(){
                             }
                             else{
                                 return(
-                                    <Card style={{width: "8%", borderRadius: "15px", display: "inline"}}>
+                                    <Card style={{width: "8%", borderRadius: "15px", display: "inline", padding: "0.8%"}}>
                                         {item}
-                                        <Button value="" size="sm" id={item} onClick={()=>filter(undefined, index)}>X</Button>
+                                        <Button value="" style={{maxHeight: "0.1%", maxWidth: "0.1%"}} id={item} onClick={()=>filter(undefined, index)}>X</Button>
                                     </Card>
                                 )
                             }
@@ -521,7 +537,7 @@ export default function Found(){
                                 :null}
 
                                 
-                                <Button data-tip data-for="addFavourites" variant="outline-danger">
+                                <Button data-tip data-for="addFavourites" variant="outline-danger" onClick={() => addFavourites(post.id)}>
                                     <Icon path={mdiCardsHeartOutline} size={1}></Icon>
                                 </Button>
                                 <ReactTooltip id="addFavourites" place="top" effect="solid">Add to Favourites</ReactTooltip>
