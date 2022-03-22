@@ -6,6 +6,7 @@ import settingsIcon from "../../SettingsIcon.png";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import heightDiagram from './Height_Diagram.png';
 import GoogleMap, { MapContainer } from './GoogleMaps';
+import { googleMapsState } from '../GlobalState/states';
 import db2, {storage, ref, getDownloadURL, logout} from "../../firebaseconfig";
 import { uploadBytes, uploadBytesResumable } from 'firebase/storage';
 import { auth } from '../../firebaseconfig';
@@ -180,12 +181,7 @@ export default function FoundPetDetails(){
         setFileImagePic("");
     }
 
-    function LocationPicker(){
-        console.log("Hi");
-    }
-
     async function SubmitDetails(){
-        console.log(fileImage);
         if(height === ""){
             alert("Please enter in a height");
         }
@@ -228,7 +224,6 @@ export default function FoundPetDetails(){
             const timesplit = timeSeconds.split(":");
             const time = (timesplit[0]+":"+timesplit[1]);
             const postTime = time+" "+day+"/"+month+"/"+year;
-            setColour(colour.toLowerCase());
             
             if(type == "dog"){
                 uploadTask.on("state_changed", (snapshot) => {
@@ -263,7 +258,8 @@ export default function FoundPetDetails(){
                             favourites: {
                                 name: null,
                                 email: null,
-                            }
+                            },
+                            address: googleMapsState.address
                         };
                         await db.push(submit);
                         alert("Post Created");
@@ -296,9 +292,14 @@ export default function FoundPetDetails(){
                                 commentTime: null,
                                 postID: null,
                             },
+                            favourites: {
+                                name: null,
+                                email: null,
+                            },
                             postTime,
                             posterName,
                             posterEmail,
+                            address: googleMapsState.address
                         };
                         await db.push(submit);
                         alert("Post Created");
@@ -319,7 +320,7 @@ export default function FoundPetDetails(){
     }
 
     //------------------------------------------------------------------------------------------------
-    useEffect(() => {
+    /*useEffect(() => {
         
         var AWS = require('aws-sdk');
 
@@ -373,7 +374,7 @@ export default function FoundPetDetails(){
                 }) // for response.labels
             } // if
         });
-    })
+    })*/
 
     //------------------------------------------------------------------------------------------------
     return(
@@ -446,7 +447,6 @@ export default function FoundPetDetails(){
                         <select name="dogimage" id="DbreedHelp" onChange={DogImages} onInput= {(breedhelp) => setDogBreedHelp(breedhelp.target.value)}>
                             <option value="" disabled selected hidden>Select a Dog Breed</option>
                             {Object.keys(breedList).map(function (element){
-                                console.log(element);
                                 return (
                                     <option>{element}</option>
                                 )
@@ -455,7 +455,6 @@ export default function FoundPetDetails(){
                         {showBreedHelpImages? 
                             <div>
                                 {breedListImages.map(function (element){
-                                    console.log("in");
                                     return(
                                         <img src={element} id="breedImage"></img>
                                     )
@@ -495,12 +494,12 @@ export default function FoundPetDetails(){
                         </select>
                     </div>
                 : null}
-                {console.log(colour.length)}
+
                 {showColourList?
                     <div /*style={{display: "inline"}}*/>
                         <br></br>
                         {colour.map(function(color){
-                            console.log(color);
+                            //console.log(color);
                             <div>
                                 <p>
                                     {color}<Button>X</Button>
@@ -540,7 +539,7 @@ export default function FoundPetDetails(){
                         </div>
                         <div id="Map">
                             <h3>Uploaded {progress}%</h3>
-                            <GoogleMap id = "googleMap" onChange={LocationPicker}/>
+                            <GoogleMap id = "googleMap" />
                         </div>
                     </div>
                 : null}

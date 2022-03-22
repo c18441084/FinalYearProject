@@ -11,6 +11,7 @@ import { mdiCardsHeartOutline } from '@mdi/js';
 import { mdiTrashCanOutline } from '@mdi/js';
 import { mdiDeleteEmptyOutline } from '@mdi/js';
 import { mdiCommentOffOutline } from '@mdi/js';
+import { mdiHeartOffOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import "./MyAccount.css";
 
@@ -64,17 +65,19 @@ export default function MyAccount(){
                     }
                 })
             }
+
             let testArray = [];
+            testArray[0] = commentsArray[0];
             for(let i=0; i<commentsArray.length; i++){
-                if(commentsArray[i].posterEmail !== emails){
-                    if(testArray.length === 0){
-                        testArray.push(commentsArray[i]);
+                let counter = 0;
+                let id = commentsArray[i].id;
+                for(let j=0; j<testArray.length; j++){
+                    if(id == testArray[j].id){
+                        counter = 1;
                     }
-                    for(let j=0; j<testArray.length; j++){
-                        if(commentsArray[i].id !== testArray[j].id){
-                            testArray.push(commentsArray[i]);
-                        }
-                    }
+                }
+                if(counter == 0 && commentsArray[i].posterEmail != emails){
+                    testArray.push(commentsArray[i])
                 }
             }
 
@@ -181,6 +184,14 @@ export default function MyAccount(){
             db2.ref(`Posts/${postID}/comments/${commentID}`).remove();
             alert("Comment deleted successfully");
         }
+        setCommentShowCounter(0);
+    }
+
+    function removeFavoruite(favID){
+        if(window.confirm("Are you sure you want to delete this post from your favourites?")){
+            db2.ref(`Posts/${favID}`).remove();
+            alert("Post removed successfully");
+        }
     }
 
     function home(){
@@ -219,6 +230,8 @@ export default function MyAccount(){
                                     <Card.Text><h3 style={{display: "inline"}}>Height: </h3>{post.height}cm</Card.Text>
                                     <Card.Text><h3 style={{display: "inline"}}>Colour: </h3>{post.colour}</Card.Text>
                                     <Card.Text><h3 style={{display: "inline"}}>The animal is: </h3>{post.neutured}</Card.Text>
+                                    {post.status === "FOUND"?<Card.Text><h3 style={{display: "inline"}}>Found at: </h3>{post.address}</Card.Text>:
+                                    <Card.Text><h3 style={{display: "inline"}}>Last seen at: </h3>{post.address}</Card.Text>}
 
                                     <Button data-tip data-for="addComment" id={post.id} variant="outline-primary" onClick={() => handleShow(post.id)}>
                                         <Icon path={mdiCommentText} size={1}></Icon>                        
@@ -289,6 +302,14 @@ export default function MyAccount(){
                                                             <div id="commentForAccount">
                                                                 <b id="commentUserForAccount">{comment.commenterName}: </b>
                                                                 <p id="commentInfoForAccount">{comment.comment}<p id="commentTimeForAccount">Commented on {comment.commentTime}</p></p>
+                                                                {auth.currentUser.email === comment.email? 
+                                                                        <div>
+                                                                            <Button data-tip data-for="deleteButton" variant="outline-danger" onClick={() => deleteComment(post.id, comment.id)}>
+                                                                                <Icon path={mdiDeleteEmptyOutline} size={1}></Icon>
+                                                                            </Button>
+                                                                            <ReactTooltip id="deleteButton" place="top" effect="solid">Delete Comment</ReactTooltip>
+                                                                        </div> 
+                                                                    :null}
                                                             </div>
                                                         </div>
                                                     )
@@ -300,18 +321,29 @@ export default function MyAccount(){
                             </Card>
                         </Col>
                     )
-                    /*return(  
-                        <div>
-                            <div id="showingPostsForAccount">
-                                <img id="postImageForAccount" src={post.image}></img>
-                                <div id="infoForAccount">
-                                    <div id="postTimeForAccount">Posted by {post.posterName} at {post.postTime}</div>
-                                    <div id="postTypeForAccount"><h3 style={{display: "inline"}}>Type: </h3>{post.type}</div>
-                                    {post.dogBreed != null?<div id="postBreedForAccount"><h3 style={{display: "inline"}}>Breed: </h3>{post.dogBreed}</div>:null}
-                                    <div id="postHeightForAccount"><h3 style={{display: "inline"}}>Height: </h3>{post.height}cm</div>
-                                    <div id="postColourForAccount"><h3 style={{display: "inline"}}>Colour: </h3>{post.colour}</div>
-                                    <div id="postNeuturedForAccount"><h3 style={{display: "inline"}}>The animal is: </h3>{post.neutured}</div>
-                                    <Button data-tip data-for="addComment" id={post.id} variant="outline-primary" onClick={() => handleShow(post.id)}>
+                })}
+                </Row>
+
+
+                <Row>
+                <h4>Commented on Posts</h4>
+                {commentsPosts.map(function(commentedPosts){
+                    return(
+                        <Col className="col-sm-3 ml-7">
+                            <Card className="shadow-lg" border="info" style={{ width: '100%', borderRadius: "25px"/*, marginLeft:"1%"*/}}>
+                                <Card.Header style={{textAlign: "center"}}><h5>{commentedPosts.status}</h5></Card.Header>
+                                <Card.Text style={{opacity: "0.5", textAlign: "center"}}>Posted by {commentedPosts.posterName} at {commentedPosts.postTime}</Card.Text>
+                                <Card.Img  variant="top" src={commentedPosts.image} style={{border: "1px solid black", marginRight: "auto", marginLeft: "auto", height: "30vh", width: "20vw", borderRadius: "25px"}}/>
+                                <Card.Body>
+                                    <Card.Text><h3 style={{display: "inline"}}>Type: </h3>{commentedPosts.type}</Card.Text>
+                                    {commentedPosts.dogBreed != null?<Card.Text><h3 style={{display: "inline"}}>Breed: </h3>{commentedPosts.dogBreed}</Card.Text>:null}
+                                    <Card.Text><h3 style={{display: "inline"}}>Height: </h3>{commentedPosts.height}cm</Card.Text>
+                                    <Card.Text><h3 style={{display: "inline"}}>Colour: </h3>{commentedPosts.colour}</Card.Text>
+                                    <Card.Text><h3 style={{display: "inline"}}>The animal is: </h3>{commentedPosts.neutured}</Card.Text>
+                                    {commentedPosts.status === "FOUND"?<Card.Text><h3 style={{display: "inline"}}>Found at: </h3>{commentedPosts.address}</Card.Text>:
+                                    <Card.Text><h3 style={{display: "inline"}}>Last seen at: </h3>{commentedPosts.address}</Card.Text>}
+
+                                    <Button data-tip data-for="addComment" id={commentedPosts.id} variant="outline-primary" onClick={() => handleShow(commentedPosts.id)}>
                                         <Icon path={mdiCommentText} size={1}></Icon>                        
                                     </Button>
                                     <ReactTooltip id="addComment" place="top" effect="solid">Add Comment</ReactTooltip>  
@@ -330,21 +362,40 @@ export default function MyAccount(){
                                             </Button>
                                         </Modal.Footer>
                                     </Modal>
-                                    {post.comments != null?
+                                    {commentedPosts.comments != null && commentShowCounter === 0?
                                         <div style={{display: "inline"}}>
-                                            <Button data-tip data-for="showComment" variant="outline-primary" onClick={() => showComments(post.id)}>
+                                            <Button data-tip data-for="showComment" variant="outline-primary" onClick={() => showComments(commentedPosts.id)}>
                                                 <Icon path={mdiCommentTextMultiple} size={1}></Icon>
                                             </Button>
-                                            <ReactTooltip id="showComment" place="top" effect="solid">View Comments</ReactTooltip>
+                                            <ReactTooltip id="showComment" place="top" effect="solid">View Comments</ReactTooltip>             
                                         </div>
                                     :null}
+                                    {commentShowCounter === 1?
+                                        <div style={{display: "inline"}}>
+                                            {showingComments.map(function(comment){
+                                                if(commentedPosts.postID === comment.postID && counter == 0){
+                                                    counter = counter +1
+                                                    return(
+                                                        <div style={{display: "inline"}}>
+                                                            <Button data-tip data-for="closeComment" variant="outline-primary" onClick = {() => closingComments()}>
+                                                                <Icon path={mdiCommentOffOutline} size={1}></Icon>
+                                                            </Button>
+                                                            <ReactTooltip id="closeComment" place="top" effect="solid">Close Comments</ReactTooltip>
+                                                        </div>
+                                                    )
+                                                }
+                                            })}
+                                        </div>
+                                    :null}
+
+                                    
                                     <Button data-tip data-for="addFavourites" variant="outline-danger">
                                         <Icon path={mdiCardsHeartOutline} size={1}></Icon>
                                     </Button>
                                     <ReactTooltip id="addFavourites" place="top" effect="solid">Add to Favourites</ReactTooltip>
-                                    {auth.currentUser.email === post.posterEmail? 
+                                    {auth.currentUser.email === commentedPosts.posterEmail? 
                                         <div style={{display: "inline"}}>
-                                            <Button data-tip data-for="deleteButton" variant="outline-danger" onClick={() => deletePosts(post.id)}>
+                                            <Button data-tip data-for="deleteButton" variant="outline-danger" onClick={() => deletePosts(commentedPosts.id)}>
                                                 <Icon path={mdiTrashCanOutline} size={1}></Icon>
                                             </Button>
                                             <ReactTooltip id="deleteButton" place="top" effect="solid">Delete Post</ReactTooltip>
@@ -353,89 +404,15 @@ export default function MyAccount(){
                                     {displayComments?
                                         <div>
                                             {showingComments.map(function(comment){
-                                                if(post.postID === comment.postID){
+                                                if(commentedPosts.postID === comment.postID){
                                                     return(
                                                         <div>
-                                                            <button id="commentsButtonForAccount" onClick = {() => closeComments()}>Close Comments</button>
                                                             <br />
                                                             <br />
                                                             <div id="commentForAccount">
                                                                 <b id="commentUserForAccount">{comment.commenterName}: </b>
                                                                 <p id="commentInfoForAccount">{comment.comment}<p id="commentTimeForAccount">Commented on {comment.commentTime}</p></p>
-                                                            </div>
-                                                        </div>
-                                                    )
-                                                }
-                                            })}
-                                        </div>
-                                    :null}
-                                </div>
-                            </div>
-                        </div>
-                    )*/
-                })}
-                </Row>
-
-
-
-                <h4>Commented on Posts</h4>
-                {commentsPosts.map(function(commentedPosts){
-                    return(
-                        <div>
-                            <div id="showingCommentedPostsForAccount">
-                                <img id="postImageForAccount" src={commentedPosts.image}></img>
-                                    <div id="infoForAccount">
-                                        <div id="postTimeForAccount">Posted by {commentedPosts.posterName} at {commentedPosts.postTime}</div>
-                                        <div id="postTypeForAccount"><h3 style={{display: "inline"}}>Type: </h3>{commentedPosts.type}</div>
-                                        {commentedPosts.dogBreed != null?<div id="postBreedForAccount"><h3 style={{display: "inline"}}>Breed: </h3>{commentedPosts.dogBreed}</div>: null}
-                                        <div id="postHeightForAccount"><h3 style={{display: "inline"}}>Height: </h3>{commentedPosts.height}cm</div>
-                                        <div id="postColourForAccount"><h3 style={{display: "inline"}}>Colour: </h3>{commentedPosts.colour}</div>
-                                        <div id="postNeuturedForAccount"><h3 style={{display: "inline"}}>The animal is: </h3>{commentedPosts.neutured}</div>
-                                        <Button id={commentedPosts.id} variant="outline-primary" onClick={(element) => handleShow(element.target.id)} data-tip data-for="addComment">
-                                            <Icon path={mdiCommentText} size={1}></Icon>                        
-                                        </Button>
-                                        <ReactTooltip id="addComment" place="top" effect="solid">Add Comment</ReactTooltip>  
-        
-                                        <Modal show={show} onHide={handleClose}>
-                                            <Modal.Header style={{background: "#F0F0F0"}}>
-                                            <Modal.Title>Comment Below</Modal.Title>
-                                            </Modal.Header>
-                                            <Modal.Body><textarea id="commentBoxForAccount" commenterName="commentBox" onChange={(e) => setComment(e.target.value)}></textarea></Modal.Body>
-                                            <Modal.Footer>
-                                                <Button variant="secondary" onClick={() => addingComment()}>
-                                                    Submit
-                                                </Button>
-                                                <Button variant="primary" onClick={handleClose}>
-                                                    Close
-                                                </Button>
-                                            </Modal.Footer>
-                                        </Modal>
-                                        {commentedPosts.comments != null?
-                                            <div style={{display: "inline"}}>
-                                                <Button data-tip data-for="showComment" id={commentedPosts.id} variant="outline-primary" onClick={() => showComments(commentedPosts.id)}>
-                                                    <Icon path={mdiCommentTextMultiple} size={1}></Icon>
-                                                </Button>
-                                                <ReactTooltip id="showComment" place="top" effect="solid">View Comments</ReactTooltip>
-                                            </div>
-                                        :null}
-                                        <Button data-tip data-for="addFavourites" variant="outline-danger">
-                                            <Icon path={mdiCardsHeartOutline} size={1}></Icon>
-                                        </Button>
-                                        <ReactTooltip id="addFavourites" place="top" effect="solid">Add to Favourites</ReactTooltip>
-                                        {displayComments?
-                                            <div>
-                                                {showingComments.map(function(comment){
-                                                    console.log(comment.id);
-                                                    if(commentedPosts.postID === comment.postID){
-                                                        return(
-                                                            <div>
-                                                                <button id="commentsButton closeCommentsButton" onClick = {() => closingComments()}>Close Comments</button>
-                                                                <br />
-                                                                <br />
-                                                                <div id="commentForAccount">
-                                                                    <b id="commentUserForAccount">{comment.commenterName}: </b>
-                                                                    <p id="commentInfoForAccount">{comment.comment}<p id="commentTimeForAccount">Commented on {comment.commentTime}</p></p>
-                                                                    {auth.currentUser.email === comment.email? 
+                                                                {auth.currentUser.email === comment.email? 
                                                                         <div>
                                                                             <Button data-tip data-for="deleteButton" variant="outline-danger" onClick={() => deleteComment(commentedPosts.id, comment.id)}>
                                                                                 <Icon path={mdiDeleteEmptyOutline} size={1}></Icon>
@@ -443,88 +420,128 @@ export default function MyAccount(){
                                                                             <ReactTooltip id="deleteButton" place="top" effect="solid">Delete Comment</ReactTooltip>
                                                                         </div> 
                                                                     :null}
-                                                                </div>
                                                             </div>
-                                                        )
-                                                    }
-                                                })}
-                                            </div>
-                                        :null}
-                                    </div>
-                            </div>
-                        </div>
+                                                        </div>
+                                                    )
+                                                }
+                                            })}
+                                        </div>
+                                    :null}
+                                </Card.Body>
+                            </Card>
+                        </Col>
                     )
                 })}
-                
+                </Row>
 
+                <Row>
                 <h4>Favourites</h4>
                 {favouritePosts.map(function(favPosts){
                     return(
-                        <div>
-                            <div id="showingCommentedPostsForAccount">
-                                <img id="postImageForAccount" src={favPosts.image}></img>
-                                    <div id="infoForAccount">
-                                        <div id="postTimeForAccount">Posted by {favPosts.posterName} at {favPosts.postTime}</div>
-                                        <div id="postTypeForAccount"><h3 style={{display: "inline"}}>Type: </h3>{favPosts.type}</div>
-                                        {favPosts.dogBreed != null?<div id="postBreedForAccount"><h3 style={{display: "inline"}}>Breed: </h3>{favPosts.dogBreed}</div>: null}
-                                        <div id="postHeightForAccount"><h3 style={{display: "inline"}}>Height: </h3>{favPosts.height}cm</div>
-                                        <div id="postColourForAccount"><h3 style={{display: "inline"}}>Colour: </h3>{favPosts.colour}</div>
-                                        <div id="postNeuturedForAccount"><h3 style={{display: "inline"}}>The animal is: </h3>{favPosts.neutured}</div>
-                                        <Button id={favPosts.id} variant="outline-primary" onClick={(element) => handleShow(element.target.id)} data-tip data-for="addComment" >
-                                            <Icon path={mdiCommentText} size={1}></Icon>                        
-                                        </Button>
-                                        <ReactTooltip id="addComment" place="top" effect="solid">Add Comment</ReactTooltip>  
-        
-                                        <Modal show={show} onHide={handleClose}>
-                                            <Modal.Header style={{background: "#F0F0F0"}}>
-                                            <Modal.Title>Comment Below</Modal.Title>
-                                            </Modal.Header>
-                                            <Modal.Body><textarea id="commentBoxForAccount" commenterName="commentBox" onChange={(e) => setComment(e.target.value)}></textarea></Modal.Body>
-                                            <Modal.Footer>
-                                                <Button variant="secondary" onClick={() => addingComment()}>
-                                                    Submit
-                                                </Button>
-                                                <Button variant="primary" onClick={handleClose}>
-                                                    Close
-                                                </Button>
-                                            </Modal.Footer>
-                                        </Modal>
-                                        {favPosts.comments != null?
-                                            <div style={{display: "inline"}}>
-                                                <Button data-tip data-for="showComment" id={favPosts.id} variant="outline-primary" onClick={() => showComments(favPosts.id)}>
-                                                    <Icon path={mdiCommentTextMultiple} size={1}></Icon>
-                                                </Button>
-                                                <ReactTooltip id="showComment" place="top" effect="solid">View Comments</ReactTooltip>
-                                            </div>
-                                        :null}
-                                        <Button data-tip data-for="addFavourites" variant="outline-danger">
-                                            <Icon path={mdiCardsHeartOutline} size={1}></Icon>
-                                        </Button>
-                                        <ReactTooltip id="addFavourites" place="top" effect="solid">Add to Favourites</ReactTooltip>
-                                        {displayComments?
-                                            <div>
-                                                {showingComments.map(function(comment){
-                                                    if(favPosts.postID === comment.postID){
-                                                        return(
-                                                            <div>
-                                                                <button id="commentsButton closeCommentsButton" onClick = {() => closeComments()}>Close Comments</button>
-                                                                <br />
-                                                                <br />
-                                                                <div id="commentForAccount">
-                                                                    <b id="commentUserForAccount">{comment.commenterName}: </b>
-                                                                    <p id="commentInfoForAccount">{comment.comment}<p id="commentTimeForAccount">Commented on {comment.commentTime}</p></p>
-                                                                </div>
+                        <Col className="col-sm-3 ml-7">
+                            <Card className="shadow-lg" border="info" style={{ width: '100%', borderRadius: "25px"/*, marginLeft:"1%"*/}}>
+                                <Card.Header style={{textAlign: "center"}}><h5>{favPosts.status}</h5></Card.Header>
+                                <Card.Text style={{opacity: "0.5", textAlign: "center"}}>Posted by {favPosts.posterName} at {favPosts.postTime}</Card.Text>
+                                <Card.Img  variant="top" src={favPosts.image} style={{border: "1px solid black", marginRight: "auto", marginLeft: "auto", height: "30vh", width: "20vw", borderRadius: "25px"}}/>
+                                <Card.Body>
+                                    <Card.Text><h3 style={{display: "inline"}}>Type: </h3>{favPosts.type}</Card.Text>
+                                    {favPosts.dogBreed != null?<Card.Text><h3 style={{display: "inline"}}>Breed: </h3>{favPosts.dogBreed}</Card.Text>:null}
+                                    <Card.Text><h3 style={{display: "inline"}}>Height: </h3>{favPosts.height}cm</Card.Text>
+                                    <Card.Text><h3 style={{display: "inline"}}>Colour: </h3>{favPosts.colour}</Card.Text>
+                                    <Card.Text><h3 style={{display: "inline"}}>The animal is: </h3>{favPosts.neutured}</Card.Text>
+                                    {favPosts.status === "FOUND"?<Card.Text><h3 style={{display: "inline"}}>Found at: </h3>{favPosts.address}</Card.Text>:
+                                    <Card.Text><h3 style={{display: "inline"}}>Last seen at: </h3>{favPosts.address}</Card.Text>}
+
+                                    <Button data-tip data-for="addComment" id={favPosts.id} variant="outline-primary" onClick={() => handleShow(favPosts.id)}>
+                                        <Icon path={mdiCommentText} size={1}></Icon>                        
+                                    </Button>
+                                    <ReactTooltip id="addComment" place="top" effect="solid">Add Comment</ReactTooltip>  
+    
+                                    <Modal show={show} onHide={handleClose}>
+                                        <Modal.Header style={{background: "#F0F0F0"}}>
+                                        <Modal.Title>Comment Below</Modal.Title>
+                                        </Modal.Header>
+                                        <Modal.Body><textarea id="commentBoxForAccount" commenterName="commentBox" onChange={(e) => setComment(e.target.value)}></textarea></Modal.Body>
+                                        <Modal.Footer>
+                                            <Button variant="secondary" onClick={() => addingComment()}>
+                                                Submit
+                                            </Button>
+                                            <Button variant="primary" onClick={handleClose}>
+                                                Close
+                                            </Button>
+                                        </Modal.Footer>
+                                    </Modal>
+                                    {favPosts.comments != null && commentShowCounter === 0?
+                                        <div style={{display: "inline"}}>
+                                            <Button data-tip data-for="showComment" variant="outline-primary" onClick={() => showComments(favPosts.id)}>
+                                                <Icon path={mdiCommentTextMultiple} size={1}></Icon>
+                                            </Button>
+                                            <ReactTooltip id="showComment" place="top" effect="solid">View Comments</ReactTooltip>             
+                                        </div>
+                                    :null}
+                                    {commentShowCounter === 1?
+                                        <div style={{display: "inline"}}>
+                                            {showingComments.map(function(comment){
+                                                if(favPosts.postID === comment.postID && counter == 0){
+                                                    counter = counter +1
+                                                    return(
+                                                        <div style={{display: "inline"}}>
+                                                            <Button data-tip data-for="closeComment" variant="outline-primary" onClick = {() => closingComments()}>
+                                                                <Icon path={mdiCommentOffOutline} size={1}></Icon>
+                                                            </Button>
+                                                            <ReactTooltip id="closeComment" place="top" effect="solid">Close Comments</ReactTooltip>
+                                                        </div>
+                                                    )
+                                                }
+                                            })}
+                                        </div>
+                                    :null}
+
+                                    
+                                    <Button data-tip data-for="addFavourites" variant="outline-danger" onClick={() => removeFavoruite(favPosts.id)}>
+                                        <Icon path={mdiHeartOffOutline} size={1}></Icon>
+                                    </Button>
+                                    <ReactTooltip id="addFavourites" place="top" effect="solid">Remove From Favourites</ReactTooltip>
+                                    {auth.currentUser.email === favPosts.posterEmail? 
+                                        <div style={{display: "inline"}}>
+                                            <Button data-tip data-for="deleteButton" variant="outline-danger" onClick={() => deletePosts(favPosts.id)}>
+                                                <Icon path={mdiTrashCanOutline} size={1}></Icon>
+                                            </Button>
+                                            <ReactTooltip id="deleteButton" place="top" effect="solid">Delete Post</ReactTooltip>
+                                        </div> 
+                                    :null}
+                                    {displayComments?
+                                        <div>
+                                            {showingComments.map(function(comment){
+                                                if(favPosts.postID === comment.postID){
+                                                    return(
+                                                        <div>
+                                                            <br />
+                                                            <br />
+                                                            <div id="commentForAccount">
+                                                                <b id="commentUserForAccount">{comment.commenterName}: </b>
+                                                                <p id="commentInfoForAccount">{comment.comment}<p id="commentTimeForAccount">Commented on {comment.commentTime}</p></p>
+                                                                {auth.currentUser.email === comment.email? 
+                                                                        <div>
+                                                                            <Button data-tip data-for="deleteButton" variant="outline-danger" onClick={() => deleteComment(favPosts.id, comment.id)}>
+                                                                                <Icon path={mdiDeleteEmptyOutline} size={1}></Icon>
+                                                                            </Button>
+                                                                            <ReactTooltip id="deleteButton" place="top" effect="solid">Delete Comment</ReactTooltip>
+                                                                        </div> 
+                                                                    :null}
                                                             </div>
-                                                        )
-                                                    }
-                                                })}
-                                            </div>
-                                        :null}
-                                    </div>
-                            </div>
-                        </div>
+                                                        </div>
+                                                    )
+                                                }
+                                            })}
+                                        </div>
+                                    :null}
+                                </Card.Body>
+                            </Card>
+                        </Col>
                     )
                 })}
+                </Row>
             </div>
         </div>
     )

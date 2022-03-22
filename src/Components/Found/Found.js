@@ -1,7 +1,7 @@
 import db2, {logout, getDownloadURL, ref} from "../../firebaseconfig";
 import './Found.css'
 import { useState, useEffect } from "react";
-import { Button, Modal, Dropdown, DropdownButton, Card, ListGroup, Form } from "react-bootstrap";
+import { Button, Modal, Dropdown, DropdownButton, Card, ListGroup, Col, Form, Row } from "react-bootstrap";
 import ReactTooltip from 'react-tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { auth } from '../../firebaseconfig';
@@ -9,6 +9,8 @@ import settingsIcon from "../../SettingsIcon.png";
 import { mdiCommentText } from '@mdi/js';
 import { mdiCommentTextMultiple } from '@mdi/js';
 import { mdiCardsHeartOutline } from '@mdi/js';
+import { mdiDeleteEmptyOutline } from '@mdi/js';
+import { mdiCommentOffOutline } from '@mdi/js';
 import Icon from '@mdi/react'
 
 
@@ -24,7 +26,7 @@ export default function Found(){
     const [showFilterChoices, setShowFilterChoices] = useState(false);
     const [breedList, setBreedList] = useState([]);
     const [heightRange, setHeightRange] = useState([]);
-
+    const [commentShowCounter, setCommentShowCounter] = useState(0);
 
     const db = db2.ref("Posts");
 
@@ -101,7 +103,9 @@ export default function Found(){
         handleClose();
     }
 
+    let counter = 0;
     async function showComments(id){
+        counter = 0;
         const dbcomments = db2.ref(`Posts/${id}/comments`);
         dbcomments.on("value", (snapshot)=>{
             const commentsFromDatabase = snapshot.val();
@@ -112,10 +116,12 @@ export default function Found(){
             setShowingComments(commentsArray);
         })
         setDisplayComments(true);
+        setCommentShowCounter(1);
     }
 
-    function closeComments(){
+    function closingComments(){
         setDisplayComments(false);
+        setCommentShowCounter(0);
     }
 
     function addFavourites(id){
@@ -150,8 +156,16 @@ export default function Found(){
         }
     }
 
+    function deleteComment(postID, commentID){
+        if(window.confirm("Are you sure you want to delete this comment?")){
+            db2.ref(`Posts/${postID}/comments/${commentID}`).remove();
+            alert("Comment deleted successfully");
+        }
+        setCommentShowCounter(0);
+    }
+    
     function filter(item, arrayNum, minHeight, maxHeight){
-        console.log(item);
+        console.log(arrayNum);
         let originalPosts = [];
         let filterType = [];
         let filterBreed = [];
@@ -181,7 +195,7 @@ export default function Found(){
         if(filterSearch[3] === ""){
             filterSearch[3] = undefined;
         }
-
+        console.log(filterSearch)
         for(let i=0; i<filterSearch.length; i++){
             if(i === 0){
                 if(filterSearch[i] != undefined){
@@ -249,6 +263,10 @@ export default function Found(){
             if(i === 3){
                 if(filterSearch[i] != undefined || filterSearch[i] == ""){
                     if(filterSearch[i] === "height"){
+                        if(maxHeight != null){
+                            heightRange[0] = minHeight;
+                            heightRange[1] = maxHeight;
+                        }
                         itemsFilteredNum = itemsFilteredNum + 1;
                         let filter = db2.ref(`Posts`);
                         filter.on("value", (snap) => {
@@ -258,15 +276,14 @@ export default function Found(){
                                 const type = db2.ref(`Posts/${id}/height`)
                                 type.on("value", (snap) => {
                                     const typeValue = snap.val();
-                                    if(typeValue > minHeight && typeValue < maxHeight){
+                                    console.log(minHeight, maxHeight);
+                                    if(typeValue >= heightRange[0] && typeValue <= heightRange[1]){
                                         filteredArray.push({id, ...postsFromDatabase[id]})
                                     }
                                 })
                             }
                             filterHeight = filteredArray;
                         })
-                        heightRange[0] = minHeight;
-                        heightRange[1] = maxHeight;
                     }
                     else{
                         itemsFilteredNum = itemsFilteredNum + 1;
@@ -335,7 +352,7 @@ export default function Found(){
                 }
             }
             for(let j=0; j<filterNeutured.length; j++){
-                if(id === filterNeutured[i].id){
+                if(id === filterNeutured[j].id){
                     counter = counter + 1;
                 }
             }
@@ -368,7 +385,7 @@ export default function Found(){
             <button id = "reportFoundPet" onClick = {reportFoundPet}>I found a stray</button>
             <div>
                 <Dropdown id="filter" style={{display: "inline"}}>
-                    <Dropdown.Toggle id="dropdown-button-dark-example1" variant="success">
+                    <Dropdown.Toggle id="dropdown-button-dark-example1" variant="success" style={{borderRadius:"15px"}}>
                         <h5>Filter</h5>
                     </Dropdown.Toggle>
 
@@ -399,29 +416,39 @@ export default function Found(){
                         </DropdownButton>
                         <DropdownButton id="dropdown-button-dark-example2" variant="dark" style={{color: "white"}} drop="end" title="Height">
                             <Form.Control type="number" placeholder="Enter Height" onChange={(element) => filter(element.target.value, 3)}/>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="2" onClick={() => filter("height", 3,  0, 10)}>0cm-10cm</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="3" onClick={() => filter("height", 3, 10, 20)}>10cm-20cm</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="4" onClick={() => filter("height", 3, 20, 30)}>20cm-30cm</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="5" onClick={() => filter("height", 3, 30, 40)}>30cm-40cm</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="6" onClick={() => filter("height", 3, 40, 50)}>40cm-50cm</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="7" onClick={() => filter("height", 3, 50, 60)}>50cm-60cm</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="8" onClick={() => filter("height", 3, 60, 70)}>60cm-70cm</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="2" onClick={() => filter("height", 3,  0, 9)}>0cm-9cm</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="3" onClick={() => filter("height", 3, 10, 19)}>10cm-19cm</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="4" onClick={() => filter("height", 3, 20, 29)}>20cm-29cm</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="5" onClick={() => filter("height", 3, 30, 39)}>30cm-39cm</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="6" onClick={() => filter("height", 3, 40, 49)}>40cm-49cm</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="7" onClick={() => filter("height", 3, 50, 59)}>50cm-59cm</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="8" onClick={() => filter("height", 3, 60, 69)}>60cm-69cm</Dropdown.Item>
+                        </DropdownButton>
+                        <DropdownButton id="dropdown-button-dark-example2" variant="dark" style={{color: "white"}} drop="end" title="Neutured">
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="1" onClick={() => filter("neutured", 4)}>Neutured</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="2" onClick={() => filter("spayed", 4)}>Spayed</Dropdown.Item>
                         </DropdownButton>
                         <Dropdown.Divider></Dropdown.Divider>
                         <Dropdown.Item href="#"  onClick={() => filter("reset")}>Reset</Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
-                {showFilterChoices?  
-                    filterSearch.map(function(item){
+                {showFilterChoices?
+                    filterSearch.map((item, index) => {
                         if(item != undefined){
                             if(item === "height"){
-
+                                console.log(index);
+                                return(
+                                    <Card style={{width: "8%", borderRadius: "15px", display: "inline"}}>
+                                        {heightRange[0]}cm-{heightRange[1]}cm
+                                        <Button size="sm" id={item} onClick={()=>filter(undefined, index)}>X</Button>
+                                    </Card>
+                                )
                             }
                             else{
                                 return(
                                     <Card style={{width: "8%", borderRadius: "15px", display: "inline"}}>
                                         {item}
-                                        <Button size="sm" id={item}>X</Button>
+                                        <Button value="" size="sm" id={item} onClick={()=>filter(undefined, index)}>X</Button>
                                     </Card>
                                 )
                             }
@@ -431,18 +458,23 @@ export default function Found(){
             </div>
 
             <div>
+                <Row>
                 {posts.map(function(post){
                     return(
-                        <div id="showingPosts">
-                            {posts.length === 0? <div id="noPosts"><h3>No posts</h3></div>:null}
-                            <img id="postImage" src={post.image}></img>
-                            <div id="info">
-                                <div id="postTime">Posted by {post.posterName} at {post.postTime}</div>
-                                <div id="postType"><h3 style={{display: "inline"}}>Type: </h3>{post.type}</div>
-                                {post.dogBreed != null?<div id="postBreed"><h3 style={{display: "inline"}}>Breed: </h3>{post.dogBreed}</div>: null}
-                                <div id="postHeight"><h3 style={{display: "inline"}}>Height: </h3>{post.height}cm</div>
-                                <div id="postColour"><h3 style={{display: "inline"}}>Colour: </h3>{post.colour}</div>
-                                <div id="postNeutured"><h3 style={{display: "inline"}}>The animal is: </h3>{post.neutured}</div>
+                        <Col className="col-sm-4 ml-20" style={{maxWidth: "27%", textAlign: "center", marginLeft: "5%", marginBottom: "3%"}}>
+                        <Card className="shadow-lg" border="info" style={{ width: '100%', borderRadius: "25px"/*, marginLeft:"1%"*/}}>
+                            <Card.Header style={{textAlign: "center"}}><h5>{post.status}</h5></Card.Header>
+                            <Card.Text style={{opacity: "0.5", textAlign: "center"}}>Posted by {post.posterName} at {post.postTime}</Card.Text>
+                            <Card.Img  variant="top" src={post.image} style={{border: "1px solid black", marginRight: "auto", marginLeft: "auto", height: "30vh", width: "20vw", borderRadius: "25px"}}/>
+                            <Card.Body>
+                                <Card.Text><h3 style={{display: "inline"}}>Type: </h3>{post.type}</Card.Text>
+                                {post.dogBreed != null?<Card.Text><h3 style={{display: "inline"}}>Breed: </h3>{post.dogBreed}</Card.Text>:null}
+                                <Card.Text><h3 style={{display: "inline"}}>Height: </h3>{post.height}cm</Card.Text>
+                                <Card.Text><h3 style={{display: "inline"}}>Colour: </h3>{post.colour}</Card.Text>
+                                <Card.Text><h3 style={{display: "inline"}}>The animal is: </h3>{post.neutured}</Card.Text>
+                                {post.status === "FOUND"?<Card.Text><h3 style={{display: "inline"}}>Found at: </h3>{post.address}</Card.Text>:
+                                <Card.Text><h3 style={{display: "inline"}}>Last seen at: </h3>{post.address}</Card.Text>}
+
                                 <Button data-tip data-for="addComment" id={post.id} variant="outline-primary" onClick={() => handleShow(post.id)}>
                                     <Icon path={mdiCommentText} size={1}></Icon>                        
                                 </Button>
@@ -452,7 +484,7 @@ export default function Found(){
                                     <Modal.Header style={{background: "#F0F0F0"}}>
                                     <Modal.Title>Comment Below</Modal.Title>
                                     </Modal.Header>
-                                    <Modal.Body><textarea id="commentBox" commenterName="commentBox" onChange={(e) => setComment(e.target.value)}></textarea></Modal.Body>
+                                    <Modal.Body><textarea id="commentBoxForAccount" commenterName="commentBox" onChange={(e) => setComment(e.target.value)}></textarea></Modal.Body>
                                     <Modal.Footer>
                                         <Button variant="secondary" onClick={() => addingComment()}>
                                             Submit
@@ -462,30 +494,56 @@ export default function Found(){
                                         </Button>
                                     </Modal.Footer>
                                 </Modal>
-                                {post.comments != null?
+                                {post.comments != null && commentShowCounter === 0?
                                     <div style={{display: "inline"}}>
-                                        <Button data-tip data-for="showComment" id={post.id} variant="outline-primary" onClick={() => showComments(post.id)}>
+                                        <Button data-tip data-for="showComment" variant="outline-primary" onClick={() => showComments(post.id)}>
                                             <Icon path={mdiCommentTextMultiple} size={1}></Icon>
                                         </Button>
-                                        <ReactTooltip id="showComment" place="top" effect="solid">View Comments</ReactTooltip>
+                                        <ReactTooltip id="showComment" place="top" effect="solid">View Comments</ReactTooltip>             
                                     </div>
                                 :null}
-                                <Button data-tip data-for="addFavourites" variant="outline-danger" id={post.id} onClick={() => addFavourites(post.id)}>
+                                {commentShowCounter === 1?
+                                    <div style={{display: "inline"}}>
+                                        {showingComments.map(function(comment){
+                                            if(post.postID === comment.postID && counter == 0){
+                                                counter = counter +1
+                                                return(
+                                                    <div style={{display: "inline"}}>
+                                                        <Button data-tip data-for="closeComment" variant="outline-primary" onClick = {() => closingComments()}>
+                                                            <Icon path={mdiCommentOffOutline} size={1}></Icon>
+                                                        </Button>
+                                                        <ReactTooltip id="closeComment" place="top" effect="solid">Close Comments</ReactTooltip>
+                                                    </div>
+                                                )
+                                            }
+                                        })}
+                                    </div>
+                                :null}
+
+                                
+                                <Button data-tip data-for="addFavourites" variant="outline-danger">
                                     <Icon path={mdiCardsHeartOutline} size={1}></Icon>
                                 </Button>
                                 <ReactTooltip id="addFavourites" place="top" effect="solid">Add to Favourites</ReactTooltip>
                                 {displayComments?
                                     <div>
                                         {showingComments.map(function(comment){
-                                            if(post.postID == comment.postID){
+                                            if(post.postID === comment.postID){
                                                 return(
                                                     <div>
-                                                        <button id="commentsButton closeCommentsButton" onClick = {() => closeComments()}>Close Comments</button>
                                                         <br />
                                                         <br />
-                                                        <div id="comment">
-                                                            <b id="commentUser">{comment.commenterName}: </b>
-                                                            <p id="commentInfo">{comment.comment}<p id="commentTime">Commented on {comment.commentTime}</p></p>
+                                                        <div id="commentForAccount">
+                                                            <b id="commentUserForAccount">{comment.commenterName}: </b>
+                                                            <p id="commentInfoForAccount">{comment.comment}<p id="commentTimeForAccount">Commented on {comment.commentTime}</p></p>
+                                                            {auth.currentUser.email === comment.email? 
+                                                                    <div>
+                                                                        <Button data-tip data-for="deleteButton" variant="outline-danger" onClick={() => deleteComment(post.id, comment.id)}>
+                                                                            <Icon path={mdiDeleteEmptyOutline} size={1}></Icon>
+                                                                        </Button>
+                                                                        <ReactTooltip id="deleteButton" place="top" effect="solid">Delete Comment</ReactTooltip>
+                                                                    </div> 
+                                                                :null}
                                                         </div>
                                                     </div>
                                                 )
@@ -493,10 +551,12 @@ export default function Found(){
                                         })}
                                     </div>
                                 :null}
-                            </div>
-                        </div>
+                            </Card.Body>
+                        </Card>
+                    </Col>
                     )
                 })}
+                </Row>
             </div>
         </div>
     )

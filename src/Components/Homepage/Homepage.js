@@ -34,23 +34,9 @@ export default function Homepage(){
                     </Dropdown.Menu>
                 </Dropdown>
             </div>
-            {/*<div id = "sidebar">
-                <button id = "found" onClick={found}>
-                    <h2>Found Pets</h2>
-                </button>
-                <a href = "#">
-                    <h2>Lost Pets</h2>
-                </a>
-                <a href = "#">
-                    <h2>Pet Clinics</h2>
-                </a>
-                <a href = "#" onClick={dogWardenService}>
-                    <h2 id = "DWS">Dog Warden Service</h2>
-                </a>
-            </div>*/}
             <Nav id="sidebar" defaultActiveKey="/home" className='flex-column'>
                 <Nav.Item>
-                    <Nav.Link id="navButton" onClick={found}>Found</Nav.Link>
+                    <Nav.Link id="navButton" onClick={found}>Found&#62;</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
                     <Nav.Link id="navButton" >Lost</Nav.Link>
