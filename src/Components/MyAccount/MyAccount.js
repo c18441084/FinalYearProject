@@ -17,6 +17,7 @@ import "./MyAccount.css";
 
 export default function MyAccount(){
 
+    const [userEmail, setUserEmail] = useState(); 
     const [usersPosts, setUsersPosts] = useState([]);
     const [commentsPosts, setCommentsPosts] = useState([]);
     const [favouritePosts, setFavouritePosts] = useState([]);
@@ -32,6 +33,7 @@ export default function MyAccount(){
 
     useEffect(() => {
         const emails = auth.currentUser.email;
+        setUserEmail(emails)
         dbUser.on("value", (snap) => {
             const postsFromDatabase = snap.val();
             const postsArray = [];
@@ -80,7 +82,7 @@ export default function MyAccount(){
                     testArray.push(commentsArray[i])
                 }
             }
-
+            
             setCommentsPosts(testArray);
         })
 
@@ -189,7 +191,20 @@ export default function MyAccount(){
 
     function removeFavoruite(favID){
         if(window.confirm("Are you sure you want to delete this post from your favourites?")){
-            db2.ref(`Posts/${favID}`).remove();
+            const favRef = db2.ref(`Posts/${favID}/favourites`);
+            favRef.on("value", (snap) => {
+                let info = snap.val();
+                let favsArray = [];
+                for(let id in info){
+                    const inside = db2.ref(`Posts/${favID}/favourites/${id}`)
+                    inside.on("value", (snap) => {
+                        let info2 = snap.val();
+                        if(info2.email === userEmail){
+                            db2.ref(`Posts/${favID}/favourites/${id}`).remove();
+                        }
+                    })
+                }
+            })
             alert("Post removed successfully");
         }
     }
@@ -217,7 +232,7 @@ export default function MyAccount(){
             <div>
                 <h4>Posts made by me</h4>
                 <Row>
-                {usersPosts.map(function(post){
+                {usersPosts[0]===undefined?<p>There are no posts</p> : usersPosts.map(function(post){
                     return(
                         <Col className="col-sm-3 ml-7">
                             <Card className="shadow-lg" border="info" style={{ width: '100%', borderRadius: "25px"/*, marginLeft:"1%"*/}}>
@@ -327,7 +342,7 @@ export default function MyAccount(){
 
                 <Row>
                 <h4>Commented on Posts</h4>
-                {commentsPosts.map(function(commentedPosts){
+                {commentsPosts[0]===undefined?<p>There no commented posts</p>: commentsPosts.map(function(commentedPosts){
                     return(
                         <Col className="col-sm-3 ml-7">
                             <Card className="shadow-lg" border="info" style={{ width: '100%', borderRadius: "25px"/*, marginLeft:"1%"*/}}>
@@ -436,7 +451,7 @@ export default function MyAccount(){
 
                 <Row>
                 <h4>Favourites</h4>
-                {favouritePosts.map(function(favPosts){
+                {favouritePosts[0]===undefined?<p>There no favourites posts</p> : favouritePosts.map(function(favPosts){
                     return(
                         <Col className="col-sm-3 ml-7">
                             <Card className="shadow-lg" border="info" style={{ width: '100%', borderRadius: "25px"/*, marginLeft:"1%"*/}}>
@@ -498,10 +513,10 @@ export default function MyAccount(){
                                     :null}
 
                                     
-                                    <Button data-tip data-for="addFavourites" variant="outline-danger" onClick={() => removeFavoruite(favPosts.id)}>
+                                    <Button data-tip data-for="removeFavourites" variant="outline-danger" onClick={() => removeFavoruite(favPosts.id)}>
                                         <Icon path={mdiHeartOffOutline} size={1}></Icon>
                                     </Button>
-                                    <ReactTooltip id="addFavourites" place="top" effect="solid">Remove From Favourites</ReactTooltip>
+                                    <ReactTooltip id="removeFavourites" place="top" effect="solid">Remove From Favourites</ReactTooltip>
                                     {auth.currentUser.email === favPosts.posterEmail? 
                                         <div style={{display: "inline"}}>
                                             <Button data-tip data-for="deleteButton" variant="outline-danger" onClick={() => deletePosts(favPosts.id)}>

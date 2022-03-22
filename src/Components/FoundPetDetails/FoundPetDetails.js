@@ -11,6 +11,9 @@ import db2, {storage, ref, getDownloadURL, logout} from "../../firebaseconfig";
 import { uploadBytes, uploadBytesResumable } from 'firebase/storage';
 import { auth } from '../../firebaseconfig';
 import beagle  from '../../beagle.jpg';
+import { mdiAlertOutline } from '@mdi/js';
+import Icon from '@mdi/react'
+
 
 //-------------------------------------------------------------------------
 /*import AWS from 'aws-sdk';
@@ -56,6 +59,7 @@ export default function FoundPetDetails(){
     const [height, setHeight] = useState("");
     const [colour, setColour] = useState([]);
     const [neutured, setNeutured] = useState("");
+    const [location, setLocation] = useState();
 
     const [showType, setShowType] = useState(false);
     const [showBreed, setShowBreed] = useState(false);
@@ -69,6 +73,7 @@ export default function FoundPetDetails(){
     const [showFileUpload, setShowFileUpload] = useState(false);
     const [showFilePic, setShowFilePic] = useState(false);
     const [showLocationPick, setShowLocationPick] = useState(false);
+    const [showGoogleMap, setShowGoogleMap] = useState(false);
 
     const [breedList, setBreedList] = useState([]);
     const [dogBreedHelp, setDogBreedHelp] = useState("");
@@ -118,9 +123,9 @@ export default function FoundPetDetails(){
         setShowLocationPick(false);
         setShowFileUpload(false);
         setShowFilePic(false);
-        if(type == "dog"){
-            if(status == "found"){
-                alert("Warning! \nIt is a legal requirement to report a stray dog to the dog warden service. To read more you can view the DWS section at the homepage of the website.")
+        if(type === "dog"){
+            if(status === "found"){
+                alert(<Icon path={mdiAlertOutline} size={1} ></Icon> + "Warning! \nIt is a legal requirement to report a stray dog to the dog warden service. To read more you can view the DWS section at the homepage of the website.")
             }
             setShowBreed(true);
             componentDidMount();
@@ -179,6 +184,15 @@ export default function FoundPetDetails(){
     function deleteImage(){
         setShowFilePic(false);
         setFileImagePic("");
+    }
+
+    function closeMap(){
+        setShowGoogleMap(false);
+    }
+
+    function submitLocation(){
+        setLocation(googleMapsState.address);
+        setShowGoogleMap(false);
     }
 
     async function SubmitDetails(){
@@ -279,6 +293,7 @@ export default function FoundPetDetails(){
                     .then(async function (url) {
                         const image = url;
                         const submit = {
+                            status: status.toUpperCase(),
                             postID: postnum,
                             type,
                             height,
@@ -535,11 +550,27 @@ export default function FoundPetDetails(){
                 {showLocationPick?
                     <div>
                         <div>
+                            <h3>Address: </h3><p>{location}</p>
+                        </div>
+                        <div>
                             <Button id="submitButton" variant="outline-success" onClick={SubmitDetails}>Submit</Button> 
                         </div>
                         <div id="Map">
                             <h3>Uploaded {progress}%</h3>
-                            <GoogleMap id = "googleMap" />
+                            <Button onClick={() => setShowGoogleMap(true)}>Open Map</Button>
+
+                            <Modal show={showGoogleMap} onHide={closeMap}>
+                                <Modal.Header>
+                                    <Modal.Title>Pick Location</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body style={{height: "50vh", width:"60vh"}}>
+                                    <GoogleMap id = "googleMap" />
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button onClick={submitLocation}>Submit</Button>
+                                    <Button onClick={closeMap}>Close Map</Button>
+                                </Modal.Footer>
+                            </Modal>
                         </div>
                     </div>
                 : null}

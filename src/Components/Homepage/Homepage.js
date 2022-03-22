@@ -6,12 +6,16 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import settingsIcon from "../../SettingsIcon.png";
 export default function Homepage(){
 
+    function myAccount(){
+        window.location = "/account";
+    }
+
     function found(){
         window.location = "/found";
     }
 
-    function myAccount(){
-        window.location = "/account";
+    function reportAPet(){
+        window.location = "/found-pet-details"
     }
 
     function dogWardenService(){
@@ -39,10 +43,13 @@ export default function Homepage(){
                     <Nav.Link id="navButton" onClick={found}>Found&#62;</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Nav.Link id="navButton" >Lost</Nav.Link>
+                    <Nav.Link id="navButton">Lost</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                <Nav.Link id="navButton" onClick={dogWardenService}>DWS</Nav.Link>
+                    <Nav.Link id="navButton" onClick={reportAPet}>Report a pet</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Nav.Link id="navButton" onClick={dogWardenService}>DWS</Nav.Link>
                 </Nav.Item>
             </Nav>
             <div id = "topbar">
