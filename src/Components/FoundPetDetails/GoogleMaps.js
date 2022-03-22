@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Map, Marker, GoogleApiWrapper } from 'google-maps-react';
 import { googleAPIkey, geocodeAPIkey } from '../../keys';
-import { actionCreators } from '../../Store/googleMaps/actions';
+import { googleMapsState } from '../GlobalState/states'
 
 const style = {
     maxWidth: "57%",
@@ -29,15 +29,24 @@ export class MapContainer extends Component {
     const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${e.latLng.lat()},${e.latLng.lng()}&key=${geocodeAPIkey}`);
     const addressObject = await response.json();
     const gettingAddress = addressObject.results[0].formatted_address
-    //address = gettingAddress;
-    console.log(gettingAddress);
+    let props2 = props;
+    let latitude = e.latLng.lat();
+    let longitude = e.latLng.lng();
+    //console.log(gettingAddress);
     this.setState({
       selectedPlace: props,
       mapCenter: {lat: e.latLng.lat(), lng: e.latLng.lng()},
       address: gettingAddress,
     })
-    //actionCreators.getRequest(state);
+    this.changeGlobalState(props2, latitude, longitude, gettingAddress);
   };
+
+  changeGlobalState(props2, latitude, longitude, gettingAddress){
+    googleMapsState.selectedPlace = props2;
+    googleMapsState.mapCenter.lat = latitude;
+    googleMapsState.mapCenter.lng = longitude;
+    googleMapsState.address = gettingAddress; 
+  }
     
   render() {
     return (
@@ -64,4 +73,4 @@ export class MapContainer extends Component {
 
 export default GoogleApiWrapper({
   apiKey: googleAPIkey,
-})(MapContainer)
+})(MapContainer, googleMapsState)
