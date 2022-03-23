@@ -1,55 +1,16 @@
 import { useState, useEffect } from 'react';
 import './FoundPetDetails.css';
 import '../Found/Found';
-import { Button, Modal, Dropdown } from "react-bootstrap";
+import { Button, Modal, Dropdown, Col, Card, Row } from "react-bootstrap";
 import settingsIcon from "../../SettingsIcon.png";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import heightDiagram from './Height_Diagram.png';
 import GoogleMap, { MapContainer } from './GoogleMaps';
 import { googleMapsState } from '../GlobalState/states';
 import db2, {storage, ref, getDownloadURL, logout} from "../../firebaseconfig";
-import { uploadBytes, uploadBytesResumable } from 'firebase/storage';
+import { uploadBytesResumable } from 'firebase/storage';
 import { auth } from '../../firebaseconfig';
-import beagle  from '../../beagle.jpg';
-import { mdiAlertOutline } from '@mdi/js';
-import Icon from '@mdi/react'
-
-
-//-------------------------------------------------------------------------
-/*import AWS from 'aws-sdk';
-
-// Import required AWS SDK clients and commands for Node.js.
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-//import { s3Client } from "./libs/s3Client.js"; // Helper function that creates an Amazon S3 service client module.
-import {path} from "path";
-import {fs} from "fs";
-
-const file = '/Users/niallmcnamara/Desktop/fyprep/FinalYearProject/src/beagle.jpg'; // Path to and name of object. For example '../myFiles/index.js'.
-const fileStream = fs.createReadStream(file);
-
-// Set the parameters
-export const uploadParams = {
-  Bucket: "BUCKET_NAME",
-  // Add the required 'Key' parameter using the 'path' module.
-  Key: path.basename(file),
-  // Add the required 'Body' parameter
-  Body: fileStream,
-};
-
-
-// Upload file to specified bucket.
-export const run = async () => {
-  try {
-    const data = await S3Client.send(new PutObjectCommand(uploadParams));
-    console.log("Success", data);
-    return data; // For unit tests.
-  } catch (err) {
-    console.log("Error", err);
-  }
-};
-run();*/
-
-//----------------------------------------------------------------------------------------------
+import { accessKeyId, secretAccessKey } from '../../keys';
 
 export default function FoundPetDetails(){
 
@@ -59,7 +20,7 @@ export default function FoundPetDetails(){
     const [height, setHeight] = useState("");
     const [colour, setColour] = useState([]);
     const [neutured, setNeutured] = useState("");
-    const [location, setLocation] = useState();
+    const [location, setLocation] = useState("");
 
     const [showType, setShowType] = useState(false);
     const [showBreed, setShowBreed] = useState(false);
@@ -81,6 +42,8 @@ export default function FoundPetDetails(){
     const [fileImage, setFileImage] = useState("");
     const [fileImagePic, setFileImagePic] = useState();
     const [progress, setProgress] = useState(0);
+
+    const AWS = require ("aws-sdk");
 
     async function componentDidMount(){
         const response = await fetch("https://dog.ceo/api/breeds/list/all");
@@ -123,9 +86,9 @@ export default function FoundPetDetails(){
         setShowLocationPick(false);
         setShowFileUpload(false);
         setShowFilePic(false);
-        if(type === "dog"){
-            if(status === "found"){
-                alert(<Icon path={mdiAlertOutline} size={1} ></Icon> + "Warning! \nIt is a legal requirement to report a stray dog to the dog warden service. To read more you can view the DWS section at the homepage of the website.")
+        if(type === "Dog"){
+            if(status === "FOUND"){
+                alert("Warning! \nIt is a legal requirement to report a stray dog to the dog warden service. To read more you can view the DWS section at the homepage of the website.")
             }
             setShowBreed(true);
             componentDidMount();
@@ -152,6 +115,21 @@ export default function FoundPetDetails(){
         setShowBreedGuide(true);
     }
 
+    function BreedIdentifier(){
+        const s3 = new AWS.S3();
+        var name = fileImage.name;
+        console.log(name);
+        (async () =>{
+            await s3
+            .putObject({
+                Body: "Identity",
+                Bucket: "myawsfindmyownerbucket",
+                Key: name
+            }).
+            promise();
+        })();
+    }
+
     function closeBreedHelp(){
         setShowBreedGuide(false);
         setShowBreedHelpImages(false);
@@ -166,8 +144,41 @@ export default function FoundPetDetails(){
     }
 
     function colourList(c){
-        colour.push(c);
-        setShowColourList(true);
+        if(colour.length <= 0){
+            colour.push(c);
+            console.log(colour)
+            console.log(c)
+        }
+        else{
+            let counter = 0;
+            for(let i=0; i<colour.length; i++){
+                if(c === colour[i]){
+                    alert("Colour already entered");
+                    counter = counter + 1;
+                }
+            }
+            if(counter === 0){
+                colour.push(c);
+            }
+        }
+        console.log(colour);
+        setShowColourList(false);
+        setTimeout(() => {
+            setShowColourList(true);
+        }, 5);
+    }
+
+    function removeColour(c){
+        console.log(c);
+        for(let i=0; i<colour.length; i++){
+            if(colour[i] === c){
+                colour.splice(colour.indexOf(c), 1);
+            }
+        }
+        setShowColourList(false);
+        setTimeout(() => {
+            setShowColourList(true);
+        }, 5);
     }
 
     function fileSubmitted(){
@@ -183,7 +194,8 @@ export default function FoundPetDetails(){
 
     function deleteImage(){
         setShowFilePic(false);
-        setFileImagePic("");
+        setFileImagePic();
+        setFileImage();
     }
 
     function closeMap(){
@@ -204,6 +216,9 @@ export default function FoundPetDetails(){
         }
         if(fileImage === ""){
             alert("Please upload a image");
+        }
+        if(location === ""){
+            alert("Please enter a location");
         }
         else{
             const storageRef = ref(storage, `/images/${fileImage.name + new Date().getTime()}`);
@@ -335,61 +350,39 @@ export default function FoundPetDetails(){
     }
 
     //------------------------------------------------------------------------------------------------
-    /*useEffect(() => {
+    useEffect(() => {
         
         var AWS = require('aws-sdk');
 
-        const bucket = 'bucket';
-        const photo = beagle;
 
-        const config = new AWS.Config({
-            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-            region: process.env.AWS_REGION
-        })
+
         
-        AWS.config.update({region:"eu-west-1"});
 
-        const client = new AWS.Rekognition();
+        AWS.config.update({
+            accessKeyId: accessKeyId,
+            secretAccessKey: secretAccessKey,
+            region: "eu-west-1"
+        });
+
         const params = {
             Image: {
                 S3Object: {
-                    Bucket: bucket,
-                    Name: photo
+                    Bucket: "myawsfindmyownerbucket",
+                    Name: "pug.jpeg"
                  },
             },
-            MaxLabels: 10
+            MaxLabels: 5,
+            MinConfidence: 80
         }
-        client.detectLabels(params, function(err, response) {
-            if(err){
-                console.log(err, err.stack); // if an error occurred
-            } 
-            else{
-                console.log("hello");
-                console.log(`Detected labels for: ${photo}`)
-                response.Labels.forEach(label => {
-                console.log(`Label:      ${label.Name}`)
-                console.log(`Confidence: ${label.Confidence}`)
-                console.log("Instances:")
-                label.Instances.forEach(instance => {
-                    let box = instance.BoundingBox
-                    console.log("  Bounding box:")
-                    console.log(`    Top:        ${box.Top}`)
-                    console.log(`    Left:       ${box.Left}`)
-                    console.log(`    Width:      ${box.Width}`)
-                    console.log(`    Height:     ${box.Height}`)
-                    console.log(`  Confidence: ${instance.Confidence}`)
-                })
-                console.log("Parents:")
-                label.Parents.forEach(parent => {
-                    console.log(`  ${parent.Name}`)
-                })
-                console.log("------------")
-                console.log("")
-                }) // for response.labels
-            } // if
-        });
-    })*/
+
+        const rekognition = new AWS.Rekognition();
+
+        /*rekognition.detectLabels(params, function(err, data){
+            if(err) console.log(err, err.stack);
+            else    console.log(data);
+        });*/
+
+    })
 
     //------------------------------------------------------------------------------------------------
     return(
@@ -410,171 +403,199 @@ export default function FoundPetDetails(){
                 </Dropdown>
             </div>
             <br/>
-            <div id="form">
-                <h2 id="PostInfo">Enter Details Form</h2>
-                <div id="missingFound">
-                    <label for="status">Status</label>
-                    <select name="status" id="status" required onChange={Status} onInput = {(e) => setStatus(e.target.value)}>
-                        <option value="" disabled selected hidden>Missing or Found</option>
-                        <option value="missing">Missing</option>
-                        <option value="found">Found</option>
-                    </select>
-                </div>
-                {showType?
-                    <div id = "typeOfAnimal">
-                        <label for="animal">Type of animal: </label>
-                        <select name="animal" id="animal" required onChange={Type} onInput = {(e) => setType(e.target.value)}>
-                            <option value="" disabled selected hidden>Select a animal type</option>
-                            <option value="dog">Dog</option>
-                            <option value="cat">Cat</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                :null}
+            <Row>
+                <Col className="col-sm-5">
+                    <div id="form">
+                        <h2 id="PostInfo">Enter Details Form</h2>
+                        <div id="missingFound">
+                            <label for="status">Status</label>
+                            <select name="status" id="status" required onChange={Status} onInput = {(e) => setStatus(e.target.value.toUpperCase())}>
+                                <option value="" disabled selected hidden>Missing or Found</option>
+                                <option value="missing">Missing</option>
+                                <option value="found">Found</option>
+                            </select>
+                        </div>
+                        {showType?
+                            <div id = "typeOfAnimal">
+                                <label for="animal">Type of animal: </label>
+                                <select name="animal" id="animal" required onChange={Type} onInput = {(e) => setType(e.target.value)}>
+                                    <option value="" disabled selected hidden>Select a animal type</option>
+                                    <option value="Dog">Dog</option>
+                                    <option value="Cat">Cat</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        :null}
 
-                {showBreed?
-                    <div id = "breed">
-                        <label for="Dbreed">Dog Breed: </label>  
-                        <select name="dog" id="Dbreed" onChange={DogBreed} onInput = {(breed) => setDogBreed(breed.target.value)}>
-                            <option value="" disabled selected hidden>Select a Dog Breed</option>
-                            <option value="unknown">Unknown</option>
-                            {Object.keys(breedList).map(function (element){
-                                return (
-                                    <option>{element}</option>
-                                )
-                            })}
-                        </select>
-                        <button id = "breedHelp" onClick={BreedHelp}>Need Help?</button>
-                        <br/>
-                    </div>
-                : null}
-                {type == "other"?
-                    <div style={{marginBottom: "1%"}}>
-                        <label for="otherType">Enter Animal: </label>
-                        <input id="otherType" type="text" min="0" max="20" onInput={(e) => setType(e.target.value)}/>
-                    </div>
-                :null}
-                {showBreedGuide?
-                    <div id = "breed_guide">
-                        <button id="closeBreedGuideButton" onClick={closeBreedHelp}>X</button>
-                        <br/>
-                        <label for="DbreedHelp">Select a Dog Breed to view image: </label>
-                        <select name="dogimage" id="DbreedHelp" onChange={DogImages} onInput= {(breedhelp) => setDogBreedHelp(breedhelp.target.value)}>
-                            <option value="" disabled selected hidden>Select a Dog Breed</option>
-                            {Object.keys(breedList).map(function (element){
-                                return (
-                                    <option>{element}</option>
-                                )
-                            })}
-                        </select>
-                        {showBreedHelpImages? 
+                        {showBreed?
+                            <div id = "breed">
+                                <label for="Dbreed">Dog Breed: </label>  
+                                <select name="dog" id="Dbreed" onChange={DogBreed} onInput = {(breed) => setDogBreed(breed.target.value)}>
+                                    <option value="" disabled selected hidden>Select a Dog Breed</option>
+                                    <option value="unknown">Unknown</option>
+                                    {Object.keys(breedList).map(function (element){
+                                        return (
+                                            <option>{element}</option>
+                                        )
+                                    })}
+                                </select>
+                                <button id = "breedHelp" onClick={BreedHelp}>Need Help?</button>
+                                <br/>
+                            </div>
+                        : null}
+                        {type == "other"?
+                            <div style={{marginBottom: "1%"}}>
+                                <label for="otherType">Enter Animal: </label>
+                                <input id="otherType" type="text" min="0" max="20" onInput={(e) => setType(e.target.value)}/>
+                            </div>
+                        :null}
+                        {showBreedGuide?
+                            <div id = "breed_guide">
+                                <button id="closeBreedGuideButton" onClick={closeBreedHelp}>X</button>
+                                <br/>
+                                <label for="DbreedHelp">Select a Dog Breed to view image: </label>
+                                <select name="dogimage" id="DbreedHelp" onChange={DogImages} onInput= {(breedhelp) => setDogBreedHelp(breedhelp.target.value)}>
+                                    <option value="" disabled selected hidden>Select a Dog Breed</option>
+                                    {Object.keys(breedList).map(function (element){
+                                        return (
+                                            <option>{element}</option>
+                                        )
+                                    })}
+                                </select>
+                                {showBreedHelpImages? 
+                                    <div>
+                                        {breedListImages.map(function (element){
+                                            return(
+                                                <img src={element} id="breedImage"></img>
+                                            )
+                                        })}
+                                    </div>
+                                : null}
+                                <p>Upload Image</p><input type="file" onChange={BreedIdentifier} onInput={(image) => setFileImage(image.target.files[0])}/>
+                            </div>
+                        : null}
+
+                        {showHeight? 
+                            <div id="height">
+                                <label for="heightInput">Height: </label>
+                                <input id="heightInput" type="number" min = "0" max = "200" onInput={(height) => setHeight(height.target.value)}/>
+                                <label for="heightInput">cm</label>
+                                <button id="heightHelp" onClick={heightGuide}>?</button>
+                            </div> 
+                        : null}
+                        {showHeightGuide?
+                            <div id="height_guide">
+                                <button id="closeHeightGuideButton" onClick={closeHeightGuide}>X</button>
+                                <h3>Measure from the front foot of the animal to the top of the head.</h3>
+                                <img id="heightGuideImage" src={heightDiagram}/>
+                            </div>
+                        : null}
+
+                        {showColourChoice? 
+                            <div id="colour_choice">
+                                <label for="colourInput">Colour: </label>
+                                <select name="colourInput" id="colourInput" onInput={(color) => colourList(color.target.value)}>
+                                    <option value="" disabled selected hidden>Select a Colour</option>       
+                                    <option value="Black">Black</option>
+                                    <option value="White">White</option>
+                                    <option value="Brown">Brown</option>   
+                                    <option value="Red">Red</option>     
+                                    <option value="Gold">Gold</option>    
+                                    <option value="Gray">Gray</option> 
+                                </select>
+                            </div>
+                        : null}
+
+                        {showColourList?
                             <div>
-                                {breedListImages.map(function (element){
+                                <br></br>
+                                {colour.map(function(color){
+                                    console.log(color);
                                     return(
-                                        <img src={element} id="breedImage"></img>
+                                        <div style={{display: "inline"}}>
+                                            <p style={{display: "inline", marginRight: "2%", border: "1px solid black", borderRadius: "15px", padding: "5px"}}>
+                                                {color}<button style={{height: "10px", width: "10px", fontSize: "9px"}} onClick={() => removeColour(color)}>X</button>
+                                            </p>
+                                        </div>
                                     )
                                 })}
+                                <br></br>
+                            </div>
+                        :null}
+
+                        {showNeuturedChoice?
+                            <div id="neutured_choice">
+                                <label for="neutured">Neutured or Spayed(Optional)</label>
+                                <select name="neutured" id="neutured" onInput={(e) => setNeutured(e.target.value)}>
+                                    <option value="Unknown">Unknown</option>
+                                    <option value="Neutured">Neutured</option>
+                                    <option value="Spayed">Spayed</option>
+                                    <option value="Neither">Neither</option>
+                                </select>
+                            </div>
+                        : null}
+
+                        {showFileUpload?
+                            <div id="file_upload">
+                                <input type="file" onChange={fileSubmitted} onInput={(image) => setFileImage(image.target.files[0])}/>
+                            </div>
+                        :null}
+                        {showFilePic?
+                            <div id="show_image_submitted">
+                                <button id = "remove_image" onClick={deleteImage}>X</button>
+                                <img src={fileImagePic} height={"25%"} width={"25%"} ></img>
+                            </div>
+                        :null}
+
+                        {showLocationPick?
+                            <div>
+                                <div>
+                                    Address: <p>{location}</p>
+                                </div>
+                                <div id="Map">
+                                    <h3>Uploaded {progress}%</h3>
+                                    <Button onClick={() => setShowGoogleMap(true)}>Open Map</Button>
+
+                                    <Modal show={showGoogleMap} onHide={closeMap}>
+                                        <Modal.Header>
+                                            <Modal.Title>Pick Location</Modal.Title>
+                                        </Modal.Header>
+                                        <Modal.Body style={{height: "50vh", width:"60vh"}}>
+                                            <GoogleMap id = "googleMap" />
+                                        </Modal.Body>
+                                        <Modal.Footer>
+                                            <Button onClick={submitLocation}>Submit</Button>
+                                            <Button onClick={closeMap}>Close Map</Button>
+                                        </Modal.Footer>
+                                    </Modal>
+                                </div>
+                                <div>
+                                    <Button id="submitButton" variant="outline-success" onClick={SubmitDetails}>Submit</Button> 
+                                </div>
                             </div>
                         : null}
                     </div>
-                : null}
-
-                {showHeight? 
-                    <div id="height">
-                        <label for="heightInput">Height: </label>
-                        <input id="heightInput" type="number" min = "0" max = "200" onInput={(height) => setHeight(height.target.value)}/>
-                        <label for="heightInput">cm</label>
-                        <button id="heightHelp" onClick={heightGuide}>?</button>
-                    </div> 
-                : null}
-                {showHeightGuide?
-                    <div id="height_guide">
-                        <button id="closeHeightGuideButton" onClick={closeHeightGuide}>X</button>
-                        <h3>Measure from the front foot of the animal to the top of the head.</h3>
-                        <img id="heightGuideImage" src={heightDiagram}/>
+                </Col>
+                
+                <Col className="col-sm-3" style={{marginLeft: "13%"}}>
+                    <div id="postPrototype">
+                            <Card className="shadow-lg" border="info" style={{ width: '100%', borderRadius: "25px"/*, marginLeft:"1%"*/}}>
+                                <Card.Header style={{textAlign: "center"}}><h5>{status}</h5></Card.Header>
+                                <Card.Text style={{opacity: "0.5", textAlign: "center"}}>Posted by {auth.currentUser.displayName}</Card.Text>
+                                <Card.Img  variant="top" src={fileImagePic} style={{border: "1px solid black", marginRight: "auto", marginLeft: "auto", height: "30vh", width: "20vw", borderRadius: "25px"}}/>
+                                <Card.Body>
+                                    <Card.Text><h3 style={{display: "inline"}}>Type: </h3>{type}</Card.Text>
+                                    {type === "Dog"?<Card.Text><h3 style={{display: "inline"}}>Breed: </h3>{dogBreed}</Card.Text>:null}
+                                    <Card.Text><h3 style={{display: "inline"}}>Height: </h3>{height}cm</Card.Text>
+                                    <Card.Text><h3 style={{display: "inline"}}>Colour: </h3>{colour?.map(function(element) {return(<div style={{display: "inline", marginRight:"2%", border: "1px solid black", borderRadius: "25px", padding: "1%"}}>{element}</div>)})}</Card.Text>
+                                    {neutured != ""?<Card.Text><h3 style={{display: "inline"}}>The animal is: </h3>{neutured}</Card.Text>:null}
+                                    {status === "FOUND"?<Card.Text><h3 style={{display: "inline"}}>Found at: </h3>{location}</Card.Text>:
+                                    <Card.Text><h3 style={{display: "inline"}}>Last seen at: </h3>{location}</Card.Text>}
+                                </Card.Body>
+                            </Card>
                     </div>
-                : null}
-
-                {showColourChoice? 
-                    <div id="colour_choice">
-                        <label for="colourInput">Colour: </label>
-                        <select name="colourInput" id="colourInput" onInput={(color) => colourList(color.target.value)}>
-                            <option value="" disabled selected hidden>Select a Colour</option>       
-                            <option value="Black">Black</option>
-                            <option value="White">White</option>
-                            <option value="Brown">Brown</option>   
-                            <option value="Red">Red</option>     
-                            <option value="Gold">Gold</option>    
-                            <option value="Gray">Gray</option> 
-                        </select>
-                    </div>
-                : null}
-
-                {showColourList?
-                    <div /*style={{display: "inline"}}*/>
-                        <br></br>
-                        {colour.map(function(color){
-                            //console.log(color);
-                            <div>
-                                <p>
-                                    {color}<Button>X</Button>
-                                </p>
-                            </div>
-                        })}
-                    </div>
-                :null}
-
-                {showNeuturedChoice?
-                    <div id="neutured_choice">
-                        <label for="neutured">Neutured or Spayed(Optional)</label>
-                        <select name="neutured" id="neutured" onInput={(e) => setNeutured(e.target.value)}>
-                            <option value="unknown">Unknown</option>
-                            <option value="neutured">Neutured</option>
-                            <option value="spayed">Spayed</option>
-                        </select>
-                    </div>
-                : null}
-
-                {showFileUpload?
-                    <div id="file_upload">
-                        <input type="file" onChange={fileSubmitted} onInput={(image) => setFileImage(image.target.files[0])}/>
-                    </div>
-                :null}
-                {showFilePic?
-                    <div id="show_image_submitted">
-                        <button id = "remove_image" onClick={deleteImage}>X</button>
-                        <img src={fileImagePic} height={"25%"} width={"25%"} ></img>
-                    </div>
-                :null}
-
-                {showLocationPick?
-                    <div>
-                        <div>
-                            <h3>Address: </h3><p>{location}</p>
-                        </div>
-                        <div>
-                            <Button id="submitButton" variant="outline-success" onClick={SubmitDetails}>Submit</Button> 
-                        </div>
-                        <div id="Map">
-                            <h3>Uploaded {progress}%</h3>
-                            <Button onClick={() => setShowGoogleMap(true)}>Open Map</Button>
-
-                            <Modal show={showGoogleMap} onHide={closeMap}>
-                                <Modal.Header>
-                                    <Modal.Title>Pick Location</Modal.Title>
-                                </Modal.Header>
-                                <Modal.Body style={{height: "50vh", width:"60vh"}}>
-                                    <GoogleMap id = "googleMap" />
-                                </Modal.Body>
-                                <Modal.Footer>
-                                    <Button onClick={submitLocation}>Submit</Button>
-                                    <Button onClick={closeMap}>Close Map</Button>
-                                </Modal.Footer>
-                            </Modal>
-                        </div>
-                    </div>
-                : null}
-            </div>
+                </Col>
+            </Row>
         </div>
     )
 }

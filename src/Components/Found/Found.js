@@ -28,6 +28,7 @@ export default function Found(){
     const [heightRange, setHeightRange] = useState([]);
     const [commentShowCounter, setCommentShowCounter] = useState(0);
     const [timeShow, setTimeShow] = useState(0);
+    const [colourHolder, setColourHolder] = useState([]);
 
     const db = db2.ref("Posts");
 
@@ -166,7 +167,6 @@ export default function Found(){
     }
     
     function filter(item, arrayNum, minHeight, maxHeight){
-        console.log(item);
         let originalPosts = [];
         let filterType = [];
         let filterBreed = [];
@@ -197,7 +197,22 @@ export default function Found(){
             return;
         }
 
-        filterSearch[arrayNum] = item;
+        if(arrayNum === 2){
+            let colourCounter = 0;
+            for(let i=0; i<colourHolder.length; i++){
+                if(item === colourHolder[i]){
+                    alert("Colour already chosen");
+                    colourCounter = 1;
+                }
+            }
+            if(colourCounter === 0){
+                colourHolder.push(item); 
+            }
+            filterSearch[arrayNum] = colourHolder;
+        }
+        else{
+            filterSearch[arrayNum] = item;
+        }
 
         if(filterSearch[3] === ""){
             filterSearch[3] = undefined;
@@ -257,7 +272,15 @@ export default function Found(){
                             const type = db2.ref(`Posts/${id}/colour`)
                             type.on("value", (snap) => {
                                 const typeValue = snap.val();
-                                if(typeValue == filterSearch[i]){
+                                let check = 0;
+                                for(let j=0; j<filterSearch[2].length; j++){
+                                    for(let k=0; k<typeValue.length; k++){
+                                        if(filterSearch[2][j] === typeValue[k]){
+                                            check = check + 1;
+                                        }
+                                    }
+                                }
+                                if(check === filterSearch[2].length){
                                     filteredArray.push({id, ...postsFromDatabase[id]})
                                 }
                             })
@@ -369,11 +392,9 @@ export default function Found(){
             }
         }
         setPosts(tempArray);
-        console.log(timeShow);
         if(timeShow === 1){
             setPosts(posts.reverse());
         }
-        console.log(posts);
         setShowFilterChoices(true);
     }
 
@@ -403,9 +424,9 @@ export default function Found(){
 
                     <Dropdown.Menu variant="dark">
                         <DropdownButton id="dropdown-button-dark-example2" variant="dark" style={{color: "white"}} drop="end" title="Animal">
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="1" onClick={() => filter("dog", 0)}>Dog</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="2" onClick={() => filter("cat", 0)}>Cat</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="3" onClick={() => filter("other" , 0)}>Other</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="1" onClick={() => filter("Dog", 0)}>Dog</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="2" onClick={() => filter("Cat", 0)}>Cat</Dropdown.Item>
+                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="3" onClick={() => filter("Other" , 0)}>Other</Dropdown.Item>
                         </DropdownButton>
                         <DropdownButton id="dropdown-button-dark-example2" variant="dark" style={{color: "white"}} drop="end" title="Breed">
                             <ListGroup style={{overflow: "scroll", maxheight: "50%"}}>
@@ -454,19 +475,32 @@ export default function Found(){
                             if(item === "height"){
                                 console.log(index);
                                 return(
-                                    <Card style={{width: "8%", borderRadius: "15px", display: "inline", padding: "5%"}}>
+                                    <Card style={{width: "8%", borderRadius: "15px", display: "inline", padding: "0.8%"}}>
                                         {heightRange[0]}cm-{heightRange[1]}cm
                                         <Button size="sm" id={item} onClick={()=>filter(undefined, index)}>X</Button>
                                     </Card>
                                 )
                             }
                             else{
-                                return(
-                                    <Card style={{width: "8%", borderRadius: "15px", display: "inline", padding: "0.8%"}}>
-                                        {item}
-                                        <Button value="" style={{maxHeight: "0.1%", maxWidth: "0.1%"}} id={item} onClick={()=>filter(undefined, index)}>X</Button>
-                                    </Card>
-                                )
+                                if(index === 2){
+                                    item.map((element, index2) => {
+                                        console.log(element);
+                                        return(
+                                            <Card style={{width: "8%", borderRadius: "15px", display: "inline", padding: "0.8%"}}>
+                                                {element}
+                                                <Button style={{maxHeight: "0.1%", maxWidth: "0.1%"}} id={element} onClick={()=>filter(undefined, index[index2])}>X</Button>
+                                            </Card>
+                                        )
+                                    })
+                                }
+                                else{
+                                    return(
+                                        <Card style={{width: "8%", borderRadius: "15px", display: "inline", padding: "0.8%"}}>
+                                            {item}
+                                            <Button style={{maxHeight: "0.1%", maxWidth: "0.1%"}} id={item} onClick={()=>filter(undefined, index)}>X</Button>
+                                        </Card>
+                                    )
+                                }
                             }
                         }
                     })
@@ -479,15 +513,15 @@ export default function Found(){
                     return(
                         <Col className="col-sm-4 ml-20" style={{maxWidth: "27%", textAlign: "center", marginLeft: "5%", marginBottom: "3%"}}>
                         <Card className="shadow-lg" border="info" style={{ width: '100%', borderRadius: "25px"/*, marginLeft:"1%"*/}}>
-                            <Card.Header style={{textAlign: "center"}}><h5>{post.status}</h5></Card.Header>
+                            {post.status === "MISSING"?<Card.Header style={{textAlign: "center", backgroundColor: "red", borderTopLeftRadius: "25px", borderTopRightRadius: "25px"}}><h5>{post.status}</h5></Card.Header>: <Card.Header style={{textAlign: "center", backgroundColor: "lightblue", borderTopLeftRadius: "25px", borderTopRightRadius: "25px"}}><h5>{post.status}</h5></Card.Header>}
                             <Card.Text style={{opacity: "0.5", textAlign: "center"}}>Posted by {post.posterName} at {post.postTime}</Card.Text>
                             <Card.Img  variant="top" src={post.image} style={{border: "1px solid black", marginRight: "auto", marginLeft: "auto", height: "30vh", width: "20vw", borderRadius: "25px"}}/>
                             <Card.Body>
                                 <Card.Text><h3 style={{display: "inline"}}>Type: </h3>{post.type}</Card.Text>
                                 {post.dogBreed != null?<Card.Text><h3 style={{display: "inline"}}>Breed: </h3>{post.dogBreed}</Card.Text>:null}
                                 <Card.Text><h3 style={{display: "inline"}}>Height: </h3>{post.height}cm</Card.Text>
-                                <Card.Text><h3 style={{display: "inline"}}>Colour: </h3>{post.colour}</Card.Text>
-                                <Card.Text><h3 style={{display: "inline"}}>The animal is: </h3>{post.neutured}</Card.Text>
+                                <Card.Text><h3 style={{display: "inline"}}>Colour: </h3>{post.colour.map(function(element) {return(<div style={{display: "inline", marginRight:"2%", border: "1px solid black", borderRadius: "25px", padding: "1%"}}>{element}</div>)})}</Card.Text>
+                                {post.neutured != ""?<Card.Text><h3 style={{display: "inline"}}>The animal is: </h3>{post.neutured}</Card.Text>:null}
                                 {post.status === "FOUND"?<Card.Text><h3 style={{display: "inline"}}>Found at: </h3>{post.address}</Card.Text>:
                                 <Card.Text><h3 style={{display: "inline"}}>Last seen at: </h3>{post.address}</Card.Text>}
 

@@ -50,7 +50,7 @@ export class MapContainer extends Component {
     
   render() {
     return (
-      <div>
+      <div id="googleMap">
         <Map style = {style}
           google={this.props.google}
           onClick={this.onMapClicked}
