@@ -5,7 +5,7 @@ import { Button, Modal, Dropdown, Col, Card, Row } from "react-bootstrap";
 import settingsIcon from "../../SettingsIcon.png";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import heightDiagram from './Height_Diagram.png';
-import GoogleMap, { MapContainer } from './GoogleMaps';
+import GoogleMap from './GoogleMaps';
 import { googleMapsState } from '../GlobalState/states';
 import db2, {storage, ref, getDownloadURL, logout} from "../../firebaseconfig";
 import { uploadBytesResumable } from 'firebase/storage';
@@ -37,23 +37,44 @@ export default function FoundPetDetails(){
     const [showGoogleMap, setShowGoogleMap] = useState(false);
 
     const [breedList, setBreedList] = useState([]);
+    const [breedList2, setBreedList2] =  useState([]);
     const [dogBreedHelp, setDogBreedHelp] = useState("");
     const [breedListImages, setBreedListImages] = useState([]);
     const [fileImage, setFileImage] = useState("");
     const [fileImagePic, setFileImagePic] = useState();
     const [progress, setProgress] = useState(0);
+    const [identifierData, setIdentifierData] = useState();
 
     const AWS = require ("aws-sdk");
 
     async function componentDidMount(){
         const response = await fetch("https://dog.ceo/api/breeds/list/all");
         const data = await response.json();
-        setBreedList(data.message);
+
+        setBreedList2(data.message);
+
+        let testArray = []
+        Object.keys(data.message).map((element, index) => {
+            Object.values(data.message).map((el, index2)=>{
+                if(index === index2){
+                    if(el.length > 0){
+                        for(let i=0; i<el.length; i++){
+                            testArray.push(element+" (" + el[i] + ")")
+                        }
+                    }
+                    else{
+                        testArray.push(element);
+                    }
+                }
+            })
+        })
+        setBreedList(testArray);
     }
 
     async function DogImages(){
         const response = await fetch("https://dog.ceo/api/breed/" + dogBreedHelp + "/images/random/3");
         const data = await response.json();
+        console.log(data.message);
         setBreedListImages(data.message);
         setShowBreedHelpImages(true);
     }
@@ -115,19 +136,58 @@ export default function FoundPetDetails(){
         setShowBreedGuide(true);
     }
 
-    function BreedIdentifier(){
+    async function BreedIdentifier(){
+        const fileContent = fileImage;
+        AWS.config.update({
+            accessKeyId: accessKeyId,
+            secretAccessKey: secretAccessKey,
+            region: "eu-west-1"
+        });
+
         const s3 = new AWS.S3();
         var name = fileImage.name;
-        console.log(name);
         (async () =>{
             await s3
             .putObject({
-                Body: "Identity",
+                Body: fileContent,
                 Bucket: "myawsfindmyownerbucket",
                 Key: name
             }).
             promise();
         })();
+
+        const params = {
+            Image: {
+                S3Object: {
+                    Bucket: "myawsfindmyownerbucket",
+                    Name: name
+                 },
+            },
+            MaxLabels: 10,
+            MinConfidence: 80
+        }
+
+        const rekognition = new AWS.Rekognition();
+
+        let d = 0;
+        let breed = 0;
+        setTimeout(() => {
+            rekognition.detectLabels(params, function(err, data){
+                if(err) console.log(err, err.stack);
+                else    console.log(data); setIdentifierData(data); d = data;
+            });
+        }, 1000)
+        setTimeout(() => {
+            console.log(d);
+            for(let i=0; i<d.Labels.length; i++){
+                if(d.Labels[i].Name != "Dog" && d.Labels[i].Name != "Mammal" && d.Labels[i].Name != "Pet" && d.Labels[i].Name != "Canine" && d.Labels[i].Name != "Animal"){
+                    breed = d.Labels[i].Name
+                    console.log(breed);
+                }
+            }
+            alert("According to our identifier gizmo 420, the following data was discovered about this dog: \n" + breed);
+        }, 5000)
+
     }
 
     function closeBreedHelp(){
@@ -210,17 +270,23 @@ export default function FoundPetDetails(){
     async function SubmitDetails(){
         if(height === ""){
             alert("Please enter in a height");
+            return;
         }
-        if(colour === ""){
+        if(colour.length <= 0){
             alert("Please enter in a colour");
+            return;
         }
+        console.log(colour);
         if(fileImage === ""){
             alert("Please upload a image");
+            return;
         }
         if(location === ""){
             alert("Please enter a location");
+            return;
         }
         else{
+            console.log(height)
             const storageRef = ref(storage, `/images/${fileImage.name + new Date().getTime()}`);
             const uploadTask = uploadBytesResumable(storageRef, fileImage);
             let postnum = 0;
@@ -349,42 +415,6 @@ export default function FoundPetDetails(){
         window.location = "/account";
     }
 
-    //------------------------------------------------------------------------------------------------
-    useEffect(() => {
-        
-        var AWS = require('aws-sdk');
-
-
-
-        
-
-        AWS.config.update({
-            accessKeyId: accessKeyId,
-            secretAccessKey: secretAccessKey,
-            region: "eu-west-1"
-        });
-
-        const params = {
-            Image: {
-                S3Object: {
-                    Bucket: "myawsfindmyownerbucket",
-                    Name: "pug.jpeg"
-                 },
-            },
-            MaxLabels: 5,
-            MinConfidence: 80
-        }
-
-        const rekognition = new AWS.Rekognition();
-
-        /*rekognition.detectLabels(params, function(err, data){
-            if(err) console.log(err, err.stack);
-            else    console.log(data);
-        });*/
-
-    })
-
-    //------------------------------------------------------------------------------------------------
     return(
         <div id="wholePage">
             <title>FindMyOwner</title>
@@ -433,7 +463,7 @@ export default function FoundPetDetails(){
                                 <select name="dog" id="Dbreed" onChange={DogBreed} onInput = {(breed) => setDogBreed(breed.target.value)}>
                                     <option value="" disabled selected hidden>Select a Dog Breed</option>
                                     <option value="unknown">Unknown</option>
-                                    {Object.keys(breedList).map(function (element){
+                                    {breedList.map(function (element){
                                         return (
                                             <option>{element}</option>
                                         )
@@ -456,7 +486,7 @@ export default function FoundPetDetails(){
                                 <label for="DbreedHelp">Select a Dog Breed to view image: </label>
                                 <select name="dogimage" id="DbreedHelp" onChange={DogImages} onInput= {(breedhelp) => setDogBreedHelp(breedhelp.target.value)}>
                                     <option value="" disabled selected hidden>Select a Dog Breed</option>
-                                    {Object.keys(breedList).map(function (element){
+                                    {Object.keys(breedList2).map(function (element){
                                         return (
                                             <option>{element}</option>
                                         )
@@ -465,6 +495,7 @@ export default function FoundPetDetails(){
                                 {showBreedHelpImages? 
                                     <div>
                                         {breedListImages.map(function (element){
+                                            console.log(element);
                                             return(
                                                 <img src={element} id="breedImage"></img>
                                             )

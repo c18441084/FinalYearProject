@@ -1,7 +1,7 @@
 import db2, {logout, getDownloadURL, ref} from "../../firebaseconfig";
 import './Found.css'
 import { useState, useEffect } from "react";
-import { Button, Modal, Dropdown, DropdownButton, Card, ListGroup, Col, Form, Row } from "react-bootstrap";
+import { Button, Modal, Dropdown, DropdownButton, Card, ListGroup, Col, Row, Nav, Navbar, NavDropdown, Container, Form } from "react-bootstrap";
 import ReactTooltip from 'react-tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { auth } from '../../firebaseconfig';
@@ -31,10 +31,6 @@ export default function Found(){
     const [colourHolder, setColourHolder] = useState([]);
 
     const db = db2.ref("Posts");
-
-    function reportFoundPet(){
-        window.location = "/found-pet-details";
-    }
 
     useEffect(() => {
         db.on("value", (snapshot)=>{
@@ -392,9 +388,11 @@ export default function Found(){
             }
         }
         setPosts(tempArray);
+        console.log(timeShow);
         if(timeShow === 1){
             setPosts(posts.reverse());
         }
+        console.log(posts);
         setShowFilterChoices(true);
     }
 
@@ -415,67 +413,96 @@ export default function Found(){
                     </Dropdown.Menu>
                 </Dropdown>
             </div>
-            <button id = "reportFoundPet" onClick = {reportFoundPet}>I found a stray</button>
-            <div>
-                <Dropdown id="filter" style={{display: "inline"}}>
-                    <Dropdown.Toggle id="dropdown-button-dark-example1" variant="success" style={{borderRadius:"15px"}}>
-                        <h5>Filter</h5>
-                    </Dropdown.Toggle>
 
-                    <Dropdown.Menu variant="dark">
-                        <DropdownButton id="dropdown-button-dark-example2" variant="dark" style={{color: "white"}} drop="end" title="Animal">
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="1" onClick={() => filter("Dog", 0)}>Dog</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="2" onClick={() => filter("Cat", 0)}>Cat</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="3" onClick={() => filter("Other" , 0)}>Other</Dropdown.Item>
-                        </DropdownButton>
-                        <DropdownButton id="dropdown-button-dark-example2" variant="dark" style={{color: "white"}} drop="end" title="Breed">
-                            <ListGroup style={{overflow: "scroll", maxheight: "50%"}}>
-                            {Object.keys(breedList).map(function (element){
-                                return (
-                                    <ListGroup.Item  eventKey="1" style={{color: "black"}} onClick={() => filter(element, 1)}>
-                                        {element}
-                                    </ListGroup.Item>
-                                )
-                            })}
-                            </ListGroup>
-                        </DropdownButton>
-                        <DropdownButton id="dropdown-button-dark-example3" variant="dark" style={{color: "white"}} drop="end" title="Colour">
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="1" onClick={() => filter("Black", 2)}>Black</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="2" onClick={() => filter("Brown", 2)}>Brown</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="3" onClick={() => filter("Gold", 2)}>Gold</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="4" onClick={() => filter("Gray", 2)}>Gray</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="5" onClick={() => filter("Red", 2)}>Red</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="6" onClick={() => filter("White", 2)}>White</Dropdown.Item>
-                        </DropdownButton>
-                        <DropdownButton id="dropdown-button-dark-example2" variant="dark" style={{color: "white"}} drop="end" title="Height">
-                            <Form.Control type="number" placeholder="Enter Height" onChange={(element) => filter(element.target.value, 3)}/>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="2" onClick={() => filter("height", 3,  0, 9)}>0cm-9cm</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="3" onClick={() => filter("height", 3, 10, 19)}>10cm-19cm</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="4" onClick={() => filter("height", 3, 20, 29)}>20cm-29cm</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="5" onClick={() => filter("height", 3, 30, 39)}>30cm-39cm</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="6" onClick={() => filter("height", 3, 40, 49)}>40cm-49cm</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="7" onClick={() => filter("height", 3, 50, 59)}>50cm-59cm</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="8" onClick={() => filter("height", 3, 60, 69)}>60cm-69cm</Dropdown.Item>
-                        </DropdownButton>
-                        <DropdownButton id="dropdown-button-dark-example2" variant="dark" style={{color: "white"}} drop="end" title="Neutured">
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="1" onClick={() => filter("neutured", 4)}>Neutured</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="2" onClick={() => filter("spayed", 4)}>Spayed</Dropdown.Item>
-                        </DropdownButton>
-                        <DropdownButton id="dropdown-button-dark-example2" variant="dark" style={{color: "white"}} drop="end" title="Time">
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="1" onClick={() => filter("newest")}>Most Recent</Dropdown.Item>
-                            <Dropdown.Item variant="dark" style={{color: "black"}} eventKey="2" onClick={() => filter("oldest")}>Oldest</Dropdown.Item>
-                        </DropdownButton>
-                        <Dropdown.Divider></Dropdown.Divider>
-                        <Dropdown.Item href="#"  onClick={() => filter("reset")}>Reset</Dropdown.Item>
-                    </Dropdown.Menu>
-                </Dropdown>
+            <div>
+                <Navbar variant="dark" bg="dark" expand="lg">
+                    <Container fluid>
+                        <Navbar.Brand href="#home">Filter</Navbar.Brand>
+                        <Navbar.Toggle aria-controls="navbar-dark-example" />
+                        <Navbar.Collapse id="navbar-dark-example">
+                        <Nav>
+                            <NavDropdown id="nav-dropdown-dark-example" title="Animal" menuVariant="dark">
+                                <NavDropdown.Item eventKey="1" onClick={() => filter("Dog", 0)}>Dog</NavDropdown.Item>
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item eventKey="2" onClick={() => filter("Cat", 0)}>Cat</NavDropdown.Item>
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item eventKey="3" onClick={() => filter("Other" , 0)}>Other</NavDropdown.Item>
+                            </NavDropdown>
+                        </Nav>
+
+                        <Nav>
+                            <NavDropdown id="nav-dropdown-dark-example" title="Breed" menuVariant="dark">
+                                <ListGroup style={{overflow: "scroll", maxHeight: "20%", WebkitOverflowScrolling: "touch"}}>
+                                    {Object.keys(breedList).map(function (element, index){
+                                        return (
+                                            <ListGroup.Item  eventKey={index} onClick={() => filter(element, 1)}>
+                                                {element}
+                                            </ListGroup.Item>
+                                        )
+                                    })}
+                                </ListGroup>
+                            </NavDropdown>
+                        </Nav>
+
+                        <Nav>
+                            <NavDropdown id="nav-dropdown-dark-example" title="Colour" menuVariant="dark">
+                                <NavDropdown.Item eventKey="1" onClick={() => filter("Black", 2)}>Black</NavDropdown.Item>
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item eventKey="2" onClick={() => filter("Brown", 2)}>Brown</NavDropdown.Item>
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item eventKey="3" onClick={() => filter("Gold", 2)}>Gold</NavDropdown.Item>
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item eventKey="4" onClick={() => filter("Gray", 2)}>Gray</NavDropdown.Item>
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item eventKey="5" onClick={() => filter("Red", 2)}>Red</NavDropdown.Item>
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item eventKey="6" onClick={() => filter("White", 2)}>White</NavDropdown.Item>
+                            </NavDropdown>
+                        </Nav>
+
+                        <Nav>
+                            <NavDropdown id="nav-dropdown-dark-example" title="Height" menuVariant="dark">
+                                <Form.Control type="number" placeholder="Enter Height" onChange={(element) => filter(element.target.value, 3)}/>
+                                <NavDropdown.Item eventKey="2" onClick={() => filter("height", 3,  0, 9)}>0cm-9cm</NavDropdown.Item>
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item eventKey="3" onClick={() => filter("height", 3, 10, 19)}>10cm-19cm</NavDropdown.Item>
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item eventKey="4" onClick={() => filter("height", 3, 20, 29)}>20cm-29cm</NavDropdown.Item>
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item eventKey="5" onClick={() => filter("height", 3, 30, 39)}>30cm-39cm</NavDropdown.Item>
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item eventKey="6" onClick={() => filter("height", 3, 40, 49)}>40cm-49cm</NavDropdown.Item>
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item eventKey="7" onClick={() => filter("height", 3, 50, 59)}>50cm-59cm</NavDropdown.Item>
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item eventKey="8" onClick={() => filter("height", 3, 60, 69)}>60cm-69cm</NavDropdown.Item>
+                            </NavDropdown>
+                        </Nav>
+
+                        <Nav>
+                            <NavDropdown id="nav-dropdown-dark-example" title="Time" menuVariant="dark">
+                                <NavDropdown.Item  eventKey="1" onClick={() => filter("newest")}>Most Recent</NavDropdown.Item>
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item eventKey="2" onClick={() => filter("oldest")}>Oldest</NavDropdown.Item>
+                            </NavDropdown>
+                       </Nav>
+
+                       <Nav>
+                            <Nav.Link  eventKey="1" onClick={() => filter("reset")}>Reset</Nav.Link>
+                       </Nav>
+
+
+                        </Navbar.Collapse>
+                    </Container>
+                </Navbar>
+                <br></br>
                 {showFilterChoices?
                     filterSearch.map((item, index) => {
                         if(item != undefined){
                             if(item === "height"){
                                 console.log(index);
                                 return(
-                                    <Card style={{width: "8%", borderRadius: "15px", display: "inline", padding: "0.8%"}}>
+                                    <Card style={{width: "8%", borderRadius: "15px", display: "inline", padding: "0.8%", borderBottom: "1px solid black"}}>
                                         {heightRange[0]}cm-{heightRange[1]}cm
                                         <Button size="sm" id={item} onClick={()=>filter(undefined, index)}>X</Button>
                                     </Card>
@@ -483,11 +510,13 @@ export default function Found(){
                             }
                             else{
                                 if(index === 2){
+                                    console.log(item)
                                     item.map((element, index2) => {
                                         console.log(element);
+                                        let colour = element
                                         return(
-                                            <Card style={{width: "8%", borderRadius: "15px", display: "inline", padding: "0.8%"}}>
-                                                {element}
+                                            <Card style={{width: "8%", borderRadius: "15px", display: "inline", padding: "0.8%", borderBottom: "1px solid black"}}>
+                                                Hello
                                                 <Button style={{maxHeight: "0.1%", maxWidth: "0.1%"}} id={element} onClick={()=>filter(undefined, index[index2])}>X</Button>
                                             </Card>
                                         )
@@ -495,7 +524,7 @@ export default function Found(){
                                 }
                                 else{
                                     return(
-                                        <Card style={{width: "8%", borderRadius: "15px", display: "inline", padding: "0.8%"}}>
+                                        <Card style={{width: "8%", borderRadius: "15px", display: "inline", padding: "0.8%", boxShadow: "0 1.4rem 8rem rgb(0,0,0,.2)", borderBottom: "1px solid black"}}>
                                             {item}
                                             <Button style={{maxHeight: "0.1%", maxWidth: "0.1%"}} id={item} onClick={()=>filter(undefined, index)}>X</Button>
                                         </Card>
@@ -513,7 +542,7 @@ export default function Found(){
                     return(
                         <Col className="col-sm-4 ml-20" style={{maxWidth: "27%", textAlign: "center", marginLeft: "5%", marginBottom: "3%"}}>
                         <Card className="shadow-lg" border="info" style={{ width: '100%', borderRadius: "25px"/*, marginLeft:"1%"*/}}>
-                            {post.status === "MISSING"?<Card.Header style={{textAlign: "center", backgroundColor: "red", borderTopLeftRadius: "25px", borderTopRightRadius: "25px"}}><h5>{post.status}</h5></Card.Header>: <Card.Header style={{textAlign: "center", backgroundColor: "lightblue", borderTopLeftRadius: "25px", borderTopRightRadius: "25px"}}><h5>{post.status}</h5></Card.Header>}
+                            {post.status === "MISSING"?<Card.Header style={{textAlign: "center", backgroundColor: "lightyellow", borderTopLeftRadius: "25px", borderTopRightRadius: "25px"}}><h5>{post.status}</h5></Card.Header>: <Card.Header style={{textAlign: "center", backgroundColor: "lightblue", borderTopLeftRadius: "25px", borderTopRightRadius: "25px"}}><h5>{post.status}</h5></Card.Header>}
                             <Card.Text style={{opacity: "0.5", textAlign: "center"}}>Posted by {post.posterName} at {post.postTime}</Card.Text>
                             <Card.Img  variant="top" src={post.image} style={{border: "1px solid black", marginRight: "auto", marginLeft: "auto", height: "30vh", width: "20vw", borderRadius: "25px"}}/>
                             <Card.Body>

@@ -1,5 +1,5 @@
 import { logout, storage } from "../../firebaseconfig";
-import { Button, Modal, Dropdown, Row, Col, Card, Carousel } from "react-bootstrap";
+import { Button, Modal, Dropdown, Row, Col, Card, Carousel, CarouselItem } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ReactTooltip from 'react-tooltip';
 import settingsIcon from "../../SettingsIcon.png";
@@ -178,6 +178,7 @@ export default function MyAccount(){
             fileRef.delete();
             db2.ref(`Posts/${id}`).remove();
             alert("Post deleted successfully");
+            window.location.reload(false);
         }
     }
 
@@ -185,6 +186,7 @@ export default function MyAccount(){
         if(window.confirm("Are you sure you want to delete this comment?")){
             db2.ref(`Posts/${postID}/comments/${commentID}`).remove();
             alert("Comment deleted successfully");
+            window.location.reload(false);
         }
         setCommentShowCounter(0);
     }
@@ -206,6 +208,7 @@ export default function MyAccount(){
                 }
             })
             alert("Post removed successfully");
+            window.location.reload(false);
         }
     }
 
@@ -233,7 +236,8 @@ export default function MyAccount(){
                 <h4>Posts made by me</h4>
                 <Row>
                 <Carousel variant="dark">
-                {usersPosts[0]===undefined?<p>There are no posts</p> : usersPosts.map(function(post){
+                {usersPosts[0]===undefined?<p>There are no posts</p> : usersPosts.map((post, index) => {
+                    let mod = index % 2;
                     return(
                         <Carousel.Item>
                             <Col className="col-sm-3 ml-7" style={{marginLeft: "38%", marginBottom: "5%"}}>
@@ -337,6 +341,7 @@ export default function MyAccount(){
                                 </Card>
                             </Col>
                         </Carousel.Item>
+                       
                     )
                 })}
                 </Carousel>
