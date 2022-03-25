@@ -1,0 +1,102 @@
+#Title{
+    background-color: #00bfFF;
+    padding: 1%;
+    font-family: 'Courier New', monospace;
+    border-bottom: 2px solid black;
+}
+
+#titleName{
+    display: inline-block;
+    text-align: center;
+    margin-left: 40%;
+}
+
+#SettingsButton{
+    height: 20%;
+    width: 5%; 
+    float: right;
+}
+
+#imageSettingsIcon{
+    height: 20%;
+    width: 70%;
+}
+
+#showingPosts{
+    border: 1px black solid;
+    border-radius: 25px;
+    margin-left: 20%;
+    margin-right: 20%;
+    box-shadow:  0 1.4rem 8rem rgb(0,0,0,.2);
+    display: flex;
+    margin-bottom: 20px;
+}
+
+#postImage{
+    height: 120px;
+    width: 150px;
+    margin-top: 15px;
+    margin-left: 20px;
+    margin-bottom: 15px;
+    border-radius: 25px;
+}
+
+#info{
+    display: inline;
+}
+
+#postTime{
+    margin-left: 190px;
+    opacity: 0.5;
+}
+
+/*#addComment{
+    margin-top: 30px;
+    margin-bottom: 10px;
+    margin-left: 30px;
+}*/
+
+/*#commentEmoji{
+    background-color: white;
+}*/
+
+#commentBox{
+    resize: none;
+    width: 100%;
+    height: 100%;
+}
+
+#commentsButton{
+    display: inline-block;
+}
+
+#showCommentsButton{
+    
+}
+
+#closeCommentsButton{
+    
+}
+
+#commentInfo{
+    padding-bottom: 5%;
+}
+
+/*#commentTime{
+    display: inline;
+    opacity: 0.5;
+    margin-left: 40%;
+    font-size: small;
+}*/
+
+#commentTime{
+    /*position: absolute;*/
+    opacity: 0.5;
+    font-size: small;
+    margin-left: 30%;
+}
+
+#noPosts{
+    text-align: center;
+    /*opacity: 0.5;*/
+}

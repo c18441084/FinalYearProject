@@ -5,6 +5,8 @@ import { registerWithEmailAndPassword } from "../../firebaseconfig";
 import { useAuthState } from "react-firebase-hooks/auth";
 import "./Login.css";
 import { Card, Row, Col, Button, Form } from "react-bootstrap";
+import LoginBackground from './loginPictures/LoginBackground.png';
+import FindMyOwner from './loginPictures/FindMyOwner.png';
 
 function Login() {
 
@@ -33,21 +35,26 @@ function Login() {
         alert("Account Created");
     }
   }
+
   return (
-    <div id ="crossed" style={{backgroundColor: "lightblue", paddingBottom: "11%"}}>
+    <div id ="crossed">
       <Row>
-        <Col className="col-sm-4" style={{marginTop: "10%"}}>
+        <Col className="col-sm-3.5" style={{height: "100vh", backgroundColor: "orange"}}>
+          <Card style={{marginTop: "3%", borderRadius: "25px", padding: "3%", backgroundColor: "lightblue"}}>
+            <Card.Img src={FindMyOwner}></Card.Img> 
+            <p>Help Bring Pets Home</p>
+          </Card>
+          <br></br>
           <Card style={{borderRadius: "25px", padding: "3%"}}>
             <div style = {{boxShadow: "0 1.4rem 8rem rgb(0,0,0,.2)", borderRadius: "25px", padding:"2%"}}>
-            <Card.Text>Help Bring Pets Home</Card.Text>
-            <Card.Title>FindMyOwner</Card.Title>
-            <Card.Text>Welcome to FindMyOwner! A website that will help you find or report a pet.</Card.Text>
+            <Card.Text>Welcome to FindMyOwner! A website that will help you find or report a lost pet.</Card.Text>
             </div>
             <br></br>
             <Card.Body style = {{marginLeft: "5%", marginRight: "5%",boxShadow: "0 1.4rem 8rem rgb(0,0,0,.2)"}}>
               {login?<Button variant="primary" style={{marginLeft: "8%", marginRight: "30%"}} onClick = {() => setLogin(true)} >Login</Button>
               :<Button variant="primary" style={{marginLeft: "8%", marginRight: "30%"}} onClick = {() => setLogin(true)}>Login</Button>}
               <Button variant="primary" onClick = {() => setLogin(false)}>Register</Button>
+              {login?<hr style={{marginLeft: "7%", border: "5px solid blue", borderRadius: "25px", width:"20%"}}/>:<hr style={{marginLeft: "55%", border: "5px solid blue", borderRadius: "25px", width:"28%"}}/>}
               {login?
                 <div style={{borderRadius: "25px"}}>
                   <Form>
@@ -94,43 +101,12 @@ function Login() {
             </Card.Body>
           </Card>
         </Col>
+        <Col className="col-sm-8" style={{textAlign: "center", height: "100vh"}}>
+          <div style={{backgroundColor: "lightblue", paddingBottom: "86%", backgroundImage: `url(${LoginBackground})`}}></div>
+        </Col>
       </Row>
     </div>
     
   );
 }
 export default Login;
-
-{/*<div className="login">
-      <div className="login__container">
-        <input
-          type="text"
-          className="login__textBox"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="E-mail Address"
-        />
-        <input
-          type="password"
-          className="login__textBox"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-        />
-        <button
-          className="login__btn"
-          onClick={() => signInWithEmailAndPassword(email, password)}
-        >
-          Login
-        </button>
-        <button className="login__btn login__google" onClick={signInWithFacebook}>
-          Login with Facebook
-        </button>
-        {/*<div>
-          <Link to="/reset">Forgot Password</Link>
-        </div>
-        <div>
-          Don't have an account? <Link to="/register">Register</Link> now.
-        </div>
-      </div>
-  </div>*/}

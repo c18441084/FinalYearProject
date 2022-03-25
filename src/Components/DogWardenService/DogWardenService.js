@@ -29,6 +29,8 @@ import waterfordCrest from './CountyCrests/waterfordCrest.png';
 import westmeathCrest from './CountyCrests/westmeathCrest.png';
 import wexfordCrest from './CountyCrests/wexfordCrest.png';
 import wicklowCrest from './CountyCrests/wicklowCrest.png';
+import Wallpaper from '../../Wallpaper.jpg';
+
 
 
 export default function DogWardenService(){
@@ -79,7 +81,7 @@ export default function DogWardenService(){
     }
 
     return(
-        <div>
+        <div style= {{backgroundImage: `url(${Wallpaper})`}}>
             <title>FindMyOwner</title>
             <div id = "Title">
                 <h1 id="titleName" href="#" onClick={home}>FindMyOwner</h1>
