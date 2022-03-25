@@ -3,6 +3,7 @@ import './App.css';
 import Login from './Components/Login/Login';
 import Homepage from './Components/Homepage/Homepage';
 import Found from './Components/Found/Found';
+import Lost from './Components/Lost/Lost';
 import Register from './Components/Register/Register';
 import FoundPetDetails from './Components/FoundPetDetails/FoundPetDetails';
 import MyAccount from './Components/MyAccount/MyAccount';
@@ -27,6 +28,7 @@ function App() {
       <Routes>
         <Route path = "/home" element = {<Homepage />} />
         <Route path = "/found" element = {<Found />} />
+        <Route path = "/lost" element = {<Lost />} />
         <Route path = "/found-pet-details" element = {<FoundPetDetails />} />
         <Route path = "/account" element = {<MyAccount />} />
         <Route path = "/dog-warden-service" element={<DogWardenService />} />

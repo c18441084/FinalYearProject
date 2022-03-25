@@ -14,6 +14,7 @@ import { mdiCommentOffOutline } from '@mdi/js';
 import { mdiHeartOffOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import "./MyAccount.css";
+import Wallpaper from '../../Wallpaper.jpg';
 
 export default function MyAccount(){
 
@@ -188,7 +189,7 @@ export default function MyAccount(){
             alert("Comment deleted successfully");
             window.location.reload(false);
         }
-        setCommentShowCounter(0);
+        setCommentShowCounter(1);
     }
 
     function removeFavoruite(favID){
@@ -217,7 +218,7 @@ export default function MyAccount(){
     }
    
     return(
-        <div>
+        <div style= {{backgroundImage: `url(${Wallpaper})`, height: "auto"}}>
             <title>FindMyOwner</title>
             <div id = "Title">
                 <h1 id="titleName" href="#" onClick={home}>FindMyOwner</h1>

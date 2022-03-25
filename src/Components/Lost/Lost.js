@@ -1,5 +1,5 @@
 import db2, {logout, getDownloadURL, ref} from "../../firebaseconfig";
-import './Found.css'
+import './Lost.css'
 import { useState, useEffect } from "react";
 import { Button, Modal, Dropdown, Card, Col, Row, Nav, Navbar, NavDropdown, Container, Form } from "react-bootstrap";
 import ReactTooltip from 'react-tooltip';
@@ -11,9 +11,8 @@ import { mdiCommentTextMultiple } from '@mdi/js';
 import { mdiCardsHeartOutline } from '@mdi/js';
 import { mdiDeleteEmptyOutline } from '@mdi/js';
 import { mdiCommentOffOutline } from '@mdi/js';
-import Icon from '@mdi/react'
 import Wallpaper from '../../Wallpaper.jpg';
-
+import Icon from '@mdi/react'
 
 
 export default function Found(){
@@ -46,7 +45,7 @@ export default function Found(){
                 let inside = db2.ref(`Posts/${id}`);
                 inside.on("value", (snap) => {
                     let status = snap.val()
-                    if(status.status === "FOUND"){
+                    if(status.status === "MISSING"){
                         postsArray.push({id, ...postsFromDatabase[id]});
                     }
                 })
@@ -79,6 +78,7 @@ export default function Found(){
 
     const handleClose = () => setShow(false);
     const handleShow = async (id) => {
+        console.log("id: " +id);
         setShow(true);
         setAddingCommentClicked(id);
     };
@@ -93,10 +93,13 @@ export default function Found(){
 
     async function addingComment(){
         let postID = 0;
+        console.log(addingCommentClicked);
         const dbcomments = db2.ref(`Posts/${addingCommentClicked}/comments`);
         db2.ref(`Posts/${addingCommentClicked}`).once("value", snap => {
             const infoFromPost = snap.val();
+            console.log(infoFromPost);
             postID = infoFromPost.postID;
+            console.log("postId: " + postID)
         })
         const commenterName = auth.currentUser.displayName;
         const email = auth.currentUser.email;
@@ -115,6 +118,11 @@ export default function Found(){
             commentTime,
             postID,
         }
+        console.log(submit.commenterName);
+        console.log(submit.email);
+        console.log(submit.comment);
+        console.log(submit.commentTime);
+        console.log(submit.postID);
         await dbcomments.push(submit);
         handleClose();
     }
@@ -141,6 +149,7 @@ export default function Found(){
     }
 
     function addFavourites(id){
+        console.log(id);
         const favouriteName = auth.currentUser.displayName;
         const favouriteEmail = auth.currentUser.email;
         const dbfavourites = db2.ref(`Posts/${id}/favourites`);
@@ -155,6 +164,7 @@ export default function Found(){
                 const favRef = db2.ref(`Posts/${id}/favourites/${id2}`);
                 favRef.on("value", (snapshot) => {
                     const email = snapshot.val();
+                    console.log(email.email);
                     if(email.email == submit.email){
                         alreadyinFavs = 1;
                     }
@@ -187,7 +197,6 @@ export default function Found(){
         let filterNeutured = [];
         let tempArray = [];
         let itemsFilteredNum = 0;
-
         if(item === "oldest"){
             setTimeShow(1);
         }
@@ -405,16 +414,16 @@ export default function Found(){
             }
         }
         setPosts(tempArray);
-        console.log(timeShow);
+        //console.log(timeShow);
         if(timeShow === 1){
             setPosts(posts.reverse());
-            console.log(posts);
+            console.log(posts.reverse())
         }
         setShowFilterChoices(true);
     }
 
     return(
-        <div style= {{backgroundImage: `url(${Wallpaper})`, height: "auto", width: "100%"}}>
+        <div style= {{backgroundImage: `url(${Wallpaper})`, height: "auto"}}>
             <title>FindMyOwner</title>
             <div id = "Title">
                 <h1 id="titleName" href="#" onClick={home}>FindMyOwner</h1>
@@ -518,6 +527,7 @@ export default function Found(){
                     filterSearch.map((item, index) => {
                         if(item != undefined){
                             if(item === "height"){
+                                console.log(index);
                                 return(
                                     <Card style={{width: "8%", borderRadius: "15px", display: "inline", padding: "0.8%", borderBottom: "1px solid black"}}>
                                         {heightRange[0]}cm-{heightRange[1]}cm
@@ -546,7 +556,6 @@ export default function Found(){
                     })
                 :null}
                 {colours?
-                
                     colours.map((element) => {
                         if(element === "Black" || element === "Brown" || element === "Gold" || element === "Gray" || element === "White" || element === "Red"){
                         return(
@@ -562,9 +571,7 @@ export default function Found(){
 
             <div>
                 <Row>
-                {posts.length >= 0? 
-                posts.map(function(post){
-                    console.log(post)
+                {posts.map(function(post){
                     return(
                         <Col className="col-sm-4 ml-20" style={{maxWidth: "27%", textAlign: "center", marginLeft: "5%", marginBottom: "3%"}}>
                         <Card className="shadow-lg" border="info" style={{ width: '100%', borderRadius: "25px"/*, marginLeft:"1%"*/}}>
@@ -632,36 +639,46 @@ export default function Found(){
                                 <ReactTooltip id="addFavourites" place="top" effect="solid">Add to Favourites</ReactTooltip>
                                 {displayComments?
                                     <div>
-                                        {showingComments.map(function(comment){
-                                            if(post.postID === comment.postID){
-                                                return(
-                                                    <div>
-                                                        <hr></hr>
-                                                        <br />
-                                                        <br />
-                                                        <div id="commentForAccount">
-                                                            <b id="commentUserForAccount">{comment.commenterName}: </b>
-                                                            <p id="commentInfoForAccount" style={{display: "inline"}}>{comment.comment}<p id="commentTimeForAccount" style={{marginLeft: "5%"}}>Commented on {comment.commentTime}</p></p>
-                                                            {auth.currentUser.email === comment.email? 
-                                                                    <div>
-                                                                        <Button data-tip data-for="deleteButton" variant="outline-danger" onClick={() => deleteComment(post.id, comment.id)}>
-                                                                            <Icon path={mdiDeleteEmptyOutline} size={1}></Icon>
-                                                                        </Button>
-                                                                        <ReactTooltip id="deleteButton" place="top" effect="solid">Delete Comment</ReactTooltip>
-                                                                    </div> 
-                                                                :null}
-                                                        </div>
-                                                    </div>
-                                                )
-                                            }
-                                        })}
+                                        <Modal show={displayComments}>
+                                            <Button data-tip data-for="closeComment" variant="outline-primary" onClick = {() => closingComments()}>
+                                                <Icon path={mdiCommentOffOutline} size={1}></Icon>
+                                            </Button>
+                                            <ReactTooltip id="closeComment" place="top" effect="solid">Close Comments</ReactTooltip>
+                                            <Modal.Body style={{ height: "auto", overflowX: 'scroll'}}>
+                                                <div style={{width: "100%", height: "100%", overflowX: 'scroll'}}>
+                                                {showingComments.map(function(comment){
+                                                    if(post.postID === comment.postID){
+                                                        return(
+                                                            <div>
+                                                                <hr></hr>
+                                                                <br />
+                                                                <br />
+                                                                <div id="commentForAccount">
+                                                                    <b id="commentUserForAccount">{comment.commenterName}: </b>
+                                                                    <p id="commentInfoForAccount" style={{display: "inline"}}>{comment.comment}<p id="commentTimeForAccount" style={{marginLeft: "5%"}}>Commented on {comment.commentTime}</p></p>
+                                                                    {auth.currentUser.email === comment.email? 
+                                                                            <div>
+                                                                                <Button data-tip data-for="deleteButton" variant="outline-danger" onClick={() => deleteComment(post.id, comment.id)}>
+                                                                                    <Icon path={mdiDeleteEmptyOutline} size={1}></Icon>
+                                                                                </Button>
+                                                                                <ReactTooltip id="deleteButton" place="top" effect="solid">Delete Comment</ReactTooltip>
+                                                                            </div> 
+                                                                        :null}
+                                                                </div>
+                                                            </div>
+                                                        )
+                                                    }
+                                                })}
+                                                </div>
+                                            </Modal.Body>
+                                        </Modal>
                                     </div>
                                 :null}
                             </Card.Body>
                         </Card>
                     </Col>
                     )
-                }): <h1>No Posts Found</h1>}
+                })}
                 </Row>
             </div>
         </div>

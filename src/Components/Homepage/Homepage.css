@@ -1,9 +1,9 @@
-#Title{
+/* #Title{
     background-color: #00bfFF;
     padding: 1%;
     font-family: 'Courier New', monospace;
     border-bottom: 2px solid black;
-}
+} */
 
 #titleName{
     display: inline-block;
@@ -12,8 +12,8 @@
 }
 
 #SettingsButton{
-    height: 20%;
-    width: 5%; 
+    height: 30%;
+    width: 10%; 
     float: right;
 }
 
@@ -43,8 +43,8 @@
     position: absolute;
     margin-right: 50%;
     border-right: 1px solid black;
-    background-color: paleturquoise;
-    height: 100%;
+    /* background-color: paleturquoise; */
+    height: 88.5%;
     width: 15%;
     font-size: 40px;
 }
@@ -86,10 +86,8 @@ h2{
 }
 
 #RecentPosts{
-    border-right: 1px solid black;
     display: inline;
     padding-right: 7%;
-    padding-bottom: 45%;
 }
 
 #PostsNearMe{

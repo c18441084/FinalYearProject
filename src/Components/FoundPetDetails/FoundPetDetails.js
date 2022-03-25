@@ -11,6 +11,8 @@ import db2, {storage, ref, getDownloadURL, logout} from "../../firebaseconfig";
 import { uploadBytesResumable } from 'firebase/storage';
 import { auth } from '../../firebaseconfig';
 import { accessKeyId, secretAccessKey } from '../../keys';
+import Wallpaper from '../../Wallpaper.jpg';
+import FindMyOwner from '../Login/loginPictures/FindMyOwner.png'
 
 export default function FoundPetDetails(){
 
@@ -43,6 +45,11 @@ export default function FoundPetDetails(){
     const [fileImage, setFileImage] = useState("");
     const [fileImagePic, setFileImagePic] = useState();
     const [progress, setProgress] = useState(0);
+    const [breedIdentity, setBreedIdentity] = useState();
+    const [breedIdentifierFile, setBreedIdentifierFile] = useState();
+    const [breedIdentifierFilePic, setBreedIdentifierFilePic] = useState();
+    const [breedIdentifierTeller, setBreedIdentifierTeller] = useState(false);
+    const [breedIdentifierTeller2, setBreedIdentifierTeller2] = useState(false);
     const [identifierData, setIdentifierData] = useState();
 
     const AWS = require ("aws-sdk");
@@ -74,7 +81,6 @@ export default function FoundPetDetails(){
     async function DogImages(){
         const response = await fetch("https://dog.ceo/api/breed/" + dogBreedHelp + "/images/random/3");
         const data = await response.json();
-        console.log(data.message);
         setBreedListImages(data.message);
         setShowBreedHelpImages(true);
     }
@@ -137,7 +143,11 @@ export default function FoundPetDetails(){
     }
 
     async function BreedIdentifier(){
-        const fileContent = fileImage;
+        console.log("hello");
+        setBreedIdentifierFilePic(URL.createObjectURL(breedIdentifierFile));
+        setBreedIdentifierTeller2(false);
+        setBreedIdentifierTeller(true);
+        const fileContent = breedIdentifierFile;
         AWS.config.update({
             accessKeyId: accessKeyId,
             secretAccessKey: secretAccessKey,
@@ -145,7 +155,7 @@ export default function FoundPetDetails(){
         });
 
         const s3 = new AWS.S3();
-        var name = fileImage.name;
+        var name = breedIdentifierFile.name;
         (async () =>{
             await s3
             .putObject({
@@ -180,14 +190,16 @@ export default function FoundPetDetails(){
         setTimeout(() => {
             console.log(d);
             for(let i=0; i<d.Labels.length; i++){
-                if(d.Labels[i].Name != "Dog" && d.Labels[i].Name != "Mammal" && d.Labels[i].Name != "Pet" && d.Labels[i].Name != "Canine" && d.Labels[i].Name != "Animal"){
-                    breed = d.Labels[i].Name
-                    console.log(breed);
-                }
+                Object.values(d.Labels[i].Parents).map((element, index) =>{
+                    if(element.Name === "Dog"){
+                        breed = d.Labels[i].Name;
+                        setBreedIdentity(breed);
+                    }
+                })
             }
             alert("According to our identifier gizmo 420, the following data was discovered about this dog: \n" + breed);
+            setBreedIdentifierTeller2(true);
         }, 5000)
-
     }
 
     function closeBreedHelp(){
@@ -206,8 +218,6 @@ export default function FoundPetDetails(){
     function colourList(c){
         if(colour.length <= 0){
             colour.push(c);
-            console.log(colour)
-            console.log(c)
         }
         else{
             let counter = 0;
@@ -221,7 +231,6 @@ export default function FoundPetDetails(){
                 colour.push(c);
             }
         }
-        console.log(colour);
         setShowColourList(false);
         setTimeout(() => {
             setShowColourList(true);
@@ -320,7 +329,7 @@ export default function FoundPetDetails(){
             const time = (timesplit[0]+":"+timesplit[1]);
             const postTime = time+" "+day+"/"+month+"/"+year;
             
-            if(type == "dog"){
+            if(type == "Dog"){
                 uploadTask.on("state_changed", (snapshot) => {
                     const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
                     setProgress(prog);
@@ -416,10 +425,11 @@ export default function FoundPetDetails(){
     }
 
     return(
-        <div id="wholePage">
+        <div id="wholePage" style= {{backgroundImage: `url(${Wallpaper})`, height: "auto"}}>
             <title>FindMyOwner</title>
             <div id = "Title">
-                <h1 id="titleName" href="#" onClick={home}>FindMyOwner</h1>
+                {/*<h1 id="titleName" href="#" onClick={home}>FindMyOwner</h1>*/}
+                <img id="titleName" onClick={home} src={FindMyOwner}></img>
                 <Dropdown id="SettingsButton">
                     <Dropdown.Toggle id="dropdown-button-dark-example1" variant="warning">
                         <img id="imageSettingsIcon" src={settingsIcon}></img>
@@ -435,7 +445,7 @@ export default function FoundPetDetails(){
             <br/>
             <Row>
                 <Col className="col-sm-5">
-                    <div id="form">
+                    <div id="form" style={{backgroundColor: "white"}}>
                         <h2 id="PostInfo">Enter Details Form</h2>
                         <div id="missingFound">
                             <label for="status">Status</label>
@@ -481,7 +491,7 @@ export default function FoundPetDetails(){
                         :null}
                         {showBreedGuide?
                             <div id = "breed_guide">
-                                <button id="closeBreedGuideButton" onClick={closeBreedHelp}>X</button>
+                                {/*<button id="closeBreedGuideButton" onClick={closeBreedHelp}>X</button>
                                 <br/>
                                 <label for="DbreedHelp">Select a Dog Breed to view image: </label>
                                 <select name="dogimage" id="DbreedHelp" onChange={DogImages} onInput= {(breedhelp) => setDogBreedHelp(breedhelp.target.value)}>
@@ -502,7 +512,55 @@ export default function FoundPetDetails(){
                                         })}
                                     </div>
                                 : null}
-                                <p>Upload Image</p><input type="file" onChange={BreedIdentifier} onInput={(image) => setFileImage(image.target.files[0])}/>
+                                <p>Upload Image</p><input type="file" onChange={BreedIdentifier} onInput={(image) => setFileImage(image.target.files[0])}/>*/}
+                                <Modal show={showBreedGuide}>
+                                    <Modal.Header>
+                                        <Modal.Title style={{textAlign: "center"}}>Breed Helper</Modal.Title>
+                                        <Button /*id="closeBreedGuideButton"*/ onClick={closeBreedHelp}>X</Button>
+                                    </Modal.Header>
+                                    <Modal.Body>
+                                        <label for="DbreedHelp">Select a Dog Breed to view image: </label>
+                                        <select name="dogimage" id="DbreedHelp" onChange={DogImages} onInput= {(breedhelp) => setDogBreedHelp(breedhelp.target.value)}>
+                                            <option value="" disabled selected hidden>Select a Dog Breed</option>
+                                            {Object.keys(breedList2).map(function (element){
+                                                return (
+                                                    <option>{element}</option>
+                                                )
+                                            })}
+                                        </select>
+                                        {showBreedHelpImages?
+                                            <div>
+                                                {breedListImages.map(function (element){
+                                                    return(
+                                                        <img src={element} id="breedImage"></img>
+                                                    )
+                                                })}
+                                            </div>
+                                        : null}
+                                        <hr></hr>
+                                        <Card>
+                                            <Card.Body style={{background: "gray", height: "40vh"}}>
+                                                {breedIdentifierTeller?
+                                                    <div>
+                                                        {console.log("howya")}
+                                                        <Card.Img src={breedIdentifierFilePic} style={{height: "36vh", marginBottom: "7%"}}></Card.Img>
+                                                        {breedIdentity?<Card.Text>Breed: {breedIdentity}</Card.Text>: <Card.Text>Breed: Loading...</Card.Text>}
+                                                        {breedIdentifierTeller2?<div><Card.Text style={{display: "inline"}}>Choose Another File: </Card.Text>
+                                                        <input style={{display: "inline", marginBottom: "5%"}} type="file" onChange={BreedIdentifier} onInput={(image) => setBreedIdentifierFile(image.target.files[0])}/></div>:null}
+                                                    </div>
+                                                
+                                                :
+                                                    <div>
+                                                        <Card.Text style={{textAlign: "center", marginTop: "25%"}}>Upload Image</Card.Text>
+                                                        <input style={{marginLeft: "25%"}} type="file" onChange={BreedIdentifier} onInput={(image) => (setBreedIdentifierFile(image.target.files[0]), BreedIdentifier())}/>
+                                                    </div>
+                                                }
+                                            </Card.Body>
+                                            <Card.Footer style={{marginTop: "25%"}}></Card.Footer>
+                                        </Card>        
+                                    </Modal.Body>
+                                    <Modal.Footer style={{marginTop: "5%"}}></Modal.Footer>
+                                </Modal>
                             </div>
                         : null}
 
