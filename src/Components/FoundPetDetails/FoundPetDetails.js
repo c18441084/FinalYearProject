@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import './FoundPetDetails.css';
 import '../Found/Found';
 import { Button, Modal, Dropdown, Col, Card, Row } from "react-bootstrap";
@@ -6,7 +6,7 @@ import settingsIcon from "../../SettingsIcon.png";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import heightDiagram from './Height_Diagram.png';
 import GoogleMap from './GoogleMaps';
-import { googleMapsState } from '../GlobalState/states';
+import { googleMapsState, animalType } from '../GlobalState/states';
 import db2, {storage, ref, getDownloadURL, logout} from "../../firebaseconfig";
 import { uploadBytesResumable } from 'firebase/storage';
 import { auth } from '../../firebaseconfig';
@@ -46,6 +46,7 @@ export default function FoundPetDetails(){
     const [fileImagePic, setFileImagePic] = useState();
     const [progress, setProgress] = useState(0);
     const [breedIdentity, setBreedIdentity] = useState();
+    const [confidence, setConfidence] = useState();
     const [breedIdentifierFile, setBreedIdentifierFile] = useState();
     const [breedIdentifierFilePic, setBreedIdentifierFilePic] = useState();
     const [breedIdentifierTeller, setBreedIdentifierTeller] = useState(false);
@@ -113,6 +114,7 @@ export default function FoundPetDetails(){
         setShowLocationPick(false);
         setShowFileUpload(false);
         setShowFilePic(false);
+        animalType.value = type;
         if(type === "Dog"){
             if(status === "FOUND"){
                 alert("Warning! \nIt is a legal requirement to report a stray dog to the dog warden service. To read more you can view the DWS section at the homepage of the website.")
@@ -147,6 +149,7 @@ export default function FoundPetDetails(){
         setBreedIdentifierFilePic(URL.createObjectURL(breedIdentifierFile));
         setBreedIdentifierTeller2(false);
         setBreedIdentifierTeller(true);
+        setBreedIdentity(null);
         const fileContent = breedIdentifierFile;
         AWS.config.update({
             accessKeyId: accessKeyId,
@@ -181,23 +184,27 @@ export default function FoundPetDetails(){
 
         let d = 0;
         let breed = 0;
+        let confidencePercent = 0;
         setTimeout(() => {
             rekognition.detectLabels(params, function(err, data){
                 if(err) console.log(err, err.stack);
-                else    console.log(data); setIdentifierData(data); d = data;
+                else    setIdentifierData(data); d = data;
             });
         }, 1000)
         setTimeout(() => {
             console.log(d);
             for(let i=0; i<d.Labels.length; i++){
                 Object.values(d.Labels[i].Parents).map((element, index) =>{
-                    if(element.Name === "Dog"){
+                    if(element.Name === "Dog" && element.Name != "Puppy"){
                         breed = d.Labels[i].Name;
+                        confidencePercent = d.Labels[i].Confidence;
+                        let convert = Math.round(confidencePercent);
                         setBreedIdentity(breed);
+                        setConfidence(convert);
                     }
                 })
             }
-            alert("According to our identifier gizmo 420, the following data was discovered about this dog: \n" + breed);
+            alert("Breed: " + breed);
             setBreedIdentifierTeller2(true);
         }, 5000)
     }
@@ -425,7 +432,7 @@ export default function FoundPetDetails(){
     }
 
     return(
-        <div id="wholePage" style= {{backgroundImage: `url(${Wallpaper})`, height: "auto"}}>
+        <div id="wholePage" style= {{backgroundImage: `url(${Wallpaper})`, height: "100vh"}}>
             <title>FindMyOwner</title>
             <div id = "Title">
                 {/*<h1 id="titleName" href="#" onClick={home}>FindMyOwner</h1>*/}
@@ -491,32 +498,10 @@ export default function FoundPetDetails(){
                         :null}
                         {showBreedGuide?
                             <div id = "breed_guide">
-                                {/*<button id="closeBreedGuideButton" onClick={closeBreedHelp}>X</button>
-                                <br/>
-                                <label for="DbreedHelp">Select a Dog Breed to view image: </label>
-                                <select name="dogimage" id="DbreedHelp" onChange={DogImages} onInput= {(breedhelp) => setDogBreedHelp(breedhelp.target.value)}>
-                                    <option value="" disabled selected hidden>Select a Dog Breed</option>
-                                    {Object.keys(breedList2).map(function (element){
-                                        return (
-                                            <option>{element}</option>
-                                        )
-                                    })}
-                                </select>
-                                {showBreedHelpImages? 
-                                    <div>
-                                        {breedListImages.map(function (element){
-                                            console.log(element);
-                                            return(
-                                                <img src={element} id="breedImage"></img>
-                                            )
-                                        })}
-                                    </div>
-                                : null}
-                                <p>Upload Image</p><input type="file" onChange={BreedIdentifier} onInput={(image) => setFileImage(image.target.files[0])}/>*/}
                                 <Modal show={showBreedGuide}>
-                                    <Modal.Header>
-                                        <Modal.Title style={{textAlign: "center"}}>Breed Helper</Modal.Title>
-                                        <Button /*id="closeBreedGuideButton"*/ onClick={closeBreedHelp}>X</Button>
+                                    <Modal.Header style={{backgroundColor: "#00bfFF"}}>
+                                        <Modal.Title style={{textAlign: "center", color: "white"}}>Breed Helper</Modal.Title>
+                                        <Button onClick={closeBreedHelp}>X</Button>
                                     </Modal.Header>
                                     <Modal.Body>
                                         <label for="DbreedHelp">Select a Dog Breed to view image: </label>
@@ -542,11 +527,10 @@ export default function FoundPetDetails(){
                                             <Card.Body style={{background: "gray", height: "40vh"}}>
                                                 {breedIdentifierTeller?
                                                     <div>
-                                                        {console.log("howya")}
                                                         <Card.Img src={breedIdentifierFilePic} style={{height: "36vh", marginBottom: "7%"}}></Card.Img>
-                                                        {breedIdentity?<Card.Text>Breed: {breedIdentity}</Card.Text>: <Card.Text>Breed: Loading...</Card.Text>}
+                                                        {breedIdentity?<div><Card.Text>Breed: {breedIdentity}<br></br>Confidence: {confidence}%</Card.Text></div>: <Card.Text>Breed: Loading...</Card.Text>}
                                                         {breedIdentifierTeller2?<div><Card.Text style={{display: "inline"}}>Choose Another File: </Card.Text>
-                                                        <input style={{display: "inline", marginBottom: "5%"}} type="file" onChange={BreedIdentifier} onInput={(image) => setBreedIdentifierFile(image.target.files[0])}/></div>:null}
+                                                        <input style={{position: "absolute", marginBottom: "5%", marginLeft: "2%"}} type="file" onChange={BreedIdentifier} onInput={(image) => setBreedIdentifierFile(image.target.files[0])}/></div>:null}
                                                     </div>
                                                 
                                                 :
@@ -556,10 +540,10 @@ export default function FoundPetDetails(){
                                                     </div>
                                                 }
                                             </Card.Body>
-                                            <Card.Footer style={{marginTop: "25%"}}></Card.Footer>
+                                            <Card.Footer style={{marginTop: "40%"}}></Card.Footer>
                                         </Card>        
                                     </Modal.Body>
-                                    <Modal.Footer style={{marginTop: "5%"}}></Modal.Footer>
+                                    <Modal.Footer style={{marginTop: "5%", backgroundColor: "#00bfFF"}}></Modal.Footer>
                                 </Modal>
                             </div>
                         : null}
@@ -649,7 +633,7 @@ export default function FoundPetDetails(){
                                         <Modal.Header>
                                             <Modal.Title>Pick Location</Modal.Title>
                                         </Modal.Header>
-                                        <Modal.Body style={{height: "50vh", width:"60vh"}}>
+                                        <Modal.Body style={{height: "50vh", width:"60vh", marginBottom: "5%"}}>
                                             <GoogleMap id = "googleMap" />
                                         </Modal.Body>
                                         <Modal.Footer>

@@ -8,3 +8,7 @@ export var googleMapsState = {
       lng: -6.266155
     }
 }
+
+export var animalType = {value : ""};
+
+export var latitude= {value : ""}, longitude = {value : ""};
