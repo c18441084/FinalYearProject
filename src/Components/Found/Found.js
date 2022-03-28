@@ -189,10 +189,10 @@ export default function Found(){
         let itemsFilteredNum = 0;
 
         if(item === "oldest"){
-            setTimeShow(1);
+            timeShow = 1;
         }
         if(item === "Most Recent"){
-            setTimeShow(0);
+            timeShow = 0;
         }
 
         setPosts(postsNeverChange);
@@ -408,7 +408,6 @@ export default function Found(){
         console.log(timeShow);
         if(timeShow === 1){
             setPosts(posts.reverse());
-            console.log(posts);
         }
         setShowFilterChoices(true);
     }
@@ -564,7 +563,7 @@ export default function Found(){
                 <Row>
                 {posts.length >= 0? 
                 posts.map(function(post){
-                    console.log(post)
+                    console.log(posts)
                     return(
                         <Col className="col-sm-4 ml-20" style={{maxWidth: "27%", textAlign: "center", marginLeft: "5%", marginBottom: "3%"}}>
                         <Card className="shadow-lg" border="info" style={{ width: '100%', borderRadius: "25px"/*, marginLeft:"1%"*/}}>
@@ -661,7 +660,7 @@ export default function Found(){
                         </Card>
                     </Col>
                     )
-                }): <h1>No Posts Found</h1>}
+                }): <Col className="col-sm-4 ml-20"><h1>No Posts Found</h1></Col>}
                 </Row>
             </div>
         </div>
