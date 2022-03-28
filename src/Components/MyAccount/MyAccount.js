@@ -214,7 +214,7 @@ export default function MyAccount(){
     }
 
     function home(){
-        window.location = "/home";
+        window.location = "/FindMyOwner/home";
     }
    
     return(

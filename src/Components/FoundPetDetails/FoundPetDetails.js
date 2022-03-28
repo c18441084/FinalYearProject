@@ -424,11 +424,11 @@ export default function FoundPetDetails(){
     }
 
     function home(){
-        window.location = "/home";
+        window.location = "/FindMyOwner/home";
     }
 
     function myAccount(){
-        window.location = "/account";
+        window.location = "/FindMyOwner/account";
     }
 
     return(

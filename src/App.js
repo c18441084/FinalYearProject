@@ -8,6 +8,7 @@ import Register from './Components/Register/Register';
 import FoundPetDetails from './Components/FoundPetDetails/FoundPetDetails';
 import MyAccount from './Components/MyAccount/MyAccount';
 import DogWardenService from './Components/DogWardenService/DogWardenService';
+import PostInfo from './Components/PostInfo/PostInfo'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from "./firebaseconfig";
@@ -21,17 +22,17 @@ function App() {
       <BrowserRouter>
       {user == null? 
       <Routes>
-        <Route path = "/" element = {<Login />} />
-        <Route path = "/register" element = {<Register />} />
+        <Route path = "/FindMyOwner/login" element = {<Login />} />
       </Routes>
       :
       <Routes>
-        <Route path = "/home" element = {<Homepage />} />
-        <Route path = "/found" element = {<Found />} />
-        <Route path = "/lost" element = {<Lost />} />
-        <Route path = "/found-pet-details" element = {<FoundPetDetails />} />
-        <Route path = "/account" element = {<MyAccount />} />
-        <Route path = "/dog-warden-service" element={<DogWardenService />} />
+        <Route path = "/FindMyOwner/home" element = {<Homepage />} />
+        <Route path = "/FindMyOwner/found" element = {<Found />} />
+        <Route path = "/FindMyOwner/lost" element = {<Lost />} />
+        <Route path = "/FindMyOwner/found-pet-details" element = {<FoundPetDetails />} />
+        <Route path = "/FindMyOwner/account" element = {<MyAccount />} />
+        <Route path = "/FindMyOwner/dog-warden-service" element={<DogWardenService />} />
+        <Route path = "/FindMyOwner/post/:id" element={<PostInfo />} />
       </Routes>
     }
       </BrowserRouter>
