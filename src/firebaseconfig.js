@@ -72,7 +72,9 @@ const signInWithFacebook = async () => {
 
 const signInWithEmailAndPassword = async (email, password) => {
   try {
+    console.log("hello");
     await auth.signInWithEmailAndPassword(email, password);
+    window.location = ("/FindMyOwner/home");
   } catch (err) {
     console.error(err);
     alert(err.message);
@@ -100,7 +102,7 @@ const updateDisplayName = async (name) => {
   console.log(auth);
   await auth.currentUser.updateProfile(update);
   console.log("finished");
-  window.location = ("/");
+  window.location = ("/FindMyOwner/home");
 }
 
 const sendPasswordResetEmail = async (email) => {
@@ -114,7 +116,7 @@ const sendPasswordResetEmail = async (email) => {
 };
 const logout = () => {
   auth.signOut();
-  window.location = ("/");
+  window.location = ("/FindMyOwner/login");
 };
 export {
   auth,

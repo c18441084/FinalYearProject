@@ -38,11 +38,11 @@ export default function DogWardenService(){
     const [dogWardenInfo, setDogWardenInfo] = useState([]);
 
     function home(){
-        window.location = "/home";
+        window.location = "/FindMyOwner/home";
     }
 
     function myAccount(){
-        window.location = "/account";
+        window.location = "/FindMyOwner/account";
     }
 
     useEffect(() => {

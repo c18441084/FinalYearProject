@@ -84,11 +84,11 @@ export default function Found(){
     };
   
     function home(){
-        window.location = "/home";
+        window.location = "/FindMyOwner/home";
     }
 
     function myAccount(){
-        window.location = "/account";
+        window.location = "/FindMyOwner/account";
     }
 
     async function addingComment(){
@@ -447,7 +447,7 @@ export default function Found(){
                         </Nav>
 
                         <Nav>
-                            <NavDropdown id="nav-dropdown-dark-example" title="Breed" menuVariant="dark">
+                            <NavDropdown id="nav-dropdown-dark-example" title="Breed" menuVariant="dark" style={{maxHeight: "500px", overflowX: "scroll"}}>
                                 {breedList.map(function (element, index){
                                     return (
                                         <div>
@@ -567,7 +567,7 @@ export default function Found(){
                     return(
                         <Col className="col-sm-4 ml-20" style={{maxWidth: "27%", textAlign: "center", marginLeft: "5%", marginBottom: "3%"}}>
                         <Card className="shadow-lg" border="info" style={{ width: '100%', borderRadius: "25px"/*, marginLeft:"1%"*/}}>
-                            {post.status === "MISSING"?<Card.Header style={{textAlign: "center", backgroundColor: "lightyellow", borderTopLeftRadius: "25px", borderTopRightRadius: "25px"}}><h5>{post.status}</h5></Card.Header>: <Card.Header style={{textAlign: "center", backgroundColor: "lightblue", borderTopLeftRadius: "25px", borderTopRightRadius: "25px"}}><h5>{post.status}</h5></Card.Header>}
+                            <Card.Header style={{textAlign: "center", backgroundColor: "lightblue", borderTopLeftRadius: "25px", borderTopRightRadius: "25px"}}><h5>{post.status}</h5></Card.Header>
                             <Card.Text style={{opacity: "0.5", textAlign: "center"}}>Posted by {post.posterName} at {post.postTime}</Card.Text>
                             <Card.Img  variant="top" src={post.image} style={{border: "1px solid black", marginRight: "auto", marginLeft: "auto", height: "30vh", width: "20vw", borderRadius: "25px"}}/>
                             <Card.Body>

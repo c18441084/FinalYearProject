@@ -2,6 +2,7 @@ import db2, {logout, getDownloadURL, ref} from "../../firebaseconfig";
 import './Lost.css'
 import { useState, useEffect } from "react";
 import { Button, Modal, Dropdown, Card, Col, Row, Nav, Navbar, NavDropdown, Container, Form } from "react-bootstrap";
+import {Link} from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { auth } from '../../firebaseconfig';
@@ -11,8 +12,10 @@ import { mdiCommentTextMultiple } from '@mdi/js';
 import { mdiCardsHeartOutline } from '@mdi/js';
 import { mdiDeleteEmptyOutline } from '@mdi/js';
 import { mdiCommentOffOutline } from '@mdi/js';
+import { mdiInformationOutline } from '@mdi/js';
 import Wallpaper from '../../Wallpaper.jpg';
-import Icon from '@mdi/react'
+import Icon from '@mdi/react';
+import {postIDnum} from '../GlobalState/states';
 
 
 export default function Found(){
@@ -82,13 +85,13 @@ export default function Found(){
         setShow(true);
         setAddingCommentClicked(id);
     };
-  
+
     function home(){
-        window.location = "/home";
+        window.location = "/FindMyOwner/home";
     }
 
     function myAccount(){
-        window.location = "/account";
+        window.location = "/FindMyOwner/account";
     }
 
     async function addingComment(){
@@ -587,7 +590,12 @@ export default function Found(){
                                 {post.status === "FOUND"?<Card.Text><h3 style={{display: "inline"}}>Found at: </h3>{post.address}</Card.Text>:
                                 <Card.Text><h3 style={{display: "inline"}}>Last seen at: </h3>{post.address}</Card.Text>}
 
-                                <Button data-tip data-for="addComment" id={post.id} variant="outline-primary" onClick={() => handleShow(post.id)}>
+                                <Link to ={{pathname: `/FindMyOwner/post/${post.id}`, state: {id: post.id}}} data-tip data-for="viewPostInfo" id={post.id} variant="outline-primary">
+                                    <Icon path={mdiInformationOutline} size={1}></Icon>                        
+                                </Link>
+                                <ReactTooltip id="addComment" place="top" effect="solid">View Post Information</ReactTooltip> 
+
+                                {/* <Button data-tip data-for="addComment" id={post.id} variant="outline-primary" onClick={() => handleShow(post.id)}>
                                     <Icon path={mdiCommentText} size={1}></Icon>                        
                                 </Button>
                                 <ReactTooltip id="addComment" place="top" effect="solid">Add Comment</ReactTooltip>  
@@ -637,16 +645,17 @@ export default function Found(){
                                     <Icon path={mdiCardsHeartOutline} size={1}></Icon>
                                 </Button>
                                 <ReactTooltip id="addFavourites" place="top" effect="solid">Add to Favourites</ReactTooltip>
+
+                                
                                 {displayComments?
                                     <div>
-                                        <Modal show={displayComments}>
-                                            <Button data-tip data-for="closeComment" variant="outline-primary" onClick = {() => closingComments()}>
-                                                <Icon path={mdiCommentOffOutline} size={1}></Icon>
-                                            </Button>
-                                            <ReactTooltip id="closeComment" place="top" effect="solid">Close Comments</ReactTooltip>
-                                            <Modal.Body style={{ height: "auto", overflowX: 'scroll'}}>
-                                                <div style={{width: "100%", height: "100%", overflowX: 'scroll'}}>
-                                                {showingComments.map(function(comment){
+                                        <Modal show={displayComments} scrollable={true} style={{height: "70%"}}>
+                                        <Modal.Header>
+                                            <Modal.Title>Comments</Modal.Title>
+                                        </Modal.Header>
+                                            <Modal.Body>
+                                                <Container style={{overflowX: "scroll", maxHeight: "20%"}}>
+                                                {/* {showingComments.map(function(comment){
                                                     if(post.postID === comment.postID){
                                                         return(
                                                             <div>
@@ -668,12 +677,41 @@ export default function Found(){
                                                             </div>
                                                         )
                                                     }
-                                                })}
-                                                </div>
+                                                })} }
+                                                    {showingComments.map(function(comment){
+                                                        if(post.postID === comment.postID){
+                                                            return(
+                                                                <div>
+                                                                    <hr></hr>
+                                                                    <br />
+                                                                    <br />
+                                                                    <div id="commentForAccount">
+                                                                        <b id="commentUserForAccount">{comment.commenterName}: </b>
+                                                                        <p id="commentInfoForAccount" style={{display: "inline"}}>{comment.comment}<p id="commentTimeForAccount" style={{marginLeft: "5%"}}>Commented on {comment.commentTime}</p></p>
+                                                                        {auth.currentUser.email === comment.email? 
+                                                                                <div>
+                                                                                    <Button data-tip data-for="deleteButton" variant="outline-danger" onClick={() => deleteComment(post.id, comment.id)}>
+                                                                                        <Icon path={mdiDeleteEmptyOutline} size={1}></Icon>
+                                                                                    </Button>
+                                                                                    <ReactTooltip id="deleteButton" place="top" effect="solid">Delete Comment</ReactTooltip>
+                                                                                </div> 
+                                                                            :null}
+                                                                    </div>
+                                                                </div>
+                                                            )
+                                                        }
+                                                    })}
+                                                </Container>
                                             </Modal.Body>
+                                            <Modal.Footer>
+                                                <Button data-tip data-for="closeComment" variant="outline-primary" onClick = {() => closingComments()}>
+                                                    <Icon path={mdiCommentOffOutline} size={1}></Icon>
+                                                </Button>
+                                                <ReactTooltip id="closeComment" place="top" effect="solid">Close Comments</ReactTooltip>
+                                            </Modal.Footer>
                                         </Modal>
                                     </div>
-                                :null}
+                                :null} */}
                             </Card.Body>
                         </Card>
                     </Col>
