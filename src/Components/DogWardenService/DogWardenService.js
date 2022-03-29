@@ -1,9 +1,10 @@
 import { mdiNoteMultipleOutline } from "@mdi/js";
 import { useState, useEffect } from "react";
-import { Button, Modal, Dropdown } from "react-bootstrap";
+import { Button, Modal, Dropdown, Image } from "react-bootstrap";
 import settingsIcon from "../../SettingsIcon.png";
 import { logout } from "../../firebaseconfig";
 import "./DogWardenService.css";
+import FindMyOwner from '../Login/loginPictures/FindMyOwner.png'
 import carlowCrest from './CountyCrests/carlowCrest.png';
 import cavanCrest from './CountyCrests/cavanCrest.png';
 import clareCrest from './CountyCrests/clareCrest.png';
@@ -81,10 +82,10 @@ export default function DogWardenService(){
     }
 
     return(
-        <div style= {{backgroundImage: `url(${Wallpaper})`}}>
+        <div>
             <title>FindMyOwner</title>
             <div id = "Title">
-                <h1 id="titleName" href="#" onClick={home}>FindMyOwner</h1>
+                <Image id="titleName" onClick={home} src={FindMyOwner} style={{marginLeft: "37%"}}></Image>
                 <Dropdown id="SettingsButton">
                     <Dropdown.Toggle id="dropdown-button-dark-example1" variant="warning">
                         <img id="imageSettingsIcon" src={settingsIcon}></img>
@@ -97,18 +98,20 @@ export default function DogWardenService(){
                     </Dropdown.Menu>
                 </Dropdown>
             </div>
-            {dogWardenInfo.map(function(info){
-                return(
-                    <div>
-                        <div id="showCounilsInfo">
-                            <div id= "county"><h3 style={{float: "left", marginLeft: "5%"}}>{info.county}</h3><img style={{height: "50px", marginRight: "-30%"}}src={info.image}></img></div>
-                            <div id="DWSinfo">Number: {info.number}</div>
-                            <div id="DWSinfo">Email: {info.email}</div>
-                            <div id="DWSinfo">URL: <a href="#" onClick={() => councilPageRedirect(info.url)}>{info.url}</a></div>
+            <div style={{backgroundImage: `url(${Wallpaper})`}}>
+                {dogWardenInfo.map(function(info){
+                    return(
+                        <div>
+                            <div id="showCounilsInfo">
+                                <div id= "county"><h3>{info.county}</h3><img src={info.image}></img></div>
+                                <div id="DWSinfo">Number: {info.number}</div>
+                                <div id="DWSinfo">Email: {info.email}</div>
+                                <div id="DWSinfo">URL: <a href="#" onClick={() => councilPageRedirect(info.url)}>{info.url}</a></div>
+                            </div>
                         </div>
-                    </div>
-                )
-            })}
+                    )
+                })}
+            </div>
         </div>
     )
 }

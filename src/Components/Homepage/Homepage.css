@@ -7,8 +7,6 @@
 
 #titleName{
     display: inline-block;
-    text-align: center;
-    margin-left: 40%;
 }
 
 #SettingsButton{
@@ -61,8 +59,8 @@
 
 #RP{
     display: inline;
-    margin-left: 5%;
-    margin-right: 45%;
+    margin-left: 15%;
+    margin-right: 35%;
 }
 
 #PNM{

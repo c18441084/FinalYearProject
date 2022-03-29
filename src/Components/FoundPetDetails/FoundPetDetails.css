@@ -5,7 +5,7 @@
     border-bottom: 2px solid black;
 }
 
-#Title h1{
+#titleName{
     text-align: center;
 }
 
@@ -16,6 +16,7 @@
     border: 1px black;
     border-style: dashed;
     border-radius: 15px;
+    background-color: white;
 }
 
 
@@ -35,6 +36,43 @@
 
 #closeBreedGuideButton{
     margin-left: 95%;
+}
+
+#FPDBreedModalHeader{
+    background-color: #00bfFF;
+}
+
+#FPDBreedModalTitle{
+    text-align: center;
+    color: white;
+}
+
+#FPDBreedCardBody{
+    background: gray;
+    height: 40vh;
+}
+
+#FPDBreedCardImg{
+    height: 36vh;
+    margin-bottom: 7%;
+}
+
+#FPDBreedCardImgInput2{
+    margin-bottom: 5%;
+    margin-left: 2%;
+}
+
+#FPDBreedCardImgInput{
+    margin-left: 25%;
+}
+
+#FPDBreedCardFooter{
+    margin-top: 40%;
+}
+
+#FPDBreedModalFooter{
+    margin-top: 5%;
+    background-color: #00bfFF;
 }
 
 #height{
@@ -60,5 +98,103 @@
     margin-left: 95%;
 }
 
+#LostCard{
+    width: 100%;
+    border-radius: 25px;
+}
 
+#LostCardHeader{
+    text-align: center;
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    background-color: lightyellow;
+}
 
+#LostPostPoster{
+    opacity: 0.5;
+    text-align: center;
+}
+
+#LostPostImage{
+    border: 1px solid black;
+    margin-left: auto;
+    margin-right: auto;
+    height: 30vh;
+    width: 20vw;
+    border-radius: 25px;
+}
+
+#FPDPostType{
+    display: inline;
+}
+
+#FPDPostDogBreed{
+    display: inline;
+}
+
+#FPDPostHeight{
+    display: inline;
+}
+
+#FPDPostColour{
+    display: inline;
+}
+
+#FPDPostNeutured{
+    display: inline;
+}
+
+#FPDPostAddress{
+    display: inline;
+}
+
+#FPDPrototypeColumn{
+    margin-left: 13%;
+}
+
+#FPDPrototypeCard{
+    width: 100%;
+    border-radius: 25px;
+}
+
+#FPDPrototypeCardHeader{
+    text-align: center;
+}
+
+#FPDPrototypePoster{
+    opacity: 0.5%;
+    text-align: center;
+}
+
+#FPDPrototypeImage{
+    border: 1px solid black;
+    margin-right: auto;
+    margin-left: auto;
+    height: 30vh;
+    width: 20vw;
+    border-radius: 25px;
+}
+
+#FPDPrototypeType{
+    display: inline;
+}
+
+#FPDPrototypeDogBreed{
+    display: inline;
+}
+
+#FPDPrototypeHeight{
+    display: inline;
+}
+
+#FPDPrototypeColour{
+    display: inline;
+}
+
+#FPDPrototypeNeutered{
+    display: inline;
+}
+
+#FPDPrototypeAddress{
+    display: inline;
+}

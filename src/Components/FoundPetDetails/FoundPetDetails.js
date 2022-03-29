@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './FoundPetDetails.css';
 import '../Found/Found';
-import { Button, Modal, Dropdown, Col, Card, Row } from "react-bootstrap";
+import { Button, Modal, Dropdown, Col, Card, Row, Image } from "react-bootstrap";
 import settingsIcon from "../../SettingsIcon.png";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import heightDiagram from './Height_Diagram.png';
@@ -21,7 +21,7 @@ export default function FoundPetDetails(){
     const [dogBreed, setDogBreed] = useState("");
     const [height, setHeight] = useState("");
     const [colour, setColour] = useState([]);
-    const [neutured, setNeutured] = useState("");
+    const [neutured, setNeutured] = useState("Unknown");
     const [location, setLocation] = useState("");
 
     const [showType, setShowType] = useState(false);
@@ -185,28 +185,76 @@ export default function FoundPetDetails(){
         let d = 0;
         let breed = 0;
         let confidencePercent = 0;
+        let errorLoading = 0;
         setTimeout(() => {
             rekognition.detectLabels(params, function(err, data){
-                if(err) console.log(err, err.stack);
-                else    setIdentifierData(data); d = data;
+                if(err){
+                    console.log(err, err.stack); 
+                    errorLoading = (err);
+                }
+                else{
+                    setIdentifierData(data); 
+                    d = data;
+                } 
             });
-        }, 1000)
+        }, 1500)
         setTimeout(() => {
-            console.log(d);
-            for(let i=0; i<d.Labels.length; i++){
-                Object.values(d.Labels[i].Parents).map((element, index) =>{
-                    if(element.Name === "Dog" && element.Name != "Puppy"){
-                        breed = d.Labels[i].Name;
-                        confidencePercent = d.Labels[i].Confidence;
-                        let convert = Math.round(confidencePercent);
-                        setBreedIdentity(breed);
-                        setConfidence(convert);
-                    }
-                })
+            if(errorLoading != 0){
+                alert("Error loading image. Please only upload JPG or PNG file");
+                setBreedIdentity("Error");
+                setBreedIdentifierTeller2(true);
+                errorLoading = 0;
             }
-            alert("Breed: " + breed);
-            setBreedIdentifierTeller2(true);
+            else{
+                console.log(d);
+                for(let i=0; i<d.Labels.length; i++){
+                    Object.values(d.Labels[i].Parents).map((element, index) =>{
+                        if(element.Name === "Dog" && d.Labels[i].Name != "Puppy"){
+                            breed = d.Labels[i].Name;
+                            confidencePercent = d.Labels[i].Confidence;
+                            let convert = Math.round(confidencePercent);
+                            setBreedIdentity(breed);
+                            setConfidence(convert);
+                        }
+                    })
+                }
+                if(breed === 0){
+                    alert("Dog not recognised.")
+                    setBreedIdentity("Dog not recognised. Please try take a closer picture");
+                }
+                else{
+                    alert("Breed: " + breed);
+                }
+                setBreedIdentifierTeller2(true);
+            }
+            deleteFromS3(name);
         }, 5000)
+    }
+
+    function deleteFromS3(name){
+        AWS.config.update({
+            accessKeyId: accessKeyId,
+            secretAccessKey: secretAccessKey,
+            region: "eu-west-1"
+        });
+
+        const s3 = new AWS.S3();
+
+        const params = {
+            Bucket: "myawsfindmyownerbucket",
+            Key: name
+        }
+
+        setTimeout(() => {
+            s3.deleteObject(params, function(err, data) {
+                if (err){
+                    console.log(err, err.stack); 
+                }
+                else{
+                    console.log(data);           
+                }     
+            });
+        }, 10000)
     }
 
     function closeBreedHelp(){
@@ -374,7 +422,7 @@ export default function FoundPetDetails(){
                         };
                         await db.push(submit);
                         alert("Post Created");
-                        window.location = ("/Found")
+                        window.location = ("/FindMyOwner/home")
                     });
                 }); 
             }
@@ -415,7 +463,7 @@ export default function FoundPetDetails(){
                         };
                         await db.push(submit);
                         alert("Post Created");
-                        window.location = ("/Found")
+                        window.location = ("/FindMyOwner/home")
                     });
                 });
             }
@@ -435,8 +483,7 @@ export default function FoundPetDetails(){
         <div id="wholePage" style= {{backgroundImage: `url(${Wallpaper})`, height: "100vh"}}>
             <title>FindMyOwner</title>
             <div id = "Title">
-                {/*<h1 id="titleName" href="#" onClick={home}>FindMyOwner</h1>*/}
-                <img id="titleName" onClick={home} src={FindMyOwner}></img>
+                <Image id="titleName" onClick={home} src={FindMyOwner} style={{marginLeft: "37%"}}></Image>
                 <Dropdown id="SettingsButton">
                     <Dropdown.Toggle id="dropdown-button-dark-example1" variant="warning">
                         <img id="imageSettingsIcon" src={settingsIcon}></img>
@@ -452,7 +499,7 @@ export default function FoundPetDetails(){
             <br/>
             <Row>
                 <Col className="col-sm-5">
-                    <div id="form" style={{backgroundColor: "white"}}>
+                    <div id="form">
                         <h2 id="PostInfo">Enter Details Form</h2>
                         <div id="missingFound">
                             <label for="status">Status</label>
@@ -499,8 +546,8 @@ export default function FoundPetDetails(){
                         {showBreedGuide?
                             <div id = "breed_guide">
                                 <Modal show={showBreedGuide}>
-                                    <Modal.Header style={{backgroundColor: "#00bfFF"}}>
-                                        <Modal.Title style={{textAlign: "center", color: "white"}}>Breed Helper</Modal.Title>
+                                    <Modal.Header id="FPDBreedModalHeader">
+                                        <Modal.Title id="FPDBreedModalTitle">Breed Helper</Modal.Title>
                                         <Button onClick={closeBreedHelp}>X</Button>
                                     </Modal.Header>
                                     <Modal.Body>
@@ -524,26 +571,26 @@ export default function FoundPetDetails(){
                                         : null}
                                         <hr></hr>
                                         <Card>
-                                            <Card.Body style={{background: "gray", height: "40vh"}}>
+                                            <Card.Body id="FPDBreedCardBody">
                                                 {breedIdentifierTeller?
                                                     <div>
-                                                        <Card.Img src={breedIdentifierFilePic} style={{height: "36vh", marginBottom: "7%"}}></Card.Img>
+                                                        <Card.Img src={breedIdentifierFilePic} id="FPDBreedCardImg"></Card.Img>
                                                         {breedIdentity?<div><Card.Text>Breed: {breedIdentity}<br></br>Confidence: {confidence}%</Card.Text></div>: <Card.Text>Breed: Loading...</Card.Text>}
                                                         {breedIdentifierTeller2?<div><Card.Text style={{display: "inline"}}>Choose Another File: </Card.Text>
-                                                        <input style={{position: "absolute", marginBottom: "5%", marginLeft: "2%"}} type="file" onChange={BreedIdentifier} onInput={(image) => setBreedIdentifierFile(image.target.files[0])}/></div>:null}
+                                                        <input id="FPDBreedCardImgInput2" type="file" onChange={BreedIdentifier} onInput={(image) => setBreedIdentifierFile(image.target.files[0])}/></div>:null}
                                                     </div>
                                                 
                                                 :
                                                     <div>
                                                         <Card.Text style={{textAlign: "center", marginTop: "25%"}}>Upload Image</Card.Text>
-                                                        <input style={{marginLeft: "25%"}} type="file" onChange={BreedIdentifier} onInput={(image) => (setBreedIdentifierFile(image.target.files[0]), BreedIdentifier())}/>
+                                                        <input id="FPDBreedCardImgInput" type="file" onChange={BreedIdentifier} onInput={(image) => (setBreedIdentifierFile(image.target.files[0]), BreedIdentifier())}/>
                                                     </div>
                                                 }
                                             </Card.Body>
-                                            <Card.Footer style={{marginTop: "40%"}}></Card.Footer>
+                                            <Card.Footer id="FPDBreedCardFooter"></Card.Footer>
                                         </Card>        
                                     </Modal.Body>
-                                    <Modal.Footer style={{marginTop: "5%", backgroundColor: "#00bfFF"}}></Modal.Footer>
+                                    <Modal.Footer id="FPDBreedModalFooter"></Modal.Footer>
                                 </Modal>
                             </div>
                         : null}
@@ -600,7 +647,7 @@ export default function FoundPetDetails(){
                             <div id="neutured_choice">
                                 <label for="neutured">Neutured or Spayed(Optional)</label>
                                 <select name="neutured" id="neutured" onInput={(e) => setNeutured(e.target.value)}>
-                                    <option value="Unknown">Unknown</option>
+                                    <option value="Unknown" selected="selected">Unknown</option>
                                     <option value="Neutured">Neutured</option>
                                     <option value="Spayed">Spayed</option>
                                     <option value="Neither">Neither</option>
@@ -650,20 +697,20 @@ export default function FoundPetDetails(){
                     </div>
                 </Col>
                 
-                <Col className="col-sm-3" style={{marginLeft: "13%"}}>
+                <Col className="col-sm-3" id="FPDPrototypeColumn">
                     <div id="postPrototype">
-                            <Card className="shadow-lg" border="info" style={{ width: '100%', borderRadius: "25px"/*, marginLeft:"1%"*/}}>
-                                <Card.Header style={{textAlign: "center"}}><h5>{status}</h5></Card.Header>
-                                <Card.Text style={{opacity: "0.5", textAlign: "center"}}>Posted by {auth.currentUser.displayName}</Card.Text>
-                                <Card.Img  variant="top" src={fileImagePic} style={{border: "1px solid black", marginRight: "auto", marginLeft: "auto", height: "30vh", width: "20vw", borderRadius: "25px"}}/>
+                            <Card className="shadow-lg" border="info" id="FPDPrototypeCard">
+                                <Card.Header id="FPDPrototypeCardHeader"><h5>{status}</h5></Card.Header>
+                                <Card.Text id="FPDPrototypePoster">Posted by {auth.currentUser.displayName}</Card.Text>
+                                <Card.Img  variant="top" src={fileImagePic} id="FPDPrototypeImage"/>
                                 <Card.Body>
-                                    <Card.Text><h3 style={{display: "inline"}}>Type: </h3>{type}</Card.Text>
-                                    {type === "Dog"?<Card.Text><h3 style={{display: "inline"}}>Breed: </h3>{dogBreed}</Card.Text>:null}
-                                    <Card.Text><h3 style={{display: "inline"}}>Height: </h3>{height}cm</Card.Text>
-                                    <Card.Text><h3 style={{display: "inline"}}>Colour: </h3>{colour?.map(function(element) {return(<div style={{display: "inline", marginRight:"2%", border: "1px solid black", borderRadius: "25px", padding: "1%"}}>{element}</div>)})}</Card.Text>
-                                    {neutured != ""?<Card.Text><h3 style={{display: "inline"}}>The animal is: </h3>{neutured}</Card.Text>:null}
-                                    {status === "FOUND"?<Card.Text><h3 style={{display: "inline"}}>Found at: </h3>{location}</Card.Text>:
-                                    <Card.Text><h3 style={{display: "inline"}}>Last seen at: </h3>{location}</Card.Text>}
+                                    <Card.Text><h3 id="FPDPrototypeType">Type: </h3>{type}</Card.Text>
+                                    {type === "Dog"?<Card.Text><h3 id="FPDPrototypeDogBreed">Breed: </h3>{dogBreed}</Card.Text>:null}
+                                    <Card.Text><h3 id="FPDPrototypeHeight">Height: </h3>{height}cm</Card.Text>
+                                    <Card.Text><h3 id="FPDPrototypeColour">Colour: </h3>{colour?.map(function(element) {return(<div style={{display: "inline", marginRight:"2%", border: "1px solid black", borderRadius: "25px", padding: "1%"}}>{element}</div>)})}</Card.Text>
+                                    {neutured != ""?<Card.Text><h3 id="FPDPrototypeNeutered">Neutered/Spayed: </h3>{neutured}</Card.Text>:null}
+                                    {status === "FOUND"?<Card.Text><h3 id="FPDPrototypeAddress">Found at: </h3>{location}</Card.Text>:
+                                    <Card.Text><h3 id="FPDPrototypeAddress">Last seen at: </h3>{location}</Card.Text>}
                                 </Card.Body>
                             </Card>
                     </div>
