@@ -17,7 +17,6 @@ const style = {
 }
 
 let urlPic = 0;
-let inputClearer = "";
 
 export class MapContainer extends Component {
 
