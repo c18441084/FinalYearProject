@@ -1,7 +1,7 @@
 import db2, {logout } from "../../firebaseconfig";
 import './Lost.css'
 import { useState, useEffect } from "react";
-import { Button, Dropdown, Card, Col, Row, Nav, Navbar, NavDropdown, Container, Form, Image } from "react-bootstrap";
+import { Button, Dropdown, Card, Col, Row, Nav, Navbar, NavDropdown, Container, Form, Image, ListGroup } from "react-bootstrap";
 import {Link} from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -379,16 +379,17 @@ export default function Found(){
 
                         <Nav>
                             <NavDropdown id="nav-dropdown-dark-example" title="Breed" menuVariant="dark">
-                                {breedList.map(function (element, index){
-                                    return (
-                                        <div>
-                                            <NavDropdown.Item eventKey={index} onClick={() => filter(element, 1)}>
-                                                {element}
-                                            </NavDropdown.Item>
-                                            <NavDropdown.Divider />
-                                        </div>
-                                    )
-                                })}
+                                <ListGroup variant="dark" style={{maxHeight: "600px", overflowX: "scroll"}}>
+                                    {breedList.map(function (element, index){
+                                        return (
+                                            <div>
+                                                <ListGroup.Item variant="dark" eventKey={index} onClick={() => filter(element, 1)}>
+                                                    {element}
+                                                </ListGroup.Item>
+                                            </div>
+                                        )
+                                    })}
+                                </ListGroup>
                             </NavDropdown>
                         </Nav>
 

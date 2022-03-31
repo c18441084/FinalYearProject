@@ -17,6 +17,7 @@ import FindMyOwner from '../Login/loginPictures/FindMyOwner.png';
 import Icon from '@mdi/react';
 import { mdiHelpCircleOutline } from '@mdi/js';
 import { mdiRuler } from '@mdi/js';
+import { mdiMapMarker } from '@mdi/js';
 import googleMapsMarkerIconDog from './GoogleMapsMarkers/googleMapsMarkerIconDog.png';
 import googleMapsMarkerIconCat from './GoogleMapsMarkers/googleMapsMarkerIconCat.png'
 
@@ -59,6 +60,8 @@ export default function FoundPetDetails(){
     const [breedIdentifierTeller, setBreedIdentifierTeller] = useState(false);
     const [breedIdentifierTeller2, setBreedIdentifierTeller2] = useState(false);
     const [identifierData, setIdentifierData] = useState();
+    const [results, setResults] = useState([]);
+    const [Loading, setLoading] = useState(false);
 
     const AWS = require ("aws-sdk");
 
@@ -152,7 +155,7 @@ export default function FoundPetDetails(){
     }
 
     async function BreedIdentifier(){
-        console.log("hello");
+        setLoading(true);
         setBreedIdentifierFilePic(URL.createObjectURL(breedIdentifierFile));
         setBreedIdentifierTeller2(false);
         setBreedIdentifierTeller(true);
@@ -183,12 +186,13 @@ export default function FoundPetDetails(){
                     Name: name
                  },
             },
-            MaxLabels: 10,
-            MinConfidence: 80
+            MaxLabels: 15,
+            MinConfidence: 50
         }
 
         const rekognition = new AWS.Rekognition();
 
+        let getResults = []
         let d = 0;
         let breed = 0;
         let confidencePercent = 0;
@@ -219,9 +223,13 @@ export default function FoundPetDetails(){
                         if(element.Name === "Dog" && d.Labels[i].Name != "Puppy"){
                             breed = d.Labels[i].Name;
                             confidencePercent = d.Labels[i].Confidence;
-                            let convert = Math.round(confidencePercent);
-                            setBreedIdentity(breed);
-                            setConfidence(convert);
+                            confidencePercent = Math.round(confidencePercent);
+                            // setBreedIdentity(breed);
+                            // setConfidence(convert);
+                            console.log(breed);
+                            let obj = {};
+                            obj[breed] = confidencePercent;
+                            getResults.push(obj)
                         }
                     })
                 }
@@ -229,11 +237,11 @@ export default function FoundPetDetails(){
                     alert("Dog not recognised.")
                     setBreedIdentity("Dog not recognised. Please try take a closer picture");
                 }
-                else{
-                    alert("Breed: " + breed);
-                }
                 setBreedIdentifierTeller2(true);
             }
+            setResults(getResults);
+            console.log(results);
+            setLoading(false);
             deleteFromS3(name);
         }, 5000)
     }
@@ -506,7 +514,7 @@ export default function FoundPetDetails(){
             <br/>
             <Row>
                 <Col className="col-sm-5">
-                    <Container style={{maxWidth: "90%"}}>
+                    <Container style={{maxWidth: "700px"}}>
                         <Card id="FPDForm">
                             <Card.Header>Enter Details Form</Card.Header>
                             <Form>
@@ -578,7 +586,7 @@ export default function FoundPetDetails(){
                                                 <div>
                                                     {breedListImages.map(function (element){
                                                         return(
-                                                            <img src={element} id="breedImage"></img>
+                                                            <Image src={element} id="breedImage"></Image>
                                                         )
                                                     })}
                                                 </div>
@@ -589,7 +597,19 @@ export default function FoundPetDetails(){
                                                     {breedIdentifierTeller?
                                                         <div>
                                                             <Card.Img src={breedIdentifierFilePic} id="FPDBreedCardImg"></Card.Img>
-                                                            {breedIdentity?<div><Card.Text>Breed: {breedIdentity}<br></br>Confidence: {confidence}%</Card.Text></div>: <Card.Text>Breed: Loading...</Card.Text>}
+                                                            {Loading? 
+                                                                <Card.Text id="FPDBreedResults">Loading...</Card.Text> 
+                                                                :
+                                                                results.map(function(element) {
+                                                                    return(
+                                                                        <Card.Text id="FPDBreedResults">
+                                                                            Breed: {Object.keys(element)}
+                                                                            <br></br>
+                                                                            Confidence: {Object.values(element)}%
+                                                                        </Card.Text>
+                                                                    )
+                                                                })
+                                                            }
                                                             {breedIdentifierTeller2?<div><Card.Text style={{display: "inline"}}>Choose Another File: </Card.Text>
                                                             <input id="FPDBreedCardImgInput2" type="file" onChange={BreedIdentifier} onInput={(image) => setBreedIdentifierFile(image.target.files[0])}/></div>:null}
                                                         </div>
@@ -601,7 +621,6 @@ export default function FoundPetDetails(){
                                                         </div>
                                                     }
                                                 </Card.Body>
-                                                <Card.Footer id="FPDBreedCardFooter"></Card.Footer>
                                             </Card>        
                                         </Modal.Body>
                                         <Modal.Footer id="FPDBreedModalFooter"></Modal.Footer>
@@ -669,10 +688,10 @@ export default function FoundPetDetails(){
 
                                 {showNeuturedChoice?
                                 <Form.Group className='mt-1 mb-2'>
-                                    <Form.Label id="FPDNeuturedLabel">Neutured or Spayed: </Form.Label>
+                                    <Form.Label id="FPDNeuturedLabel">Neutured/Spayed: </Form.Label>
                                     <Form.Select id="FPDNeuturedOption" onInput={(e) => setNeutured(e.target.value)}>
-                                        <option value="Unknown" disable selected="selected">Optional</option>
-                                        <option value="Unknown" selected="selected">Unknown</option>
+                                        <option value="Unknown" disabled selected="selected">Optional</option>
+                                        <option value="Unknown">Unknown</option>
                                         <option value="Neutured">Neutured</option>
                                         <option value="Spayed">Spayed</option>
                                         <option value="Neither">Neither</option>
@@ -686,12 +705,34 @@ export default function FoundPetDetails(){
                                     <Form.Control id="FPDFileUpload" type="file" onChange={fileSubmitted} onInput={(image) => setFileImage(image.target.files[0])}/>
                                 </Form.Group>
                                 :null}
-                                {showFilePic?
-                                    <div id="show_image_submitted">
-                                        <button id = "remove_image" onClick={deleteImage}>X</button>
-                                        <img src={fileImagePic} height={"25%"} width={"25%"} ></img>
-                                    </div>
-                                :null}
+
+                                {showLocationPick?
+                                    <Form.Group>
+                                        <Form.Label>Address: </Form.Label>
+                                        <Form.Text>{location}</Form.Text>
+                                        <Button id="FPDOpenGoogleMap" data-tip data-for="OpenGoogleButton" onClick={() => setShowGoogleMap(true)}>
+                                            <Icon path={mdiMapMarker} size={1}></Icon>
+                                        </Button>
+                                        <ReactTooltip id="OpenGoogleButton" place="top" effect="solid">Open Map</ReactTooltip>
+                                        <Modal show={showGoogleMap} onHide={closeMap}>
+                                            <Modal.Header>
+                                                <Modal.Title>Pick Location</Modal.Title>
+                                            </Modal.Header>
+                                            <Modal.Body style={{height: "50vh", width:"60vh", marginBottom: "5%"}}>
+                                                <GoogleMap id = "googleMap" />
+                                            </Modal.Body>
+                                            <Modal.Footer>
+                                                <Button onClick={submitLocation}>Submit</Button>
+                                                <Button onClick={closeMap}>Close Map</Button>
+                                            </Modal.Footer>
+                                        </Modal>
+                                        <br></br>
+                                        <Button id="FPDSubmitButton" variant="outline-success" onClick={SubmitDetails}>Submit</Button>
+                                        <br></br>
+                                        {progress? <Form.Text>Uploaded {progress}%</Form.Text> :null}
+                                    </Form.Group>
+                                    
+                                : null}
                             </Form>
                             {/* <div id="missingFound">
                                 <label for="status">Status</label>
@@ -894,7 +935,8 @@ export default function FoundPetDetails(){
                     <h1><Badge id="FPDPrototypeBadge" bg="info">Prototype Post</Badge></h1>
                     <div id="postPrototype">
                             <Card className="shadow-lg" border="info" id="FPDPrototypeCard">
-                                <Card.Header id="FPDPrototypeCardHeader"><h5>{status}</h5></Card.Header>
+                                {status === "MISSING"? <Card.Header id="FPDPrototypeCardHeader" style={{backgroundColor: "lightyellow"}}><h5>{status}</h5></Card.Header> : null}
+                                {status === "FOUND"? <Card.Header id="FPDPrototypeCardHeader" style={{backgroundColor: "lightblue"}}><h5>{status}</h5></Card.Header> : null}
                                 <Card.Text id="FPDPrototypePoster">Posted by {auth.currentUser.displayName}</Card.Text>
                                 <Card.Img  variant="top" src={fileImagePic} id="FPDPrototypeImage"/>
                                 <Card.Body>

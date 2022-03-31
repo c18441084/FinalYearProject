@@ -17,14 +17,14 @@
     border-style: dashed;
     border-radius: 15px;
     background-color: white;
-    width: 90%;
+    width: 110%;
     margin-top: 12%;
 }
 
 #FPDStatusLabel{
     margin-top: 5%;
-    margin-right: 3%;
-    margin-left: -8%;
+    margin-right: 2%;
+    margin-left: -10%;
     display: inline;
 }
 
@@ -36,8 +36,8 @@
 
 #FPDTypeLabel{
     margin-top: 5%;
-    margin-right: 5%;
-    margin-left: -8%;
+    margin-right: 3%;
+    margin-left: -9%;
     display: inline;
 }
 
@@ -50,7 +50,7 @@
 #FPDOtherTypeLabel{
     margin-top: 5%;
     display: inline;
-    margin-left: -9%;
+    margin-left: -10%;
 }
 
 #FPDOtherTypeControl{
@@ -62,7 +62,7 @@
 #FPDBreedLabel{
     margin-top: 5%;
     margin-right: 2%;
-    margin-left: 1%;
+    margin-left: -1%;
     display: inline;
 }
 
@@ -74,6 +74,46 @@
 
 #FPDBreedHelpButton{
     margin-left: 5%;
+}
+
+#FPDBreedModalHeader{
+    background-color: #00bfFF;
+}
+
+#FPDBreedModalTitle{
+    text-align: center;
+    color: white;
+}
+
+#FPDBreedCardBody{
+    background: gray;
+    height: auto;
+}
+
+#FPDBreedCardImg{
+    height: auto;
+    margin-bottom: 7%;
+}
+
+#FPDBreedCardImgInput2{
+    margin-bottom: 5%;
+    margin-left: 2%;
+}
+
+#FPDBreedCardImgInput{
+    margin-left: 25%;
+}
+
+#FPDBreedResults{
+    border-radius: 25px;
+    padding: 10px;
+    margin-bottom: 2%;
+    background-color: white;
+}
+
+#FPDBreedModalFooter{
+    margin-top: 5%;
+    background-color: #00bfFF;
 }
 
 #FPDHeightLabel{
@@ -101,7 +141,7 @@
 
 #FPDColourLabel{
     margin-top: 5%;
-    margin-left: -8%;
+    margin-left: -12%;
     margin-right: 2%;
     display: inline;
 }
@@ -115,7 +155,8 @@
 #FPDNeuturedLabel{
     margin-top: 5%;
     margin-right: 2%;
-    margin-left: -20%;
+    margin-left: -15%;
+    font-size: small;
     display: inline;
 }
 
@@ -138,6 +179,15 @@
     text-align: center;
 }
 
+#FPDOpenGoogleMap{
+    margin-left: 4%;
+}
+
+#FPDSubmitButton{
+    margin-top: 3%;
+    margin-bottom: 2%;
+}
+
 #breed_guide{
     background-color: lightblue;
     color: white;
@@ -154,43 +204,6 @@
 
 #closeBreedGuideButton{
     margin-left: 95%;
-}
-
-#FPDBreedModalHeader{
-    background-color: #00bfFF;
-}
-
-#FPDBreedModalTitle{
-    text-align: center;
-    color: white;
-}
-
-#FPDBreedCardBody{
-    background: gray;
-    height: 40vh;
-}
-
-#FPDBreedCardImg{
-    height: 36vh;
-    margin-bottom: 7%;
-}
-
-#FPDBreedCardImgInput2{
-    margin-bottom: 5%;
-    margin-left: 2%;
-}
-
-#FPDBreedCardImgInput{
-    margin-left: 25%;
-}
-
-#FPDBreedCardFooter{
-    margin-top: 40%;
-}
-
-#FPDBreedModalFooter{
-    margin-top: 5%;
-    background-color: #00bfFF;
 }
 
 #height{
@@ -229,55 +242,7 @@
     margin-left: 95%;
 }
 
-#LostCard{
-    width: 100%;
-    border-radius: 25px;
-}
 
-#LostCardHeader{
-    text-align: center;
-    border-top-left-radius: 25px;
-    border-top-right-radius: 25px;
-    background-color: lightyellow;
-}
-
-#LostPostPoster{
-    opacity: 0.5;
-    text-align: center;
-}
-
-#LostPostImage{
-    border: 1px solid black;
-    margin-left: auto;
-    margin-right: auto;
-    height: 30vh;
-    width: 20vw;
-    border-radius: 25px;
-}
-
-#FPDPostType{
-    display: inline;
-}
-
-#FPDPostDogBreed{
-    display: inline;
-}
-
-#FPDPostHeight{
-    display: inline;
-}
-
-#FPDPostColour{
-    display: inline;
-}
-
-#FPDPostNeutured{
-    display: inline;
-}
-
-#FPDPostAddress{
-    display: inline;
-}
 
 #FPDPrototypeColumn{
     margin-left: 13%;
@@ -295,6 +260,8 @@
 
 #FPDPrototypeCardHeader{
     text-align: center;
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
 }
 
 #FPDPrototypePoster{
