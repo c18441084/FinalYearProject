@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import './FoundPetDetails.css';
 import '../Found/Found';
-import { Button, Modal, Dropdown, Col, Card, Row, Image } from "react-bootstrap";
+import { Button, Modal, Dropdown, Col, Card, Row, Image, Form, Badge, Container } from "react-bootstrap";
+import ReactTooltip from 'react-tooltip';
 import settingsIcon from "../../SettingsIcon.png";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import heightDiagram from './Height_Diagram.png';
@@ -12,12 +13,18 @@ import { uploadBytesResumable } from 'firebase/storage';
 import { auth } from '../../firebaseconfig';
 import { accessKeyId, secretAccessKey } from '../../keys';
 import Wallpaper from '../../Wallpaper.jpg';
-import FindMyOwner from '../Login/loginPictures/FindMyOwner.png'
+import FindMyOwner from '../Login/loginPictures/FindMyOwner.png';
+import Icon from '@mdi/react';
+import { mdiHelpCircleOutline } from '@mdi/js';
+import { mdiRuler } from '@mdi/js';
+import googleMapsMarkerIconDog from './GoogleMapsMarkers/googleMapsMarkerIconDog.png';
+import googleMapsMarkerIconCat from './GoogleMapsMarkers/googleMapsMarkerIconCat.png'
 
 export default function FoundPetDetails(){
 
     const [status, setStatus] = useState("");
     const [type, setType] = useState("");
+    const [type2, setType2] = useState("");
     const [dogBreed, setDogBreed] = useState("");
     const [height, setHeight] = useState("");
     const [colour, setColour] = useState([]);
@@ -499,205 +506,392 @@ export default function FoundPetDetails(){
             <br/>
             <Row>
                 <Col className="col-sm-5">
-                    <div id="form">
-                        <h2 id="PostInfo">Enter Details Form</h2>
-                        <div id="missingFound">
-                            <label for="status">Status</label>
-                            <select name="status" id="status" required onChange={Status} onInput = {(e) => setStatus(e.target.value.toUpperCase())}>
-                                <option value="" disabled selected hidden>Missing or Found</option>
-                                <option value="missing">Missing</option>
-                                <option value="found">Found</option>
-                            </select>
-                        </div>
-                        {showType?
-                            <div id = "typeOfAnimal">
-                                <label for="animal">Type of animal: </label>
-                                <select name="animal" id="animal" required onChange={Type} onInput = {(e) => setType(e.target.value)}>
-                                    <option value="" disabled selected hidden>Select a animal type</option>
-                                    <option value="Dog">Dog</option>
-                                    <option value="Cat">Cat</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-                        :null}
+                    <Container style={{maxWidth: "90%"}}>
+                        <Card id="FPDForm">
+                            <Card.Header>Enter Details Form</Card.Header>
+                            <Form>
+                                <Form.Group className='mt-3 mb-2'>
+                                    <Form.Label id="FPDStatusLabel">Status: </Form.Label>
+                                    <Form.Select id="FPDStatusOption" required onChange={Status} onInput = {(e) => setStatus(e.target.value.toUpperCase())}>
+                                        <option value="" disabled selected="selected">Missing or Found</option>
+                                        <option value="missing">Missing</option>
+                                        <option value="found">Found</option>
+                                    </Form.Select>
+                                </Form.Group>
 
-                        {showBreed?
-                            <div id = "breed">
-                                <label for="Dbreed">Dog Breed: </label>  
-                                <select name="dog" id="Dbreed" onChange={DogBreed} onInput = {(breed) => setDogBreed(breed.target.value)}>
-                                    <option value="" disabled selected hidden>Select a Dog Breed</option>
-                                    <option value="unknown">Unknown</option>
-                                    {breedList.map(function (element){
-                                        return (
-                                            <option>{element}</option>
-                                        )
-                                    })}
-                                </select>
-                                <button id = "breedHelp" onClick={BreedHelp}>Need Help?</button>
-                                <br/>
-                            </div>
-                        : null}
-                        {type == "other"?
-                            <div style={{marginBottom: "1%"}}>
-                                <label for="otherType">Enter Animal: </label>
-                                <input id="otherType" type="text" min="0" max="20" onInput={(e) => setType(e.target.value)}/>
-                            </div>
-                        :null}
-                        {showBreedGuide?
-                            <div id = "breed_guide">
-                                <Modal show={showBreedGuide}>
-                                    <Modal.Header id="FPDBreedModalHeader">
-                                        <Modal.Title id="FPDBreedModalTitle">Breed Helper</Modal.Title>
-                                        <Button onClick={closeBreedHelp}>X</Button>
-                                    </Modal.Header>
-                                    <Modal.Body>
-                                        <label for="DbreedHelp">Select a Dog Breed to view image: </label>
-                                        <select name="dogimage" id="DbreedHelp" onChange={DogImages} onInput= {(breedhelp) => setDogBreedHelp(breedhelp.target.value)}>
-                                            <option value="" disabled selected hidden>Select a Dog Breed</option>
-                                            {Object.keys(breedList2).map(function (element){
+                                {showType?
+                                <Form.Group className='mt-1 mb-2'>
+                                    <Form.Label id="FPDTypeLabel">Type: </Form.Label>
+                                    <Form.Select id="FPDTypeOption" required onChange={Type} onInput = {(e) => (setType(e.target.value), setType2(e.target.value))}>
+                                            <option value="" disabled selected="selected">Select a animal type</option>
+                                            <option value="Dog">Dog</option>
+                                            <option value="Cat">Cat</option>
+                                            <option value="Other">Other</option>
+                                    </Form.Select>
+                                </Form.Group>
+                                :null}
+
+                                {type2 == "Other"?
+                                    <Form.Group className='mt-1 mb-2'>
+                                        <Form.Label id="FPDOtherTypeLabel">Animal: </Form.Label>
+                                        <Form.Control id="FPDOtherTypeControl" placeholder="Enter Animal" type="text" min="0" max="20" onInput={(e) => setType(e.target.value)}/>
+                                    </Form.Group>
+                                :null}
+
+                                {showBreed?
+                                <Form.Group className='mt-1 mb-2'>
+                                    <Form.Label id="FPDBreedLabel">Dog Breed: </Form.Label>
+                                        <Form.Select name="dog" id="FPDBreedOption" onChange={DogBreed} onInput = {(breed) => setDogBreed(breed.target.value)}>
+                                            <option value="" disabled selected="selected">Select a Dog Breed</option>
+                                            <option value="unknown">Unknown</option>
+                                            {breedList.map(function (element){
                                                 return (
                                                     <option>{element}</option>
                                                 )
                                             })}
-                                        </select>
-                                        {showBreedHelpImages?
-                                            <div>
-                                                {breedListImages.map(function (element){
-                                                    return(
-                                                        <img src={element} id="breedImage"></img>
+                                        </Form.Select>
+                                        <Button data-tip data-for="BreedHelpButton" id="FPDBreedHelpButton" variant="outline-primary" onClick={BreedHelp}>
+                                            <Icon path={mdiHelpCircleOutline} size={1}></Icon>
+                                        </Button>
+                                        <ReactTooltip id="BreedHelpButton" place="top" effect="solid">Breed Identifier</ReactTooltip>
+                                </Form.Group>
+                                :null}
+
+                                {showBreedGuide?
+                                <div id = "breed_guide">
+                                    <Modal show={showBreedGuide}>
+                                        <Modal.Header id="FPDBreedModalHeader">
+                                            <Modal.Title id="FPDBreedModalTitle">Breed Helper</Modal.Title>
+                                            <Button variant="warning" onClick={closeBreedHelp}>X</Button>
+                                        </Modal.Header>
+                                        <Modal.Body>
+                                            <label for="DbreedHelp">Select a Dog Breed to view image: </label>
+                                            <select name="dogimage" id="DbreedHelp" onChange={DogImages} onInput= {(breedhelp) => setDogBreedHelp(breedhelp.target.value)}>
+                                                <option value="" disabled selected="selected">Select a Dog Breed</option>
+                                                {Object.keys(breedList2).map(function (element){
+                                                    return (
+                                                        <option>{element}</option>
                                                     )
                                                 })}
-                                            </div>
-                                        : null}
-                                        <hr></hr>
-                                        <Card>
-                                            <Card.Body id="FPDBreedCardBody">
-                                                {breedIdentifierTeller?
-                                                    <div>
-                                                        <Card.Img src={breedIdentifierFilePic} id="FPDBreedCardImg"></Card.Img>
-                                                        {breedIdentity?<div><Card.Text>Breed: {breedIdentity}<br></br>Confidence: {confidence}%</Card.Text></div>: <Card.Text>Breed: Loading...</Card.Text>}
-                                                        {breedIdentifierTeller2?<div><Card.Text style={{display: "inline"}}>Choose Another File: </Card.Text>
-                                                        <input id="FPDBreedCardImgInput2" type="file" onChange={BreedIdentifier} onInput={(image) => setBreedIdentifierFile(image.target.files[0])}/></div>:null}
-                                                    </div>
-                                                
-                                                :
-                                                    <div>
-                                                        <Card.Text style={{textAlign: "center", marginTop: "25%"}}>Upload Image</Card.Text>
-                                                        <input id="FPDBreedCardImgInput" type="file" onChange={BreedIdentifier} onInput={(image) => (setBreedIdentifierFile(image.target.files[0]), BreedIdentifier())}/>
-                                                    </div>
-                                                }
-                                            </Card.Body>
-                                            <Card.Footer id="FPDBreedCardFooter"></Card.Footer>
-                                        </Card>        
-                                    </Modal.Body>
-                                    <Modal.Footer id="FPDBreedModalFooter"></Modal.Footer>
-                                </Modal>
-                            </div>
-                        : null}
-
-                        {showHeight? 
-                            <div id="height">
-                                <label for="heightInput">Height: </label>
-                                <input id="heightInput" type="number" min = "0" max = "200" onInput={(height) => setHeight(height.target.value)}/>
-                                <label for="heightInput">cm</label>
-                                <button id="heightHelp" onClick={heightGuide}>?</button>
-                            </div> 
-                        : null}
-                        {showHeightGuide?
-                            <div id="height_guide">
-                                <button id="closeHeightGuideButton" onClick={closeHeightGuide}>X</button>
-                                <h3>Measure from the front foot of the animal to the top of the head.</h3>
-                                <img id="heightGuideImage" src={heightDiagram}/>
-                            </div>
-                        : null}
-
-                        {showColourChoice? 
-                            <div id="colour_choice">
-                                <label for="colourInput">Colour: </label>
-                                <select name="colourInput" id="colourInput" onInput={(color) => colourList(color.target.value)}>
-                                    <option value="" disabled selected hidden>Select a Colour</option>       
-                                    <option value="Black">Black</option>
-                                    <option value="White">White</option>
-                                    <option value="Brown">Brown</option>   
-                                    <option value="Red">Red</option>     
-                                    <option value="Gold">Gold</option>    
-                                    <option value="Gray">Gray</option> 
-                                </select>
-                            </div>
-                        : null}
-
-                        {showColourList?
-                            <div>
-                                <br></br>
-                                {colour.map(function(color){
-                                    console.log(color);
-                                    return(
-                                        <div style={{display: "inline"}}>
-                                            <p style={{display: "inline", marginRight: "2%", border: "1px solid black", borderRadius: "15px", padding: "5px"}}>
-                                                {color}<button style={{height: "10px", width: "10px", fontSize: "9px"}} onClick={() => removeColour(color)}>X</button>
-                                            </p>
-                                        </div>
-                                    )
-                                })}
-                                <br></br>
-                            </div>
-                        :null}
-
-                        {showNeuturedChoice?
-                            <div id="neutured_choice">
-                                <label for="neutured">Neutured or Spayed(Optional)</label>
-                                <select name="neutured" id="neutured" onInput={(e) => setNeutured(e.target.value)}>
-                                    <option value="Unknown" selected="selected">Unknown</option>
-                                    <option value="Neutured">Neutured</option>
-                                    <option value="Spayed">Spayed</option>
-                                    <option value="Neither">Neither</option>
-                                </select>
-                            </div>
-                        : null}
-
-                        {showFileUpload?
-                            <div id="file_upload">
-                                <input type="file" onChange={fileSubmitted} onInput={(image) => setFileImage(image.target.files[0])}/>
-                            </div>
-                        :null}
-                        {showFilePic?
-                            <div id="show_image_submitted">
-                                <button id = "remove_image" onClick={deleteImage}>X</button>
-                                <img src={fileImagePic} height={"25%"} width={"25%"} ></img>
-                            </div>
-                        :null}
-
-                        {showLocationPick?
-                            <div>
-                                <div>
-                                    Address: <p>{location}</p>
-                                </div>
-                                <div id="Map">
-                                    <h3>Uploaded {progress}%</h3>
-                                    <Button onClick={() => setShowGoogleMap(true)}>Open Map</Button>
-
-                                    <Modal show={showGoogleMap} onHide={closeMap}>
-                                        <Modal.Header>
-                                            <Modal.Title>Pick Location</Modal.Title>
-                                        </Modal.Header>
-                                        <Modal.Body style={{height: "50vh", width:"60vh", marginBottom: "5%"}}>
-                                            <GoogleMap id = "googleMap" />
+                                            </select>
+                                            {showBreedHelpImages?
+                                                <div>
+                                                    {breedListImages.map(function (element){
+                                                        return(
+                                                            <img src={element} id="breedImage"></img>
+                                                        )
+                                                    })}
+                                                </div>
+                                            : null}
+                                            <hr></hr>
+                                            <Card>
+                                                <Card.Body id="FPDBreedCardBody">
+                                                    {breedIdentifierTeller?
+                                                        <div>
+                                                            <Card.Img src={breedIdentifierFilePic} id="FPDBreedCardImg"></Card.Img>
+                                                            {breedIdentity?<div><Card.Text>Breed: {breedIdentity}<br></br>Confidence: {confidence}%</Card.Text></div>: <Card.Text>Breed: Loading...</Card.Text>}
+                                                            {breedIdentifierTeller2?<div><Card.Text style={{display: "inline"}}>Choose Another File: </Card.Text>
+                                                            <input id="FPDBreedCardImgInput2" type="file" onChange={BreedIdentifier} onInput={(image) => setBreedIdentifierFile(image.target.files[0])}/></div>:null}
+                                                        </div>
+                                                    
+                                                    :
+                                                        <div>
+                                                            <Card.Text style={{textAlign: "center", marginTop: "25%"}}>Upload Image</Card.Text>
+                                                            <input id="FPDBreedCardImgInput" type="file" onChange={BreedIdentifier} onInput={(image) => (setBreedIdentifierFile(image.target.files[0]), BreedIdentifier())}/>
+                                                        </div>
+                                                    }
+                                                </Card.Body>
+                                                <Card.Footer id="FPDBreedCardFooter"></Card.Footer>
+                                            </Card>        
                                         </Modal.Body>
-                                        <Modal.Footer>
-                                            <Button onClick={submitLocation}>Submit</Button>
-                                            <Button onClick={closeMap}>Close Map</Button>
-                                        </Modal.Footer>
+                                        <Modal.Footer id="FPDBreedModalFooter"></Modal.Footer>
                                     </Modal>
                                 </div>
-                                <div>
-                                    <Button id="submitButton" variant="outline-success" onClick={SubmitDetails}>Submit</Button> 
-                                </div>
+                                : null}
+
+                            {showHeight? 
+                            <Form.Group className='mt-1 mb-2'>
+                                    <Form.Label id="FPDHeightLabel">Height: </Form.Label>
+                                    <Form.Control id="FPDHeightControl" type="number" min = "0" max = "200" onInput={(height) => setHeight(height.target.value)} />
+                                    <Form.Label id="FPDHeightControlcm">cm</Form.Label>
+
+                                    <Button id="FPDHeightHelpButton" data-tip data-for="HeightHelpButton" onClick={heightGuide}>
+                                        <Icon path={mdiRuler} size={1}></Icon>
+                                    </Button>
+                                    <ReactTooltip id="HeightHelpButton" place="top" effect="solid">Height Helper</ReactTooltip>
+                                </Form.Group>
+                                : null}
+
+                                {showHeightGuide?
+                                <Modal id="FPDHeightModal" show={showHeightGuide}>
+                                    <Modal.Header id="FPDHeightModalHeader">
+                                        <Modal.Title id="FPDHeightModalTitle">Height Helper</Modal.Title>
+                                        <Button onClick={closeHeightGuide} variant="warning">X</Button>
+                                    </Modal.Header>
+                                    <Modal.Body>
+                                        <Image id="FPDHeightModalImage" src={heightDiagram}></Image>
+                                    </Modal.Body>
+                                    <Modal.Footer id="FPDHeightModalFooter">
+                                        <Button onClick={closeHeightGuide} variant="warning">Close</Button>
+                                    </Modal.Footer>
+                                </Modal>
+                                : null}
+
+                                {showColourChoice? 
+                                <Form.Group className='mt-1 mb-2'>
+                                    <Form.Label id="FPDColourLabel">Colour: </Form.Label>
+                                    <Form.Select id="FPDColourOption" onInput={(color) => colourList(color.target.value)}>
+                                            <option value="" disabled selected="selected">Select a Colour</option>       
+                                            <option value="Black">Black</option>
+                                            <option value="White">White</option>
+                                            <option value="Brown">Brown</option>   
+                                            <option value="Red">Red</option>     
+                                            <option value="Gold">Gold</option>    
+                                            <option value="Gray">Gray</option> 
+                                    </Form.Select>
+                                </Form.Group>
+                                : null}  
+
+                                {showColourList?
+                                <Form.Group>
+                                    {colour.map(function(color){
+                                        console.log(color);
+                                        return(
+                                            <div style={{display: "inline"}}>
+                                                <p style={{display: "inline", marginRight: "2%", border: "1px solid black", borderRadius: "15px", padding: "5px"}}>
+                                                    {color}<Button size="sm" style={{height: "10px", width: "10px", fontSize: "9px"}} onClick={() => removeColour(color)}>X</Button>
+                                                </p>
+                                            </div>
+                                        )
+                                    })}
+                                </Form.Group>
+                                :null}      
+
+                                {showNeuturedChoice?
+                                <Form.Group className='mt-1 mb-2'>
+                                    <Form.Label id="FPDNeuturedLabel">Neutured or Spayed: </Form.Label>
+                                    <Form.Select id="FPDNeuturedOption" onInput={(e) => setNeutured(e.target.value)}>
+                                        <option value="Unknown" disable selected="selected">Optional</option>
+                                        <option value="Unknown" selected="selected">Unknown</option>
+                                        <option value="Neutured">Neutured</option>
+                                        <option value="Spayed">Spayed</option>
+                                        <option value="Neither">Neither</option>
+                                    </Form.Select>
+                                </Form.Group>
+                                : null} 
+
+                                {showFileUpload?
+                                <Form.Group className='mt-1 mb-2'>
+                                    <Form.Label id="FPDFileUploadLabel">Upload Image: </Form.Label>
+                                    <Form.Control id="FPDFileUpload" type="file" onChange={fileSubmitted} onInput={(image) => setFileImage(image.target.files[0])}/>
+                                </Form.Group>
+                                :null}
+                                {showFilePic?
+                                    <div id="show_image_submitted">
+                                        <button id = "remove_image" onClick={deleteImage}>X</button>
+                                        <img src={fileImagePic} height={"25%"} width={"25%"} ></img>
+                                    </div>
+                                :null}
+                            </Form>
+                            {/* <div id="missingFound">
+                                <label for="status">Status</label>
+                                <select name="status" id="status" required onChange={Status} onInput = {(e) => setStatus(e.target.value.toUpperCase())}>
+                                    <option value="" disabled selected hidden>Missing or Found</option>
+                                    <option value="missing">Missing</option>
+                                    <option value="found">Found</option>
+                                </select>
                             </div>
-                        : null}
-                    </div>
+                            {showType?
+                                <div id = "typeOfAnimal">
+                                    <label for="animal">Type of animal: </label>
+                                    <select name="animal" id="animal" required onChange={Type} onInput = {(e) => setType(e.target.value)}>
+                                        <option value="" disabled selected hidden>Select a animal type</option>
+                                        <option value="Dog">Dog</option>
+                                        <option value="Cat">Cat</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            :null}
+
+                            {showBreed?
+                                <div id = "breed">
+                                    <label for="Dbreed">Dog Breed: </label>  
+                                    <select name="dog" id="Dbreed" onChange={DogBreed} onInput = {(breed) => setDogBreed(breed.target.value)}>
+                                        <option value="" disabled selected hidden>Select a Dog Breed</option>
+                                        <option value="unknown">Unknown</option>
+                                        {breedList.map(function (element){
+                                            return (
+                                                <option>{element}</option>
+                                            )
+                                        })}
+                                    </select>
+                                    <button id = "breedHelp" onClick={BreedHelp}>Need Help?</button>
+                                    <br/>
+                                </div>
+                            : null}
+                            {type == "other"?
+                                <div style={{marginBottom: "1%"}}>
+                                    <label for="otherType">Enter Animal: </label>
+                                    <input id="otherType" type="text" min="0" max="20" onInput={(e) => setType(e.target.value)}/>
+                                </div>
+                            :null}
+                            {showBreedGuide?
+                                <div id = "breed_guide">
+                                    <Modal show={showBreedGuide}>
+                                        <Modal.Header id="FPDBreedModalHeader">
+                                            <Modal.Title id="FPDBreedModalTitle">Breed Helper</Modal.Title>
+                                            <Button onClick={closeBreedHelp}>X</Button>
+                                        </Modal.Header>
+                                        <Modal.Body>
+                                            <label for="DbreedHelp">Select a Dog Breed to view image: </label>
+                                            <select name="dogimage" id="DbreedHelp" onChange={DogImages} onInput= {(breedhelp) => setDogBreedHelp(breedhelp.target.value)}>
+                                                <option value="" disabled selected hidden>Select a Dog Breed</option>
+                                                {Object.keys(breedList2).map(function (element){
+                                                    return (
+                                                        <option>{element}</option>
+                                                    )
+                                                })}
+                                            </select>
+                                            {showBreedHelpImages?
+                                                <div>
+                                                    {breedListImages.map(function (element){
+                                                        return(
+                                                            <img src={element} id="breedImage"></img>
+                                                        )
+                                                    })}
+                                                </div>
+                                            : null}
+                                            <hr></hr>
+                                            <Card>
+                                                <Card.Body id="FPDBreedCardBody">
+                                                    {breedIdentifierTeller?
+                                                        <div>
+                                                            <Card.Img src={breedIdentifierFilePic} id="FPDBreedCardImg"></Card.Img>
+                                                            {breedIdentity?<div><Card.Text>Breed: {breedIdentity}<br></br>Confidence: {confidence}%</Card.Text></div>: <Card.Text>Breed: Loading...</Card.Text>}
+                                                            {breedIdentifierTeller2?<div><Card.Text style={{display: "inline"}}>Choose Another File: </Card.Text>
+                                                            <input id="FPDBreedCardImgInput2" type="file" onChange={BreedIdentifier} onInput={(image) => setBreedIdentifierFile(image.target.files[0])}/></div>:null}
+                                                        </div>
+                                                    
+                                                    :
+                                                        <div>
+                                                            <Card.Text style={{textAlign: "center", marginTop: "25%"}}>Upload Image</Card.Text>
+                                                            <input id="FPDBreedCardImgInput" type="file" onChange={BreedIdentifier} onInput={(image) => (setBreedIdentifierFile(image.target.files[0]), BreedIdentifier())}/>
+                                                        </div>
+                                                    }
+                                                </Card.Body>
+                                                <Card.Footer id="FPDBreedCardFooter"></Card.Footer>
+                                            </Card>        
+                                        </Modal.Body>
+                                        <Modal.Footer id="FPDBreedModalFooter"></Modal.Footer>
+                                    </Modal>
+                                </div>
+                            : null}
+
+                            {showHeight? 
+                                <div id="height">
+                                    <label for="heightInput">Height: </label>
+                                    <input id="heightInput" type="number" min = "0" max = "200" onInput={(height) => setHeight(height.target.value)}/>
+                                    <label for="heightInput">cm</label>
+                                    <button id="heightHelp" onClick={heightGuide}>?</button>
+                                </div> 
+                            : null}
+                            {showHeightGuide?
+                                <div id="height_guide">
+                                    <button id="closeHeightGuideButton" onClick={closeHeightGuide}>X</button>
+                                    <h3>Measure from the front foot of the animal to the top of the head.</h3>
+                                    <img id="heightGuideImage" src={heightDiagram}/>
+                                </div>
+                            : null}
+
+                            {showColourChoice? 
+                                <div id="colour_choice">
+                                    <label for="colourInput">Colour: </label>
+                                    <select name="colourInput" id="colourInput" onInput={(color) => colourList(color.target.value)}>
+                                        <option value="" disabled selected hidden>Select a Colour</option>       
+                                        <option value="Black">Black</option>
+                                        <option value="White">White</option>
+                                        <option value="Brown">Brown</option>   
+                                        <option value="Red">Red</option>     
+                                        <option value="Gold">Gold</option>    
+                                        <option value="Gray">Gray</option> 
+                                    </select>
+                                </div>
+                            : null}
+
+                            {showColourList?
+                                <div>
+                                    <br></br>
+                                    {colour.map(function(color){
+                                        console.log(color);
+                                        return(
+                                            <div style={{display: "inline"}}>
+                                                <p style={{display: "inline", marginRight: "2%", border: "1px solid black", borderRadius: "15px", padding: "5px"}}>
+                                                    {color}<button style={{height: "10px", width: "10px", fontSize: "9px"}} onClick={() => removeColour(color)}>X</button>
+                                                </p>
+                                            </div>
+                                        )
+                                    })}
+                                    <br></br>
+                                </div>
+                            :null}
+
+                            {showNeuturedChoice?
+                                <div id="neutured_choice">
+                                    <label for="neutured">Neutured or Spayed(Optional)</label>
+                                    <select name="neutured" id="neutured" onInput={(e) => setNeutured(e.target.value)}>
+                                        <option value="Unknown" selected="selected">Unknown</option>
+                                        <option value="Neutured">Neutured</option>
+                                        <option value="Spayed">Spayed</option>
+                                        <option value="Neither">Neither</option>
+                                    </select>
+                                </div>
+                            : null}
+
+                            {showFileUpload?
+                                <div id="file_upload">
+                                    <input type="file" onChange={fileSubmitted} onInput={(image) => setFileImage(image.target.files[0])}/>
+                                </div>
+                            :null}
+                            {showFilePic?
+                                <div id="show_image_submitted">
+                                    <button id = "remove_image" onClick={deleteImage}>X</button>
+                                    <img src={fileImagePic} height={"25%"} width={"25%"} ></img>
+                                </div>
+                            :null}
+
+                            {showLocationPick?
+                                <div>
+                                    <div>
+                                        Address: <p>{location}</p>
+                                    </div>
+                                    <div id="Map">
+                                        <h3>Uploaded {progress}%</h3>
+                                        <Button onClick={() => setShowGoogleMap(true)}>Open Map</Button>
+
+                                        <Modal show={showGoogleMap} onHide={closeMap}>
+                                            <Modal.Header>
+                                                <Modal.Title>Pick Location</Modal.Title>
+                                            </Modal.Header>
+                                            <Modal.Body style={{height: "50vh", width:"60vh", marginBottom: "5%"}}>
+                                                <GoogleMap id = "googleMap" />
+                                            </Modal.Body>
+                                            <Modal.Footer>
+                                                <Button onClick={submitLocation}>Submit</Button>
+                                                <Button onClick={closeMap}>Close Map</Button>
+                                            </Modal.Footer>
+                                        </Modal>
+                                    </div>
+                                    <div>
+                                        <Button id="submitButton" variant="outline-success" onClick={SubmitDetails}>Submit</Button> 
+                                    </div>
+                                </div>
+                            : null} */}
+                        </Card>
+                    </Container>
                 </Col>
                 
                 <Col className="col-sm-3" id="FPDPrototypeColumn">
+                    <h1><Badge id="FPDPrototypeBadge" bg="info">Prototype Post</Badge></h1>
                     <div id="postPrototype">
                             <Card className="shadow-lg" border="info" id="FPDPrototypeCard">
                                 <Card.Header id="FPDPrototypeCardHeader"><h5>{status}</h5></Card.Header>

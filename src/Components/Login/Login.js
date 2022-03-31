@@ -23,7 +23,7 @@ function Login() {
       // maybe trigger a loading screen
       return;
     }
-    if (user) history("/home");
+    if (user) history("/FindMyOwner/home");
   }, [user, loading]);
 
   function confirm(){
