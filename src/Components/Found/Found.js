@@ -1,7 +1,7 @@
 import db2, {logout} from "../../firebaseconfig";
 import './Found.css'
 import { useState, useEffect } from "react";
-import { Button, Modal, Dropdown, Card, Col, Row, Nav, Navbar, NavDropdown, Container, Form, Image } from "react-bootstrap";
+import { Button, Dropdown, Card, Col, Row, Nav, Navbar, NavDropdown, Container, Form, Image } from "react-bootstrap";
 import {Link} from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -23,7 +23,6 @@ export default function Found(){
     const [showFilterChoices, setShowFilterChoices] = useState(false);
     const [breedList, setBreedList] = useState([]);
     const [heightRange, setHeightRange] = useState([]);
-    const [timeShow, setTimeShow] = useState(0);
     const [colourHolder, setColourHolder] = useState([]);
 
     const db = db2.ref("Posts");
@@ -115,13 +114,6 @@ export default function Found(){
         let filterNeutured = [];
         let tempArray = [];
         let itemsFilteredNum = 0;
-
-        if(item === "oldest"){
-            timeShow = 1;
-        }
-        if(item === "Most Recent"){
-            timeShow = 0;
-        }
 
         setPosts(postsNeverChange);
         originalPosts = postsNeverChange;
@@ -332,10 +324,12 @@ export default function Found(){
                 tempArray.push(originalPosts[i]);
             }
         }
-        setPosts(tempArray);
-        console.log(timeShow);
-        if(timeShow === 1){
-            setPosts(posts.reverse());
+        console.log(tempArray);
+        if(item === "oldest"){
+            setPosts(tempArray.reverse());
+        }
+        else{
+            setPosts(tempArray);
         }
         setShowFilterChoices(true);
     }
@@ -491,7 +485,6 @@ export default function Found(){
                 <Row>
                 {posts.length >= 0? 
                 posts.map(function(post){
-                    console.log(posts)
                     return(
                         <Col className="col-sm-4 ml-20" id="FoundColumn">
                         <Card className="shadow-lg" border="info" id="FoundCard">

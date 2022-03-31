@@ -131,6 +131,12 @@
 #PostInfoDeletePostButton{
     width: 5%;
     margin-bottom: 1%;
+    margin-right: 1%;
+}
+
+#PostInfoShareButton{
+    width: 5%;
+    margin-bottom: 1%;
 }
 
 #PostInfoCommentSection{

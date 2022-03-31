@@ -9,16 +9,134 @@
     text-align: center;
 }
 
-#form{
+#FPDForm{
     text-align: center;
     box-shadow: 0 1.4rem 8rem rgb(0,0,0,.2);
-    margin-left: 30%;
+    margin-left: 25%;
     border: 1px black;
     border-style: dashed;
     border-radius: 15px;
     background-color: white;
+    width: 90%;
+    margin-top: 12%;
 }
 
+#FPDStatusLabel{
+    margin-top: 5%;
+    margin-right: 3%;
+    margin-left: -8%;
+    display: inline;
+}
+
+#FPDStatusOption{
+    width: 60%;
+    display: inline;
+    text-align: center;
+}
+
+#FPDTypeLabel{
+    margin-top: 5%;
+    margin-right: 5%;
+    margin-left: -8%;
+    display: inline;
+}
+
+#FPDTypeOption{
+    width: 60%;
+    display: inline;
+    text-align: center;
+}
+
+#FPDOtherTypeLabel{
+    margin-top: 5%;
+    display: inline;
+    margin-left: -9%;
+}
+
+#FPDOtherTypeControl{
+    width: 60%;
+    display: inline;
+    text-align: center;
+}
+
+#FPDBreedLabel{
+    margin-top: 5%;
+    margin-right: 2%;
+    margin-left: 1%;
+    display: inline;
+}
+
+#FPDBreedOption{
+    width: 60%;
+    display: inline;
+    text-align: center;
+}
+
+#FPDBreedHelpButton{
+    margin-left: 5%;
+}
+
+#FPDHeightLabel{
+    margin-top: 5%;
+    margin-left: 5%;
+    margin-right: 2%;
+    display: inline;
+}
+
+#FPDHeightControl{
+    width: 60%;
+    display: inline;
+    text-align: center;
+}
+
+#FPDHeightLabelcm{
+    margin-top: 5%;
+    margin-right: 2%;
+    display: inline;
+}
+
+#FPDHeightHelpButton{
+    margin-left: 2%;
+}
+
+#FPDColourLabel{
+    margin-top: 5%;
+    margin-left: -8%;
+    margin-right: 2%;
+    display: inline;
+}
+
+#FPDColourOption{
+    width: 60%;
+    display: inline;
+    text-align: center;
+}
+
+#FPDNeuturedLabel{
+    margin-top: 5%;
+    margin-right: 2%;
+    margin-left: -20%;
+    display: inline;
+}
+
+#FPDNeuturedOption{
+    width: 60%;
+    display: inline;
+    text-align: center;
+}
+
+#FPDFileUploadLabel{
+    margin-top: 5%;
+    margin-right: 3%;
+    margin-left: -17%;
+    display: inline;
+}
+
+#FPDFileUpload{
+    width: 60%;
+    display: inline;
+    text-align: center;
+}
 
 #breed_guide{
     background-color: lightblue;
@@ -79,13 +197,26 @@
     display: inline-block;
 }
 
-#height_guide{
-    background-color: lightblue;
+#FPDHeightModal{
+    margin-top: 15%;
+}
+
+#FPDHeightModalHeader{
+    background-color: #00bfFF;
+}
+
+#FPDHeightModalTitle{
+    text-align: center;
     color: white;
-    margin-left: 20%;
-    margin-right: 15%;
-    padding-left: 5%;
-    padding-bottom: 5%;
+}
+
+#FPDHeightModalImage{
+    height: 100%;
+    width: 100%;
+}
+
+#FPDHeightModalFooter{
+    background-color: #00bfFF;
 }
 
 #heightGuideImage{
@@ -155,6 +286,11 @@
 #FPDPrototypeCard{
     width: 100%;
     border-radius: 25px;
+}
+
+#FPDPrototypeBadge{
+    color: white;
+    margin-left: 17%;
 }
 
 #FPDPrototypeCardHeader{

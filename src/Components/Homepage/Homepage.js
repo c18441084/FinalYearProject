@@ -28,7 +28,6 @@ export default function Homepage(){
     const db = db2.ref("Posts");
     const [recentPosts, setRecentPosts] = useState([]);
     const [nearPosts, setNearPosts] = useState([]);
-    const [mileRadius, setMileRadius] = useState(10);
 
     function myAccount(){
         window.location = "/FindMyOwner/account";
@@ -84,7 +83,7 @@ export default function Homepage(){
                         const { lat, lng } = await response.results[0].geometry.location;
                         address = `${lat},${lng}`;
                         distance = gettingDistance(latitude.value, longitude.value, address);
-                        if(distance < mileRadius){
+                        if(distance < 10){
                             postsArray.push({id, ...postsFromDatabase[id]});
                         }
                         },
@@ -145,7 +144,8 @@ export default function Homepage(){
         }
     }
 
-    function changeMileRadius(){
+    function changeMileRadius(miles){
+        let mileRadius = miles;
         navigator.geolocation.getCurrentPosition(changePosition);
         function changePosition(position){
             let distance = 0;
@@ -165,6 +165,7 @@ export default function Homepage(){
                             const { lat, lng } = await response.results[0].geometry.location;
                             address = `${lat},${lng}`;
                             distance = gettingDistance(latitude.value, longitude.value, address);
+                            console.log(mileRadius);
                             if(distance < mileRadius){
                                 postsArray.push({id, ...postsFromDatabase[id]});
                             }
@@ -258,7 +259,7 @@ export default function Homepage(){
 
                     <div id = "PostsNearMe" style={{backgroundImage: `url(${Wallpaper})`, marginLeft: "37%", position: "absolute", borderLeft: "6px solid #00bfFF", overflowX: "scroll", maxHeight: "90%", width: "auto"}}>
                     <label for="miles">Posts within: </label>
-                                    <select name="miles" id="miles" onInput={(e) => (setMileRadius(e.target.value), changeMileRadius())}>
+                                    <select name="miles" id="miles" onInput={(e) => changeMileRadius(e.target.value)}>
                                         <option value="5">5 miles</option>
                                         <option value="10" selected="selected">10 miles</option>
                                         <option value="20">20 miles</option>
