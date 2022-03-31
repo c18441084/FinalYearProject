@@ -18,8 +18,7 @@ import {mdiTrashCanOutline} from '@mdi/js';
 import { mdiShare } from '@mdi/js';
 import GoogleMap from './GoogleMapsShowLocation';
 import FindMyOwner from '../Login/loginPictures/FindMyOwner.png';
-import Parser from 'html-react-parser';
-
+import { TwitterIcon, TwitterShareButton, WhatsappIcon, WhatsappShareButton } from 'react-share';
 
 export default function Homepage(){
 
@@ -35,12 +34,14 @@ export default function Homepage(){
     const [show, setShow] = useState(false);
     const [showMap, setShowMap] = useState(false);
     const [closeMap, setCloseMap] = useState(true);
+    const [url, setUrl] = useState();
 
     function myAccount(){
         window.location = "/FindMyOwner/account";
     }
 
     useEffect(() =>{
+        setUrl(`http://localhost:3000/FindMyOwner/post/${id}`);
         db.on("value", (snapshot) => {
             const postsFromDatabase = snapshot.val();
             let postArray = [];
@@ -182,15 +183,6 @@ export default function Homepage(){
         }
     }
 
-    function share(){
-        const code = "<Card id=\"PostInfoPostBox\" className=\"shadow-lg\">{postInfo?.map(function(post){return(<div>{post.status === \"MISSING\"?<Card.Text id=\"PostInfoStatusBar\" style={{backgroundColor: \'lightyellow\'}}><b>{post.status}</b></Card.Text>:<Card.Text id=\"PostInfoStatusBar\" style={{backgroundColor: \'lightblue\'}}><b>{post.status}</b></Card.Text>}<Card.Img id=\"PostInfoImage\" src={post.image}></Card.Img><Card.Text id=\"PostInfoStatus\"><b>Status: </b>{post.status}</Card.Text><Card.Text id=\"PostInfoType\"><b>Type: </b>{post.type}</Card.Text>{post.dogBreed?<Card.Text id=\"PostInfoDogBreed\"><b>Breed: </b>{post.dogBreed}</Card.Text>:<Card.Text id=\"PostInfoDogBreed\"><b>Breed: </b>Unknown</Card.Text>}<Card.Text id=\"PostInfoHeight\"><b>Height: </b>{post.height}cm</Card.Text><Card.Text id=\"PostInfoColour\">{post.colour < 2?<b>Colour: </b> : <b>Colours: </b>}{post.colour?.map(function(element) {return(<div id=\"PostInfoColourDisplay\">{element}</div>)})}</Card.Text><Card.Text id=\"PostInfoNeutured\"><b>Neutured/Spayed: </b>{post.neutured}</Card.Text>{post.status === \"FOUND\"?<Card.Text id=\"PostInfoAddress\"><b>Found at: </b>{post.address}</Card.Text>:<Card.Text id=\"PostInfoAddress\"><b>Last seen at: </b>{post.address}</Card.Text>}</div>)})}</Card>"
-        const navUrl =
-            'https://twitter.com/intent/tweet?text=' +
-            `http://localhost:3000/FindMyOwner/post/${id}` + 
-            `${Parser(code)}`
-        window.open(navUrl, '_blank');
-    }
-
     function home(){
         window.location = "/FindMyOwner/home";
     }
@@ -273,9 +265,16 @@ export default function Homepage(){
                                         <ReactTooltip id="deletePostButton" place="top" effect="solid">Delete Post</ReactTooltip>
                                     </Button>
                                 :null}
-                                <Button id="PostInfoShareButton" data-tip data-for="sharePost" variant="outline-primary" onClick={() => share()}>
+                                {/* <Button id="PostInfoShareButton" data-tip data-for="sharePost" variant="outline-primary" onClick={() => share()}>
                                     <Icon path={mdiShare} size={1}></Icon>
-                                </Button>
+                                </Button> */}
+                                <TwitterShareButton url={url}>
+                                    <TwitterIcon size={32} round={true} />
+                                </TwitterShareButton>
+                                <ReactTooltip id="sharePost" place="top" effect="solid">Share post to Facebook</ReactTooltip>
+                                <WhatsappShareButton url={url}>
+                                    <WhatsappIcon size={32} round={true} />
+                                </WhatsappShareButton>
                                 <ReactTooltip id="sharePost" place="top" effect="solid">Share post to Facebook</ReactTooltip>
                             </div>
                         </div>
