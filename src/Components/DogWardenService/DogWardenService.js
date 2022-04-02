@@ -1,8 +1,10 @@
 import { mdiNoteMultipleOutline } from "@mdi/js";
 import { useState, useEffect } from "react";
-import { Button, Modal, Dropdown, Image } from "react-bootstrap";
+import { Button, Modal, Dropdown, Image, Card, Form, Col, Row, Container } from "react-bootstrap";
 import settingsIcon from "../../SettingsIcon.png";
 import { logout } from "../../firebaseconfig";
+import { mdiMicrosoftXboxControllerMenu } from '@mdi/js';
+import Icon from '@mdi/react'
 import "./DogWardenService.css";
 import FindMyOwner from '../Login/loginPictures/FindMyOwner.png'
 import carlowCrest from './CountyCrests/carlowCrest.png';
@@ -37,6 +39,8 @@ import Wallpaper from '../../Wallpaper.jpg';
 export default function DogWardenService(){
 
     const [dogWardenInfo, setDogWardenInfo] = useState([]);
+    const [dogWardenSearch, setDogWardenSearch] = useState([]);
+    const [search, setSearch] = useState("");
 
     function home(){
         window.location = "/FindMyOwner/home";
@@ -44,6 +48,18 @@ export default function DogWardenService(){
 
     function myAccount(){
         window.location = "/FindMyOwner/account";
+    }
+
+    function found(){
+        window.location = "/FindMyOwner/found";
+    }
+
+    function lost(){
+        window.location = "/FindMyOwner/lost";
+    }
+
+    function report(){
+        window.location = "/FindMyOwner/report-pet-details";
     }
 
     useEffect(() => {
@@ -81,37 +97,129 @@ export default function DogWardenService(){
         window.open(url);
     }
 
+    useEffect(() => {
+        
+        setDogWardenSearch(dogWardenInfo?.filter((element) => element.county.toLowerCase().includes(search.toLowerCase())));
+        
+    }, [search])
+
     return(
-        <div>
+        <div style={{height: "auto", minHeight: "100vh",backgroundImage: `url(${Wallpaper})`}}>
             <title>FindMyOwner</title>
             <div id = "Title">
-                <Image id="titleName" onClick={home} src={FindMyOwner} style={{marginLeft: "37%"}}></Image>
+                <Dropdown id="MenuButton">
+                    <Dropdown.Toggle variant="warning" size="lg">
+                        <Icon path={mdiMicrosoftXboxControllerMenu} size={1}></Icon>
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu variant="dark">
+                        <Dropdown.Item onClick={home} >Home</Dropdown.Item>
+                        <Dropdown.Divider />
+                        <Dropdown.Item onClick={found}>Found</Dropdown.Item>
+                        <Dropdown.Divider />
+                        <Dropdown.Item onClick={lost}>Lost</Dropdown.Item>
+                        <Dropdown.Divider />
+                        <Dropdown.Item onClick={report}>Report a Pet</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown> 
+                <Image id="titleName" onClick={home} src={FindMyOwner} style={{marginLeft: "33%"}}></Image>
                 <Dropdown id="SettingsButton">
-                    <Dropdown.Toggle id="dropdown-button-dark-example1" variant="warning">
+                    <Dropdown.Toggle variant="warning" size="lg">
                         <img id="imageSettingsIcon" src={settingsIcon}></img>
                     </Dropdown.Toggle>
 
                     <Dropdown.Menu variant="dark">
                         <Dropdown.Item href="#" onClick={myAccount}>My Account</Dropdown.Item>
-                        <Dropdown.Divider></Dropdown.Divider>
+                        <Dropdown.Divider />
                         <Dropdown.Item href="#" onClick={logout}>Logout</Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
             </div>
-            <div style={{backgroundImage: `url(${Wallpaper})`}}>
-                {dogWardenInfo.map(function(info){
-                    return(
-                        <div>
-                            <div id="showCounilsInfo">
-                                <div id= "county"><h3>{info.county}</h3><img src={info.image}></img></div>
-                                <div id="DWSinfo">Number: {info.number}</div>
-                                <div id="DWSinfo">Email: {info.email}</div>
-                                <div id="DWSinfo">URL: <a href="#" onClick={() => councilPageRedirect(info.url)}>{info.url}</a></div>
-                            </div>
-                        </div>
-                    )
-                })}
-            </div>
+            
+            <Row>
+                <Col className="col-sm-11">
+                    <Card id="DWSCard">
+                        <Card.Header id="DWSCardHeader"><h2><b>Dog Warden Service</b></h2></Card.Header>
+                        <Row>
+                            <Col className="col-sm-4">
+                                <Card id="DWSInfoCard" className="move">
+                                    <Card.Header id="DWSInfoCardHeader">What?</Card.Header>
+                                    <Card.Body id="DWSInfoCardBody">
+                                        <Card.Text>
+                                            The Dog Warden Service is a service provided by the each county's council.
+                                            The local authorities are responsilble for the control of dogs since Control
+                                            of Dogs Act 1986 was incorporated into the county councils.
+                                        </Card.Text>
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                            <Col className="col-sm-4">
+                                <Card id="DWSInfoCard">
+                                    <Card.Header id="DWSInfoCardHeader">Why?</Card.Header>
+                                    <Card.Body id="DWSInfoCardBody">
+                                        <Card.Text>
+                                            The Dog Warden Service have the power to request the name and address
+                                            of anyone suspected of an offence under the Control of Dogs Act. Seize 
+                                            and detain any dog. This service allows for pet dogs to be treated with
+                                            animal friendly manner and without pet owners mistreating them or 
+                                            neglecting the animal. If someone has come across a lost/stray dog,
+                                            it is a legal requirement to report the dog to the Dog Warden Service in
+                                            their county council.
+                                        </Card.Text>
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                            <Col className="col-sm-4">
+                                <Card id="DWSInfoCard" className="move2">
+                                    <Card.Header id="DWSInfoCardHeader">Where?</Card.Header>
+                                    <Card.Body id="DWSInfoCardBody">
+                                        <Card.Text>
+                                            Each county has there own Dog Warden Service. You can find and contact your 
+                                            Dog Warden Service through your county council. Below are list of all counties
+                                            in the Republic of Ireland containing the contact information needed to get in
+                                            touch with their county council, along with a URL link to the county council
+                                            website. There is also a search that can be used to search for your county
+                                            council by typing in the county instead of scrolling through the list.
+                                        </Card.Text>
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                        </Row>
+                        <Form>
+                            <Form.Control id="DWSSearchBar" type="text" placeholder="Search County..." onInput={(e) => setSearch(e.target.value)}/>
+                        </Form>
+                    </Card>
+                </Col>
+            </Row>
+
+            <Row>
+                <Col className="col-sm-12">
+                    {search.length > 0?
+                        dogWardenSearch?.map(function(searching){
+                            return(
+                                <Card id="showCounilsInfo">
+                                    <div id= "county"><h3>{searching.county}</h3><img src={searching.image} style={{float:"right"}}></img></div>
+                                    <Card.Text id="DWSinfo"><b>Number: </b>{searching.number}</Card.Text>
+                                    <Card.Text  id="DWSinfo"><b>Email: </b>{searching.email}</Card.Text >
+                                    <Card.Text  id="DWSinfo"><b>URL: </b><a href="#" onClick={() => councilPageRedirect(searching.url)}>{searching.url}</a></Card.Text >
+                                </Card>
+                            )
+                        })
+
+                        : 
+                        
+                        dogWardenInfo.map(function(info){
+                            return(
+                                <Card id="showCounilsInfo">
+                                    <div id= "county"><h3>{info.county}</h3><img src={info.image} style={{float:"right"}}></img></div>
+                                    <Card.Text id="DWSinfo"><b>Number: </b>{info.number}</Card.Text>
+                                    <Card.Text  id="DWSinfo"><b>Email: </b>{info.email}</Card.Text >
+                                    <Card.Text  id="DWSinfo"><b>URL: </b><a href="#" onClick={() => councilPageRedirect(info.url)}>{info.url}</a></Card.Text >
+                                </Card>
+                            )
+                        })
+                    }
+                </Col>
+            </Row>
         </div>
     )
 }

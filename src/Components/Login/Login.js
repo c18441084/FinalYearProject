@@ -26,13 +26,12 @@ function Login() {
     if (user) history("/FindMyOwner/home");
   }, [user, loading]);
 
-  function confirm(){
+  async function confirm(){
     if(password !== confirmPassword){
         alert("Passwords are not the same");
     }
     else{
         registerWithEmailAndPassword(name, email, password);
-        alert("Account Created");
     }
   }
 

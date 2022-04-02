@@ -9,9 +9,11 @@ import { auth } from '../../firebaseconfig';
 import settingsIcon from "../../SettingsIcon.png";
 import { mdiCardsHeartOutline } from '@mdi/js';
 import { mdiPageNextOutline } from '@mdi/js';
+import { mdiMicrosoftXboxControllerMenu } from '@mdi/js';
 import Icon from '@mdi/react'
 import Wallpaper from '../../Wallpaper.jpg';
 import FindMyOwner from '../Login/loginPictures/FindMyOwner.png'
+import DogWardenService from "../DogWardenService/DogWardenService";
 
 export default function Found(){
 
@@ -41,8 +43,9 @@ export default function Found(){
                     }
                 })
             }
-            setPosts(postsArray);
-            setPostsNeverChange(postsArray);
+            console.log(postsArray.reverse());
+            setPosts(postsArray.reverse());
+            setPostsNeverChange(postsArray.reverse());
         })
         componentDidMount();
         async function componentDidMount(){
@@ -73,6 +76,19 @@ export default function Found(){
 
     function myAccount(){
         window.location = "/FindMyOwner/account";
+    }
+
+    function lost(){
+        window.location = "/FindMyOwner/lost";
+    }
+
+    function report(){
+        window.location = "/FindMyOwner/report-pet-details";
+    }
+
+    function dws(){
+        window.location = "/FindMyOwner/dog-warden-service";
+
     }
 
     function addFavourites(id){
@@ -338,15 +354,30 @@ export default function Found(){
         <div style= {{backgroundImage: `url(${Wallpaper})`, height: "auto", width: "100%"}}>
             <title>FindMyOwner</title>
             <div id = "Title">
-                <Image id="titleName" onClick={home} src={FindMyOwner} style={{marginLeft: "37%"}}></Image>
+                <Dropdown id="MenuButton">
+                    <Dropdown.Toggle variant="warning" size="lg">
+                        <Icon path={mdiMicrosoftXboxControllerMenu} size={1}></Icon>
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu variant="dark">
+                        <Dropdown.Item onClick={home} >Home</Dropdown.Item>
+                        <Dropdown.Divider />
+                        <Dropdown.Item onClick={lost}>Lost</Dropdown.Item>
+                        <Dropdown.Divider />
+                        <Dropdown.Item onClick={report}>Report a Pet</Dropdown.Item>
+                        <Dropdown.Divider />
+                        <Dropdown.Item onClick={dws}>DWS</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown> 
+
+                <Image id="titleName" onClick={home} src={FindMyOwner} style={{marginLeft: "33%"}}></Image>
                 <Dropdown id="SettingsButton">
-                    <Dropdown.Toggle id="dropdown-button-dark-example1" variant="warning">
+                    <Dropdown.Toggle variant="warning" size="lg">
                         <img id="imageSettingsIcon" src={settingsIcon}></img>
                     </Dropdown.Toggle>
 
                     <Dropdown.Menu variant="dark">
                         <Dropdown.Item href="#" onClick={myAccount}>My Account</Dropdown.Item>
-                        <Dropdown.Divider></Dropdown.Divider>
+                        <Dropdown.Divider />
                         <Dropdown.Item href="#" onClick={logout}>Logout</Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
