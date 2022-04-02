@@ -42,7 +42,7 @@ export default function Homepage(){
     }
 
     function reportAPet(){
-        window.location = "/FindMyOwner/found-pet-details"
+        window.location = "/FindMyOwner/report-pet-details"
     }
 
     function dogWardenService(){
@@ -289,7 +289,7 @@ export default function Homepage(){
                                             </Link>
                                             <ReactTooltip id="viewPostInfo" place="top" effect="solid">View Post Information</ReactTooltip>
                                             
-                                            <Button data-tip data-for="addFavourites" variant="outline-danger" onClick={() => addFavourites(post.id)}>
+                                            <Button  data-tip data-for="addFavourites" variant="outline-danger" onClick={() => addFavourites(post.id)}>
                                                 <Icon path={mdiCardsHeartOutline} size={1}></Icon>
                                             </Button>
                                             <ReactTooltip id="addFavourites" place="top" effect="solid">Add to Favourites</ReactTooltip>

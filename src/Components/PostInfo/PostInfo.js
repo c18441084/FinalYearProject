@@ -10,6 +10,7 @@ import Icon from '@mdi/react';
 import { mdiCommentText } from '@mdi/js';
 import { mdiDeleteEmptyOutline } from '@mdi/js';
 import { mdiCardsHeartOutline } from '@mdi/js';
+import { mdiMicrosoftXboxControllerMenu } from '@mdi/js';
 import ReactTooltip from 'react-tooltip';
 import Wallpaper from '../../Wallpaper.jpg';
 import {latitude, longitude, animalType} from '../GlobalState/states';
@@ -21,7 +22,6 @@ import FindMyOwner from '../Login/loginPictures/FindMyOwner.png';
 import { TwitterIcon, TwitterShareButton, WhatsappIcon, WhatsappShareButton } from 'react-share';
 
 export default function Homepage(){
-
 
     const {id} = useParams();
     const [postInfo, setPostInfo] = useState([]);
@@ -41,6 +41,7 @@ export default function Homepage(){
     }
 
     useEffect(() =>{
+        let address = "";
         setUrl(`http://localhost:3000/FindMyOwner/post/${id}`);
         db.on("value", (snapshot) => {
             const postsFromDatabase = snapshot.val();
@@ -52,6 +53,7 @@ export default function Homepage(){
             }
             setPostInfo(postArray);
             animalType.value = postArray[0].type;
+            address = postArray[0].address;
         })
 
         dbcomments.on("value", (snapshot) => {
@@ -79,21 +81,23 @@ export default function Homepage(){
             setFavsAmount(favArraylength.length);
             setFavouritedUsers(favArray);
         })
+        setTimeout(() => {
+            Geocode.setApiKey(geocodeAPIkey);
+            Geocode.fromAddress(address).then(
+                async (response) => {
+                const { lat, lng } = await response.results[0].geometry.location;
+                latitude.value = lat;
+                longitude.value = lng;
+                },
+                (error) => {
+                console.error(error);
+                }
+            );
+        }, 250)
     }, [])
 
-    function showLocation(address){
+    function showLocation(){
         setCloseMap(false);
-        Geocode.setApiKey(geocodeAPIkey);
-        Geocode.fromAddress(address).then(
-            async (response) => {
-            const { lat, lng } = await response.results[0].geometry.location;
-            latitude.value = lat;
-            longitude.value = lng;
-            },
-            (error) => {
-            console.error(error);
-            }
-        );
         setShowMap(true);
     }
 
@@ -187,18 +191,53 @@ export default function Homepage(){
         window.location = "/FindMyOwner/home";
     }
 
+    function found(){
+        window.location = "/FindMyOwner/found";
+    }
+
+    function lost(){
+        window.location = "/FindMyOwner/lost";
+    }
+
+    function report(){
+        window.location = "/FindMyOwner/report-pet-details";
+    }
+
+    function dws(){
+        window.location = "/FindMyOwner/dog-warden-service";
+
+    }
+
     return(
-        <div id="PostInfoWholePage" style={{backgroundImage: `url(${Wallpaper})`, height: "100vh", width: "100%"}}>
+        <div id="PostInfoWholePage" style={{backgroundImage: `url(${Wallpaper})`, height: "auto", width: "100%", paddingBottom:"5%"}}>
             <title>FindMyOwner</title>
             <div id = "Title">
-                <Image id="titleName" onClick={home} src={FindMyOwner} style={{marginLeft: "37%"}}></Image>
-                <Dropdown id="SettingsButton">
-                    <Dropdown.Toggle id="dropdown-button-dark-example1" variant="warning">
-                        <img id="imageSettingsIcon" src={settingsIcon}></img>
+                <Dropdown id="MenuButton">
+                    <Dropdown.Toggle variant="warning" size="lg">
+                        <Icon path={mdiMicrosoftXboxControllerMenu} size={1}></Icon>
                     </Dropdown.Toggle>
                     <Dropdown.Menu variant="dark">
+                        <Dropdown.Item onClick={home} >Home</Dropdown.Item>
+                        <Dropdown.Divider />
+                        <Dropdown.Item onClick={found}>Found</Dropdown.Item>
+                        <Dropdown.Divider />
+                        <Dropdown.Item onClick={lost}>Lost</Dropdown.Item>
+                        <Dropdown.Divider />
+                        <Dropdown.Item onClick={report}>Report a Pet</Dropdown.Item>
+                        <Dropdown.Divider />
+                        <Dropdown.Item onClick={dws}>DWS</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown> 
+
+                <Image id="titleName" onClick={home} src={FindMyOwner} style={{marginLeft: "33%"}}></Image>
+                <Dropdown id="SettingsButton">
+                    <Dropdown.Toggle variant="warning" size="lg">
+                        <img id="imageSettingsIcon" src={settingsIcon}></img>
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu variant="dark">
                         <Dropdown.Item href="#" onClick={myAccount}>My Account</Dropdown.Item>
-                        <Dropdown.Divider></Dropdown.Divider>
+                        <Dropdown.Divider />
                         <Dropdown.Item href="#" onClick={logout}>Logout</Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
@@ -265,17 +304,14 @@ export default function Homepage(){
                                         <ReactTooltip id="deletePostButton" place="top" effect="solid">Delete Post</ReactTooltip>
                                     </Button>
                                 :null}
-                                {/* <Button id="PostInfoShareButton" data-tip data-for="sharePost" variant="outline-primary" onClick={() => share()}>
-                                    <Icon path={mdiShare} size={1}></Icon>
-                                </Button> */}
-                                <TwitterShareButton url={url}>
+                                <TwitterShareButton data-tip data-for="sharePostTwitter" url={url}>
                                     <TwitterIcon size={32} round={true} />
                                 </TwitterShareButton>
-                                <ReactTooltip id="sharePost" place="top" effect="solid">Share post to Facebook</ReactTooltip>
+                                <ReactTooltip id="sharePostTwitter" place="top" effect="solid">Share post to Twitter</ReactTooltip>
                                 <WhatsappShareButton url={url}>
-                                    <WhatsappIcon size={32} round={true} />
+                                    <WhatsappIcon data-tip data-for="sharePostWhatsapp" size={32} round={true} />
                                 </WhatsappShareButton>
-                                <ReactTooltip id="sharePost" place="top" effect="solid">Share post to Facebook</ReactTooltip>
+                                <ReactTooltip id="sharePostWhatsapp" place="top" effect="solid">Share post to Whatsapp</ReactTooltip>
                             </div>
                         </div>
                     )

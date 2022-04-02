@@ -20,7 +20,7 @@ function App() {
   return (
     <div className ='app'>
       <BrowserRouter>
-      {user == null? 
+      {user === null? 
       <Routes>
         <Route path = "/FindMyOwner/login" element = {<Login />} />
       </Routes>
@@ -29,7 +29,7 @@ function App() {
         <Route path = "/FindMyOwner/home" element = {<Homepage />} />
         <Route path = "/FindMyOwner/found" element = {<Found />} />
         <Route path = "/FindMyOwner/lost" element = {<Lost />} />
-        <Route path = "/FindMyOwner/found-pet-details" element = {<FoundPetDetails />} />
+        <Route path = "/FindMyOwner/report-pet-details" element = {<FoundPetDetails />} />
         <Route path = "/FindMyOwner/account" element = {<MyAccount />} />
         <Route path = "/FindMyOwner/dog-warden-service" element={<DogWardenService />} />
         <Route path = "/FindMyOwner/post/:id" element={<PostInfo />} />

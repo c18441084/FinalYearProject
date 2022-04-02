@@ -5,9 +5,13 @@
     border-bottom: 2px solid black;
 }
 
+#MenuButton{
+    display: "inline-block";
+    float: left;
+}
+
 #titleName{
     display: inline-block;
-    text-align: center;
     margin-left: 40%;
 }
 
