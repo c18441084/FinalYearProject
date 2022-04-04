@@ -536,6 +536,7 @@ export default function FoundPetDetails(){
             <br/>
             <Row>
                 <Col className="col-sm-5">
+                    <Badge id="FPDEnterDetailsBadge" bg="info"><h1>Report Form</h1></Badge>
                     <Container style={{maxWidth: "700px"}}>
                         <Card id="FPDForm">
                             <Card.Header>Enter Details Form</Card.Header>
@@ -761,7 +762,7 @@ export default function FoundPetDetails(){
                 </Col>
                 
                 <Col className="col-sm-3" id="FPDPrototypeColumn">
-                    <h1><Badge id="FPDPrototypeBadge" bg="info">Prototype Post</Badge></h1>
+                    <Badge id="FPDPrototypeBadge" bg="info"><h1>Prototype Post</h1></Badge>
                     <div id="postPrototype">
                             <Card className="shadow-lg" border="info" id="FPDPrototypeCard">
                                 {status === "MISSING"? <Card.Header id="FPDPrototypeCardHeader" style={{backgroundColor: "lightyellow"}}><h5>{status}</h5></Card.Header> : null}

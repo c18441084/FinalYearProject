@@ -17,14 +17,14 @@ function Login() {
   const [login, setLogin] =  useState(true);
   const [user, loading, error] = useAuthState(auth);
 
-  const history = useNavigate();
-  useEffect(() => {
-    if (loading) {
-      // maybe trigger a loading screen
-      return;
-    }
-    if (user) history("/FindMyOwner/home");
-  }, [user, loading]);
+  // const history = useNavigate();
+  // useEffect(() => {
+  //   if (loading) {
+  //     // maybe trigger a loading screen
+  //     return;
+  //   }
+  //   if (user) history("/FindMyOwner/home");
+  // }, [user, loading]);
 
   async function confirm(){
     if(password !== confirmPassword){
@@ -36,7 +36,7 @@ function Login() {
   }
 
   return (
-    <div id ="crossed">
+    <div id ="crossed" style={{backgroundImage:`url(${LoginBackground})`, backgroundColor:"lightblue"}}>
       <Row>
         <Col className="col-sm-3.5" style={{height: "100vh", backgroundColor: "orange"}}>
           <Card style={{marginTop: "3%", borderRadius: "25px", padding: "3%", backgroundColor: "lightblue"}}>
@@ -101,7 +101,6 @@ function Login() {
           </Card>
         </Col>
         <Col className="col-sm-8" style={{textAlign: "center", height: "100vh"}}>
-          <div style={{backgroundColor: "lightblue", paddingBottom: "86%", backgroundImage: `url(${LoginBackground})`}}></div>
         </Col>
       </Row>
     </div>

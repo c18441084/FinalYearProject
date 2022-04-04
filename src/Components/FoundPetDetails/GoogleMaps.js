@@ -94,7 +94,7 @@ export class MapContainer extends Component {
                   placeholder: "Search Place..."
                 })}
               />
-              <div className="autocomplete-dropdown-container">
+              <div className="autocomplete-dropdown-container" style ={{maxheight: "200px", overflowX: "scroll"}}>
                 {loading && <div>Loading...</div>}
                 {suggestions.map(suggestion => {
                   const className = suggestion.active

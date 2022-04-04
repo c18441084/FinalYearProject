@@ -77,7 +77,18 @@ const signInWithEmailAndPassword = async (email, password) => {
     window.location = ("/FindMyOwner/home");
   } catch (err) {
     console.error(err);
-    alert(err.message);
+    if(!(email.includes("@"))){
+      alert("Not a valid email address. Make sure to include the \"@\" key.");
+    }
+    if(err.code === "auth/user-not-found"){
+      alert("Not a valid account. Please register a account if you wish to login.")
+    }
+    if(err.code === "auth/wrong-password"){
+      alert("Wrong password entered. Please re-enter password.");
+    }
+    else{
+      alert(err.message);
+    }
   }
 };
 const registerWithEmailAndPassword = async (name, email, password) => {
@@ -91,7 +102,11 @@ const registerWithEmailAndPassword = async (name, email, password) => {
     }).then(
     updateDisplayName(name));
   } catch (err) {
-    console.error(err);
+    console.log(err.code);
+    console.log(err.message);
+    if(!(email.includes("@"))){
+      alert("Not a valid email address. Make sure to include the \"@\" character");
+    }
     alert(err.message);
   }
 };
@@ -102,6 +117,7 @@ const updateDisplayName = async (name) => {
   console.log(auth);
   await auth.currentUser.updateProfile(update);
   console.log("finished");
+  alert("Account created. Welcome "+name);
   window.location = ("/FindMyOwner/home");
 }
 
