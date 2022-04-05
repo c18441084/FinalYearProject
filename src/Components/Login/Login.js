@@ -1,21 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, signInWithEmailAndPassword, signInWithFacebook } from "../../firebaseconfig";
-import { registerWithEmailAndPassword } from "../../firebaseconfig";
+import { auth, signInWithEmailAndPassword, signInWithFacebook, registerWithEmailAndPassword, sendPasswordResetEmail } from "../../firebaseconfig";
 import { useAuthState } from "react-firebase-hooks/auth";
 import "./Login.css";
-import { Card, Row, Col, Button, Form } from "react-bootstrap";
+import { Card, Row, Col, Button, Form, Modal } from "react-bootstrap";
 import LoginBackground from './loginPictures/LoginBackground.png';
 import FindMyOwner from './loginPictures/FindMyOwner.png';
+import { FormDropdown } from "semantic-ui-react";
 
 function Login() {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [newPasswordEmail, setNewPasswordEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [login, setLogin] =  useState(true);
   const [user, loading, error] = useAuthState(auth);
+  const [showReset, setShowReset] = useState(false);
+  const [closeReset, setCloseReset] = useState(true);
 
   // const history = useNavigate();
   // useEffect(() => {
@@ -26,12 +29,79 @@ function Login() {
   //   if (user) history("/FindMyOwner/home");
   // }, [user, loading]);
 
-  async function confirm(){
-    if(password !== confirmPassword){
-        alert("Passwords are not the same");
+  function checkLogin(){
+    if(email === ""){
+      alert("Please enter a email");
+      document.getElementById("loginEmail").style.borderColor = "red";
+      return;
     }
     else{
-        registerWithEmailAndPassword(name, email, password);
+      document.getElementById("loginEmail").style.borderColor = "";
+    }
+
+    if(password === ""){
+      alert("Please enter a password");
+      document.getElementById("loginPassword").style.borderColor = "red";
+      return;
+    }
+    else{
+      document.getElementById("loginPassword").style.borderColor = "";
+    }
+
+    signInWithEmailAndPassword(email, password);
+  }
+
+  function forgotPassword(){
+    if(newPasswordEmail === ""){
+      alert("Please enter in your user's email");
+    }
+    else{
+      sendPasswordResetEmail(newPasswordEmail);
+    }
+  }
+
+  function register(){
+    if(name === ""){
+      alert("Please enter a name");
+      document.getElementById("registerName").style.borderColor = "red";
+      return;
+    }
+    else{
+      document.getElementById("registerName").style.borderColor = "";
+    }
+
+    if(email === ""){
+      alert("Please enter a email");
+      document.getElementById("registerEmail").style.borderColor = "red";
+      return;
+    }
+    else{
+      document.getElementById("registerEmail").style.borderColor = "";
+    }
+
+    if(password === ""){
+      alert("Please enter a password");
+      document.getElementById("registerPassword").style.borderColor = "red";
+      return;
+    }
+    else{
+      document.getElementById("registerPassword").style.borderColor = "";
+    }
+
+    if(confirmPassword === ""){
+      alert("Please confirm password");
+      document.getElementById("registerConfirmPassword").style.borderColor = "red";
+      return;
+    }
+    else{
+      document.getElementById("registerConfirmPassword").style.borderColor = "";
+    }
+
+    if(password !== confirmPassword){
+      alert("Passwords are not the same");
+    }
+    else{
+      registerWithEmailAndPassword(name, email, password);
     }
   }
 
@@ -59,16 +129,27 @@ function Login() {
                   <Form>
                     <Form.Group>
                       <Form.Label>Email</Form.Label>
-                      <Form.Control type="email" placeholder="Enter email" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                      <Form.Control id="loginEmail" type="email" placeholder="Enter email" value={email} onChange={(e) => setEmail(e.target.value)}/>
                     </Form.Group>
 
                     <Form.Group>
                       <Form.Label>Password</Form.Label>
-                      <Form.Control type="password" placeholder="Enter password" value={password} onChange={(e) => setPassword(e.target.value)}/>
+                      <Form.Control id="loginPassword" type="password" placeholder="Enter password" value={password} onChange={(e) => setPassword(e.target.value)}/>
+                      <Card.Text style={{cursor: "pointer"}} href="#" onClick={() => (setShowReset(true), setCloseReset(false))}>Forgot Password?</Card.Text>
+                      <Modal show={showReset} close={closeReset}>
+                        <Modal.Header>Reset Password<Button id="closeResetModal" onClick={() => (setShowReset(false), setCloseReset(true))}>X</Button></Modal.Header>
+                        <Modal.Body>
+                          <Form>
+                            <Form.Label>Enter Account Email</Form.Label>
+                            <Form.Control style={{marginBottom: "2%"}} id="resetEmail" type="email" placeholder="Enter email" value={newPasswordEmail} onChange={(e) => setNewPasswordEmail(e.target.value)}></Form.Control>
+                          </Form>
+                          <Button style={{float: "right"}} id="submitResetEmail" onClick={() => forgotPassword()}>Send Email</Button>
+                        </Modal.Body>
+                      </Modal>
                     </Form.Group>
                   </Form>
                   <br></br>
-                  <Button onClick={() => signInWithEmailAndPassword(email, password)}>Submit</Button>
+                  <Button onClick={() => checkLogin()}>Submit</Button>
                   <Card.Text>OR</Card.Text>
                   <Button className="login__btn login__google" onClick={signInWithFacebook}>Login with Facebook</Button>
                 </div>
@@ -76,26 +157,26 @@ function Login() {
                   <Form>
                     <Form.Group>
                       <Form.Label>Name</Form.Label>
-                      <Form.Control type="email" placeholder="Enter Full Name" value={name} onChange={(e) => setName(e.target.value)}/>
+                      <Form.Control id="registerName" type="email" placeholder="Enter Full Name" value={name} onChange={(e) => setName(e.target.value)}/>
                     </Form.Group>
 
                     <Form.Group>
                       <Form.Label>Email</Form.Label>
-                      <Form.Control type="email" placeholder="Enter email" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                      <Form.Control id="registerEmail" type="email" placeholder="Enter email" value={email} onChange={(e) => setEmail(e.target.value)}/>
                     </Form.Group>
 
                     <Form.Group>
                       <Form.Label>Password</Form.Label>
-                      <Form.Control type="password" placeholder="Enter password" value={password} onChange={(e) => setPassword(e.target.value)}/>
+                      <Form.Control id="registerPassword" type="password" placeholder="Enter password" value={password} onChange={(e) => setPassword(e.target.value)}/>
                     </Form.Group>
 
                     <Form.Group>
                       <Form.Label>Confirm Password</Form.Label>
-                      <Form.Control type="password" placeholder="Re-enter password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}/>
+                      <Form.Control id="registerConfirmPassword" type="password" placeholder="Re-enter password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}/>
                     </Form.Group>
                   </Form>
                   <br></br>
-                  <Button onClick={() => confirm()}>Submit</Button>
+                  <Button onClick={() => register()}>Submit</Button>
                 </div>}
             </Card.Body>
           </Card>

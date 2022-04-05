@@ -1,11 +1,10 @@
-import db2, {logout } from "../../firebaseconfig";
+import db2, {logout, auth } from "../../firebaseconfig";
 import './Lost.css'
 import { useState, useEffect } from "react";
 import { Button, Dropdown, Card, Col, Row, Nav, Navbar, NavDropdown, Container, Form, Image, ListGroup } from "react-bootstrap";
 import {Link} from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { auth } from '../../firebaseconfig';
 import settingsIcon from "../../SettingsIcon.png";
 import { mdiCardsHeartOutline } from '@mdi/js';
 import { mdiPageNextOutline } from '@mdi/js';

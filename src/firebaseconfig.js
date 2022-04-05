@@ -5,6 +5,7 @@ import { ref } from 'firebase/storage';
 import "firebase/compat/auth";
 import "firebase/compat/firestore";
 import { signInWithPopup, FacebookAuthProvider} from "firebase/auth";
+import { firebaseAPIkey } from "./keys";
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
@@ -16,7 +17,7 @@ import { getDownloadURL } from "firebase/storage";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyAc69SFX0Uvo5EayC8hq3e8DmSGFl4BWYs",
+  apiKey: `${firebaseAPIkey}`,
   authDomain: "findmyowner-6abcb.firebaseapp.com",
   projectId: "findmyowner-6abcb",
   storageBucket: "findmyowner-6abcb.appspot.com",
@@ -48,6 +49,7 @@ const signInWithFacebook = async () => {
       .collection("users")
       .where("uid", "==", user.uid)
       .get();
+      window.location = ("/FindMyOwner/home");
     if (query.docs.length === 0) {
       await db.collection("users").add({
         uid: user.uid,
@@ -58,21 +60,15 @@ const signInWithFacebook = async () => {
     }
   }
   catch (error){
-    // Handle Errors here.
     const errorCode = error.code;
     const errorMessage = error.message;
-    // The email of the user's account used.
     const email = error.email;
-    // The AuthCredential type that was used.
     const credential = FacebookAuthProvider.credentialFromError(error);
-
-    // ..
   }
 };
 
 const signInWithEmailAndPassword = async (email, password) => {
   try {
-    console.log("hello");
     await auth.signInWithEmailAndPassword(email, password);
     window.location = ("/FindMyOwner/home");
   } catch (err) {
@@ -126,8 +122,12 @@ const sendPasswordResetEmail = async (email) => {
     await auth.sendPasswordResetEmail(email);
     alert("Password reset link sent!");
   } catch (err) {
-    console.error(err);
-    alert(err.message);
+    if(!(email.includes("@"))){
+      alert("Not a valid email address. Make sure to include the \"@\" character");
+    }
+    else if(err.code === "auth/user-not-found"){
+      alert("This email does not have an account. Please register an account")
+    }
   }
 };
 const logout = () => {
