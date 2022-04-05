@@ -1,14 +1,13 @@
 //import react from "react";
 import './Homepage.css';
 import { useState, useEffect } from 'react';
-import { auth, logout } from "../../firebaseconfig";
+import db2, { auth, logout } from "../../firebaseconfig";
 import { Dropdown, Nav, Button, Col, Row, Card, Image } from "react-bootstrap";
 import ReactTooltip from 'react-tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import settingsIcon from "../../SettingsIcon.png";
 import Wallpaper from '../../Wallpaper.jpg';
 import { latitude, longitude } from '../GlobalState/states';
-import db2 from "../../firebaseconfig";
 import FindMyOwner from '../Login/loginPictures/FindMyOwner.png'
 import { geocodeAPIkey } from '../../keys';
 import Geocode from 'react-geocode';
@@ -80,15 +79,15 @@ export default function Homepage(){
                     let address = snap.val();
                     Geocode.fromAddress(address).then(
                         async (response) => {
-                        const { lat, lng } = await response.results[0].geometry.location;
-                        address = `${lat},${lng}`;
-                        distance = gettingDistance(latitude.value, longitude.value, address);
-                        if(distance < 10){
-                            postsArray.push({id, ...postsFromDatabase[id]});
-                        }
+                            const { lat, lng } = await response.results[0].geometry.location;
+                            address = `${lat},${lng}`;
+                            distance = gettingDistance(latitude.value, longitude.value, address);
+                            if(distance < 10){
+                                postsArray.push({id, ...postsFromDatabase[id]});
+                            }
                         },
                         (error) => {
-                        console.error(error);
+                            console.error(error);
                         }
                     );
                 })
@@ -162,13 +161,13 @@ export default function Homepage(){
                         let address = snap.val();
                         Geocode.fromAddress(address).then(
                             async (response) => {
-                            const { lat, lng } = await response.results[0].geometry.location;
-                            address = `${lat},${lng}`;
-                            distance = gettingDistance(latitude.value, longitude.value, address);
-                            console.log(mileRadius);
-                            if(distance < mileRadius){
-                                postsArray.push({id, ...postsFromDatabase[id]});
-                            }
+                                const { lat, lng } = await response.results[0].geometry.location;
+                                address = `${lat},${lng}`;
+                                distance = gettingDistance(latitude.value, longitude.value, address);
+                                console.log(mileRadius);
+                                if(distance < mileRadius){
+                                    postsArray.push({id, ...postsFromDatabase[id]});
+                                }
                             },
                             (error) => {
                             console.error(error);

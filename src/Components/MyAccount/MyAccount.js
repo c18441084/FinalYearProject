@@ -1,11 +1,10 @@
-import { logout, storage } from "../../firebaseconfig";
+import db2, { logout, storage, auth } from "../../firebaseconfig";
 import { Button, Dropdown, Row, Col, Card, Carousel, Image } from "react-bootstrap";
 import {Link} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ReactTooltip from 'react-tooltip';
 import settingsIcon from "../../SettingsIcon.png";
 import { useEffect, useState } from "react";
-import db2, { auth } from "../../firebaseconfig";
 import { mdiCardsHeartOutline } from '@mdi/js';
 import { mdiTrashCanOutline } from '@mdi/js';
 import { mdiHeartOffOutline } from '@mdi/js';
@@ -191,7 +190,7 @@ export default function MyAccount(){
     }
    
     return(
-        <div style= {{backgroundImage: `url(${Wallpaper})`, height: "auto"}}>
+        <div style= {{backgroundImage: `url(${Wallpaper})`, minHeight: "100vh"}}>
             <title>FindMyOwner</title>
             <div id = "Title">
                 <Dropdown id="MenuButton">

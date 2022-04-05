@@ -4,7 +4,6 @@ import Login from './Components/Login/Login';
 import Homepage from './Components/Homepage/Homepage';
 import Found from './Components/Found/Found';
 import Lost from './Components/Lost/Lost';
-import Register from './Components/Register/Register';
 import FoundPetDetails from './Components/FoundPetDetails/FoundPetDetails';
 import MyAccount from './Components/MyAccount/MyAccount';
 import DogWardenService from './Components/DogWardenService/DogWardenService';
@@ -16,6 +15,7 @@ import { auth } from "./firebaseconfig";
 function App() {
 
   const [user] = useAuthState(auth);
+  console.log(user);
 
   return (
     <div className ='app'>

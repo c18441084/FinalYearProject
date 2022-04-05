@@ -3,6 +3,7 @@ import { Map, Marker, GoogleApiWrapper } from 'google-maps-react';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng} from 'react-places-autocomplete';
 import { googleAPIkey, geocodeAPIkey } from '../../keys';
 import { googleMapsState, animalType } from '../GlobalState/states';
+import Geocode from "react-geocode";
 import googleMapsMarkerIconDog from './GoogleMapsMarkers/googleMapsMarkerIconDog.png'
 import googleMapsMarkerIconCat from './GoogleMapsMarkers/googleMapsMarkerIconCat.png'
 
@@ -50,9 +51,9 @@ export class MapContainer extends Component {
   };
 
   onMapClicked = async (props, marker, e) => {
-    const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${e.latLng.lat()},${e.latLng.lng()}&key=${geocodeAPIkey}`);
-    const addressObject = await response.json();
-    const gettingAddress = addressObject.results[0].formatted_address
+    Geocode.setApiKey(geocodeAPIkey)
+    const addressObject = await Geocode.fromLatLng(e.latLng.lat(), e.latLng.lng());
+    const gettingAddress = addressObject.results[0].formatted_address;
     let props2 = props;
     let latitude = e.latLng.lat();
     let longitude = e.latLng.lng();

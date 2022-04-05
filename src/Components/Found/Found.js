@@ -51,6 +51,7 @@ export default function Found(){
         async function componentDidMount(){
             const response = await fetch("https://dog.ceo/api/breeds/list/all");
             const data = await response.json();
+            console.log(data);
             let testArray = []
             Object.keys(data.message).map((element, index) => {
                 Object.values(data.message).map((el, index2)=>{
