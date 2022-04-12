@@ -26,6 +26,19 @@
     margin-top: -3%;
 }
 
+#TermsModalTitle{
+    background-color: #00bfFF;
+    color: white;
+}
+
+#TermsModalFooter{
+    background-color: #00bfFF;
+}
+
+#TermsModalBody{
+    max-height: 90%;
+}
+
 #found{
     background-color: paleturquoise;
     border: none;

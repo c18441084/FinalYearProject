@@ -159,6 +159,20 @@
     text-align: center;
 }
 
+#FPDColourLabel{
+    margin-top: 5%;
+    margin-left: -5%;
+    margin-right: 2%;
+    display: inline;
+}
+
+#FPDOtherColourOption{
+    width: 55%;
+    display: inline;
+    text-align: center;
+    margin-right: 2%;
+}
+
 #FPDNeuturedLabel{
     margin-top: 5%;
     margin-right: 2%;
@@ -249,7 +263,14 @@
     margin-left: 95%;
 }
 
+#FPDGoogleModalHeader{
+    background-color: #00bfFF;
+    color: white;
+}
 
+#FPDGoogleModalFooter{
+    background-color: #00bfFF;
+}
 
 #FPDPrototypeColumn{
     margin-left: 13%;

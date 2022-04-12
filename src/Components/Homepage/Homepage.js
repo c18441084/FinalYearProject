@@ -1,11 +1,11 @@
 //import react from "react";
 import './Homepage.css';
 import { useState, useEffect } from 'react';
-import db2, { auth, logout } from "../../firebaseconfig";
-import { Dropdown, Nav, Button, Col, Row, Card, Image } from "react-bootstrap";
+import db2, { auth } from "../../firebaseconfig";
+import { Dropdown, Nav, Button, Col, Row, Card, Image, Modal } from "react-bootstrap";
 import ReactTooltip from 'react-tooltip';
+import Map from './GoogleMapsAllPosts';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import settingsIcon from "../../SettingsIcon.png";
 import Wallpaper from '../../Wallpaper.jpg';
 import { latitude, longitude } from '../GlobalState/states';
 import FindMyOwner from '../Login/loginPictures/FindMyOwner.png'
@@ -21,12 +21,21 @@ import { mdiHome } from '@mdi/js';
 import { mdiNearMe } from '@mdi/js';
 import { mdiHistory } from '@mdi/js';
 import {Link} from 'react-router-dom';
+import { Settings }from '../Settings/Settings';
+
 
 export default function Homepage(){
 
     const db = db2.ref("Posts");
+    const [allPosts, setAllPosts] = useState([]);
     const [recentPosts, setRecentPosts] = useState([]);
     const [nearPosts, setNearPosts] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [closeModal, setCloseModal] = useState(true);
+    const [showTerms, setShowTerms] = useState(false);
+    const [closeTerms, setCloseTerms] = useState(true);
+    const [showPrivacy, setShowPrivacy] = useState(false);
+    const [closePrivacy, setClosePrivacy] = useState(true);
 
     function myAccount(){
         window.location = "/FindMyOwner/account";
@@ -56,6 +65,7 @@ export default function Homepage(){
                     postsArray.push({id, ...postsFromDatabase[id]})
             }
             let recentArray = []
+            setAllPosts(postsArray);
             for(let i=postsArray.length-1; i>postsArray.length-4; i--){
                 recentArray.push(postsArray[i]);
             }
@@ -68,7 +78,7 @@ export default function Homepage(){
         let distance = 0;
         latitude.value = (position.coords.latitude);
         longitude.value = (position.coords.longitude);
-        Geocode.setApiKey(geocodeAPIkey);
+        // Geocode.setApiKey(geocodeAPIkey);
 
         db.on("value", (snap) => {
             const postsFromDatabase = snap.val();
@@ -77,19 +87,19 @@ export default function Homepage(){
                 let locationRef = db2.ref(`Posts/${id}/address`);
                 locationRef.on("value", (snap) =>{
                     let address = snap.val();
-                    Geocode.fromAddress(address).then(
-                        async (response) => {
-                            const { lat, lng } = await response.results[0].geometry.location;
-                            address = `${lat},${lng}`;
-                            distance = gettingDistance(latitude.value, longitude.value, address);
-                            if(distance < 10){
-                                postsArray.push({id, ...postsFromDatabase[id]});
-                            }
-                        },
-                        (error) => {
-                            console.error(error);
-                        }
-                    );
+                    // Geocode.fromAddress(address).then(
+                    //     async (response) => {
+                    //         const { lat, lng } = await response.results[0].geometry.location;
+                    //         address = `${lat},${lng}`;
+                    //         distance = gettingDistance(latitude.value, longitude.value, address);
+                    //         if(distance < 10){
+                    //             postsArray.push({id, ...postsFromDatabase[id]});
+                    //         }
+                    //     },
+                    //     (error) => {
+                    //         console.error(error);
+                    //     }
+                    // );
                 })
             }
             setTimeout(() =>{
@@ -150,7 +160,7 @@ export default function Homepage(){
             let distance = 0;
             latitude.value = (position.coords.latitude);
             longitude.value = (position.coords.longitude);
-            Geocode.setApiKey(geocodeAPIkey);
+           //Geocode.setApiKey(geocodeAPIkey);
     
             db.on("value", (snap) => {
                 const postsFromDatabase = snap.val();
@@ -159,20 +169,20 @@ export default function Homepage(){
                     let locationRef = db2.ref(`Posts/${id}/address`);
                     locationRef.on("value", (snap) =>{
                         let address = snap.val();
-                        Geocode.fromAddress(address).then(
-                            async (response) => {
-                                const { lat, lng } = await response.results[0].geometry.location;
-                                address = `${lat},${lng}`;
-                                distance = gettingDistance(latitude.value, longitude.value, address);
-                                console.log(mileRadius);
-                                if(distance < mileRadius){
-                                    postsArray.push({id, ...postsFromDatabase[id]});
-                                }
-                            },
-                            (error) => {
-                            console.error(error);
-                            }
-                        );
+                        // Geocode.fromAddress(address).then(
+                        //     async (response) => {
+                        //         const { lat, lng } = await response.results[0].geometry.location;
+                        //         address = `${lat},${lng}`;
+                        //         distance = gettingDistance(latitude.value, longitude.value, address);
+                        //         console.log(mileRadius);
+                        //         if(distance < mileRadius){
+                        //             postsArray.push({id, ...postsFromDatabase[id]});
+                        //         }
+                        //     },
+                        //     (error) => {
+                        //     console.error(error);
+                        //     }
+                        // );
                     })
                 }
                 setTimeout(() =>{
@@ -183,21 +193,17 @@ export default function Homepage(){
         } 
     }
 
+    function showAllPosts(){
+        setCloseModal(false);
+        setShowModal(true);
+    }
+
     return(
         <div style= {{height: "auto"}}>
             <title>FindMyOwner</title>
             <div id = "Title">
                 <Image id="titleName" src={FindMyOwner} style={{marginLeft: "37%"}}></Image>
-                <Dropdown id="SettingsButton">
-                    <Dropdown.Toggle id="dropdown-button-dark-example1" variant="warning">
-                        <img id="imageSettingsIcon" src={settingsIcon}></img>
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu variant="dark">
-                        <Dropdown.Item href="#" onClick={myAccount}>My Account</Dropdown.Item>
-                        <Dropdown.Divider></Dropdown.Divider>
-                        <Dropdown.Item href="#" onClick={logout}>Logout</Dropdown.Item>
-                    </Dropdown.Menu>
-                </Dropdown>
+                <Settings />
             </div>
             <Nav id="sidebar" variant="dark" className='flex-column'>
                 <Nav.Item>
@@ -215,8 +221,20 @@ export default function Homepage(){
             </Nav>
             <div id = "topbar">
                 <h3 id = "RP">Recent Posts <Icon path ={mdiHistory} size={1}></Icon></h3>
+                <Button onClick={() => showAllPosts()}>Hit</Button>
                 <h3 id = "PNM">Posts near me <Icon path ={mdiNearMe} size={1}></Icon></h3>
             </div>
+            <Modal  show={showModal} close={closeModal}>
+                <Modal.Header>
+                    <Modal.Title>Posts Around The World</Modal.Title>
+                </Modal.Header>
+                <Modal.Body style={{height: "50vh", width:"60vh", marginBottom: "7%"}}>
+                    <Map />
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button onClick={() => (setShowModal(false), setCloseModal(true))}>Close</Button>
+                </Modal.Footer>
+            </Modal>
             <div style={{backgroundImage: `url(${Wallpaper})`}}>
             <div style={{marginLeft: "20%"}}>
                 <Row>

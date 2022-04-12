@@ -3,12 +3,11 @@ import './FoundPetDetails.css';
 import '../Found/Found';
 import { Button, Modal, Dropdown, Col, Card, Row, Image, Form, Badge, Container } from "react-bootstrap";
 import ReactTooltip from 'react-tooltip';
-import settingsIcon from "../../SettingsIcon.png";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import heightDiagram from './Height_Diagram.png';
 import GoogleMap from './GoogleMaps';
 import { googleMapsState, animalType } from '../GlobalState/states';
-import db2, {storage, ref, getDownloadURL, logout} from "../../firebaseconfig";
+import db2, {storage, ref, getDownloadURL} from "../../firebaseconfig";
 import { uploadBytesResumable } from 'firebase/storage';
 import { auth } from '../../firebaseconfig';
 import { accessKeyId, secretAccessKey } from '../../keys';
@@ -19,6 +18,7 @@ import { mdiHelpCircleOutline } from '@mdi/js';
 import { mdiRuler } from '@mdi/js';
 import { mdiMapMarker } from '@mdi/js';
 import { mdiMicrosoftXboxControllerMenu } from '@mdi/js';
+import { Settings } from '../Settings/Settings';
 
 export default function FoundPetDetails(){
 
@@ -60,6 +60,7 @@ export default function FoundPetDetails(){
     const [identifierData, setIdentifierData] = useState();
     const [results, setResults] = useState([]);
     const [Loading, setLoading] = useState(false);
+    const [otherColour, setOtherColour] = useState("");
 
     const AWS = require ("aws-sdk");
 
@@ -95,6 +96,7 @@ export default function FoundPetDetails(){
     }
 
     function Status(){
+        setColour([]);
         setShowType(false);
         setShowBreed(false);
         setShowBreedGuide(false);
@@ -112,6 +114,7 @@ export default function FoundPetDetails(){
     }
 
     function Type(){
+        setColour([]);
         setShowBreed(false);
         setShowBreedGuide(false);
         setShowBreedHelpImages(false);
@@ -283,6 +286,11 @@ export default function FoundPetDetails(){
     }
 
     function colourList(c){
+        console.log(c)
+        if(!(type === "Dog") && !(type === "Cat")){
+            let test = otherColour.charAt(0).toUpperCase() + otherColour.slice(1);
+            c = test;
+        }
         if(colour.length <= 0){
             colour.push(c);
         }
@@ -484,10 +492,6 @@ export default function FoundPetDetails(){
         window.location = "/FindMyOwner/home";
     }
 
-    function myAccount(){
-        window.location = "/FindMyOwner/account";
-    }
-
     function found(){
         window.location = "/FindMyOwner/found";
     }
@@ -521,17 +525,7 @@ export default function FoundPetDetails(){
                 </Dropdown> 
 
                 <Image id="titleName" onClick={home} src={FindMyOwner} style={{marginLeft: "33%"}}></Image>
-                <Dropdown id="SettingsButton">
-                    <Dropdown.Toggle variant="warning" size="lg">
-                        <img id="imageSettingsIcon" src={settingsIcon}></img>
-                    </Dropdown.Toggle>
-
-                    <Dropdown.Menu variant="dark">
-                        <Dropdown.Item href="#" onClick={myAccount}>My Account</Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item href="#" onClick={logout}>Logout</Dropdown.Item>
-                    </Dropdown.Menu>
-                </Dropdown>
+                <Settings />
             </div>
             <br/>
             <Row>
@@ -654,7 +648,7 @@ export default function FoundPetDetails(){
                             {showHeight? 
                             <Form.Group className='mt-1 mb-2'>
                                     <Form.Label id="FPDHeightLabel">Height: </Form.Label>
-                                    <Form.Control id="FPDHeightControl" type="number" min = "0" max = "200" onInput={(height) => setHeight(height.target.value)} />
+                                    <Form.Control id="FPDHeightControl" placeholder= "Enter Height" type="number" min = "0" max = "200" onInput={(height) => setHeight(height.target.value)} />
                                     <Form.Label id="FPDHeightControlcm">cm</Form.Label>
 
                                     <Button id="FPDHeightHelpButton" data-tip data-for="HeightHelpButton" onClick={heightGuide}>
@@ -680,18 +674,27 @@ export default function FoundPetDetails(){
                                 : null}
 
                                 {showColourChoice? 
-                                <Form.Group className='mt-1 mb-2'>
-                                    <Form.Label id="FPDColourLabel">Colour: </Form.Label>
-                                    <Form.Select id="FPDColourOption" onInput={(color) => colourList(color.target.value)}>
-                                            <option value="" disabled selected="selected">Select a Colour</option>       
-                                            <option value="Black">Black</option>
-                                            <option value="White">White</option>
-                                            <option value="Brown">Brown</option>   
-                                            <option value="Red">Red</option>     
-                                            <option value="Gold">Gold</option>    
-                                            <option value="Gray">Gray</option> 
-                                    </Form.Select>
-                                </Form.Group>
+                                <div>
+                                    {type === "Dog" || type === "Cat"? 
+                                    <Form.Group className='mt-1 mb-2'>
+                                        <Form.Label id="FPDColourLabel">Colour: </Form.Label>
+                                        <Form.Select id="FPDColourOption" onInput={(color) => colourList(color.target.value)}>
+                                                <option value="" disabled selected="selected">Select a Colour</option>       
+                                                <option value="Black">Black</option>
+                                                <option value="Brown">Brown</option>  
+                                                <option value="Gold">Gold</option>    
+                                                <option value="Gray">Gray</option>  
+                                                <option value="Red">Red</option>     
+                                                <option value="White">White</option>
+                                        </Form.Select>
+                                    </Form.Group>
+                                    :
+                                    <Form.Group className='mt-1 mb-2'>
+                                        <Form.Label id="FPDColourLabel">Colour: </Form.Label>
+                                        <Form.Control id="FPDOtherColourOption" placeholder="Enter Colour" type="text" onChange={(colour) => setOtherColour(colour.target.value)} />
+                                        <Button onClick={() => colourList()}>Add</Button>
+                                    </Form.Group>}
+                                </div>
                                 : null}  
 
                                 {showColourList?
@@ -738,15 +741,15 @@ export default function FoundPetDetails(){
                                         </Button>
                                         <ReactTooltip id="OpenGoogleButton" place="top" effect="solid">Open Map</ReactTooltip>
                                         <Modal show={showGoogleMap} onHide={closeMap}>
-                                            <Modal.Header>
+                                            <Modal.Header id="FPDGoogleModalHeader">
                                                 <Modal.Title>Pick Location</Modal.Title>
                                             </Modal.Header>
-                                            <Modal.Body style={{height: "50vh", width:"60vh", marginBottom: "5%"}}>
+                                            <Modal.Body style={{height: "50vh", width:"60vh", marginBottom: "7%"}}>
                                                 <GoogleMap id = "googleMap" />
                                             </Modal.Body>
-                                            <Modal.Footer>
-                                                <Button onClick={submitLocation}>Submit</Button>
-                                                <Button onClick={closeMap}>Close Map</Button>
+                                            <Modal.Footer id="FPDGoogleModalFooter">
+                                                <Button variant="warning" onClick={submitLocation}>Submit</Button>
+                                                <Button variant="warning" onClick={closeMap}>Close Map</Button>
                                             </Modal.Footer>
                                         </Modal>
                                         <br></br>

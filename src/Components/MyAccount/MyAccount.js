@@ -1,9 +1,8 @@
-import db2, { logout, storage, auth } from "../../firebaseconfig";
-import { Button, Dropdown, Row, Col, Card, Carousel, Image } from "react-bootstrap";
+import db2, { storage, auth, ref, getDownloadURL, updateProfilePic } from "../../firebaseconfig";
+import { Button, Dropdown, Row, Col, Card, Carousel, Image, Form, Container, Modal } from "react-bootstrap";
 import {Link} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ReactTooltip from 'react-tooltip';
-import settingsIcon from "../../SettingsIcon.png";
 import { useEffect, useState } from "react";
 import { mdiCardsHeartOutline } from '@mdi/js';
 import { mdiTrashCanOutline } from '@mdi/js';
@@ -13,7 +12,10 @@ import { mdiMicrosoftXboxControllerMenu } from '@mdi/js';
 import Icon from '@mdi/react';
 import "./MyAccount.css";
 import Wallpaper from '../../Wallpaper.jpg';
-import FindMyOwner from '../Login/loginPictures/FindMyOwner.png'
+import FindMyOwner from '../Login/loginPictures/FindMyOwner.png';
+import { Settings } from '../Settings/Settings';
+import { uploadBytesResumable } from "firebase/storage";
+import DefaultProfilePicture from '../../DefaultProfilePicture.jpg'
 
 export default function MyAccount(){
 
@@ -21,6 +23,14 @@ export default function MyAccount(){
     const [usersPosts, setUsersPosts] = useState([]);
     const [commentsPosts, setCommentsPosts] = useState([]);
     const [favouritePosts, setFavouritePosts] = useState([]);
+    const [profilePicture, setProfilePicture] = useState(auth.currentUser.photoURL);
+    const [progress, setProgress] = useState(0);
+    const [showHover, setShowHover] = useState(false);
+    const [showPasswordChange, setShowPasswordChange] = useState(false);
+    const [closePasswordChange, setClosePasswordChange] = useState(true);
+    const [oldPassword, setOldPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [newPassword2, setNewPassword2] = useState("");
 
     const dbUser = db2.ref(`Posts`);
 
@@ -188,6 +198,73 @@ export default function MyAccount(){
         window.location = "/FindMyOwner/dog-warden-service";
 
     }
+
+    async function profilePictureUpload(image){
+        if(image.type.includes('image')){
+            console.log("Hello");
+            const getURL = auth.currentUser.photoURL;
+            if(!(getURL === "https://firebasestorage.googleapis.com/v0/b/findmyowner-6abcb.appspot.com/o/ProfilePictures%2FDefaultProfilePicture.jpg?alt=media&token=4caa117a-5388-44ca-8af3-02b7a7b677ed")){
+                await storage.refFromURL(getURL).delete();
+            }
+            const storageRef = ref(storage, `/ProfilePictures/${image.name + new Date().getTime()}`);
+            const uploadTask = uploadBytesResumable(storageRef, image);
+            console.log(storageRef);
+            uploadTask.on("state_changed", (snapshot) => {
+                const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                setProgress(prog);
+            }, (err) => 
+            console.log(err),
+            () => { 
+                getDownloadURL(uploadTask.snapshot.ref).then(
+                async function(url){ 
+                    const link = url;
+                    updateProfilePic(link)
+                })
+            });
+            setProfilePicture(auth.currentUser.photoURL);
+
+        }
+        else{
+            alert("Please upload an image file");
+        }
+    }
+
+    function passwordChange(){
+        if(oldPassword === ""){
+            alert("Please Enter Old Password")
+            document.getElementById("old").style.borderColor = "red";
+            return;
+        }
+        else{
+            document.getElementById("old").style.borderColor = "";
+        }
+
+        if(newPassword === ""){
+            alert("Please Enter New Password")
+            document.getElementById("new").style.borderColor = "red";
+            return;
+        }
+        else{
+            document.getElementById("new").style.borderColor = "";
+        }
+
+        if(newPassword2 === ""){
+            alert("Please Re-enter New Password")
+            document.getElementById("new2").style.borderColor = "red";
+            return;
+        }
+        else{
+            document.getElementById("new2").style.borderColor = "";
+        }
+
+        if(!(newPassword === newPassword2)){
+            alert("Passwords don't match. Please confirm both new passwords are the same");
+            return;
+        }
+        else{
+
+        }
+    }
    
     return(
         <div style= {{backgroundImage: `url(${Wallpaper})`, minHeight: "100vh"}}>
@@ -210,18 +287,60 @@ export default function MyAccount(){
                     </Dropdown.Menu>
                 </Dropdown> 
                 <Image id="titleName" onClick={home} src={FindMyOwner} style={{marginLeft: "30%"}}></Image>
-                <Dropdown id="SettingsButton">
-                    <Dropdown.Toggle variant="warning" size="lg">
-                        <img id="imageSettingsIcon" src={settingsIcon}></img>
-                    </Dropdown.Toggle>
-
-                    <Dropdown.Menu variant="dark">
-                        <Dropdown.Item href="#" onClick={logout}>Logout</Dropdown.Item>
-                    </Dropdown.Menu>
-                </Dropdown>
+                <Settings />
             </div>
 
             <div>
+                <Row style={{marginTop: "2%"}}>
+                    <Card className="shadow lg"style={{marginLeft: "2%", width: "94%", borderRadius: "25px"}}>
+                        <Card.Header style={{textAlign: "center", backgroundColor: "#00bfFF", borderTopRightRadius: "25px", borderTopLeftRadius: "25px", width:"102%", marginLeft: "-1%", color: "white"}}>
+                            <b>Account Information</b>
+                        </Card.Header>
+                        <Card.Body>
+                            <Container style={{width: "100%"}}>
+                                <div style={{float: "left"}}>
+                                    <label for="changePic">
+                                        <Card.Img id="profilePic" src={profilePicture} className="rounded-circle" style={{width: "50%", maxWidth: "50%"}} onMouseEnter={() => setShowHover(true)} onMouseLeave={() => setShowHover(false)}/>
+                                    </label>
+                                    <input style={{display: "none"}} id="changePic" type="file" onInput={(image) => profilePictureUpload(image.target.files[0])}/>
+                                    {showHover?
+                                        <a id="changeHover" style={{marginLeft: "-70%", marginTop:"11%", color: "black", opacity: "1"}} onMouseEnter={() => setShowHover(true)}>Change Picture</a>
+                                    :null}
+                                </div>
+                                <div style={{position: "absolute", marginLeft: "35%", marginTop: "5%"}}>
+                                    <Card.Text><b>User ID:</b> {auth.currentUser.uid}</Card.Text>
+                                    <Card.Text><b>Name:</b> {auth.currentUser.displayName}</Card.Text>
+                                    <Card.Text><b>Email:</b> {auth.currentUser.email}</Card.Text>
+                                    {/* <Button onClick={() => (setShowPasswordChange(true), setClosePasswordChange(false))}>Change Password</Button>
+                                    <Modal show={showPasswordChange} close={closePasswordChange}>
+                                        <Modal.Header style={{backgroundColor: "#00bfFF", color: "white"}}>
+                                            <Modal.Title>Password Change</Modal.Title>
+                                        </Modal.Header>
+                                        <Modal.Body>
+                                            <Form>
+                                                <Form.Label>Old Password</Form.Label>
+                                                <Form.Control id="old" type="password" placeholder="Enter old password" onChange={(e) => setOldPassword(e.target.value)}/>
+                                                <Form.Label>New Password</Form.Label>
+                                                <Form.Control id="new" type="password" placeholder="Enter new password" onChange={(e) => setNewPassword(e.target.value)}/>
+                                                <Form.Label>Re-enter Password</Form.Label>
+                                                <Form.Control id="new2" type="password" placeholder="Re-enter new password" onChange={(e) => setNewPassword2(e.target.value)}/>
+                                            </Form>
+                                            <Modal.Footer style={{backgroundColor: "#00bfFF", marginTop: "5%", marginBottom: "-3.5%", width: "106.8%", marginLeft: "-3.4%"}}>
+                                                <Button variant="warning" onClick={() => passwordChange()}>Submit</Button>
+                                                <Button variant="warning" onClick={() => (setShowPasswordChange(false), setClosePasswordChange(true))}>Close</Button>
+                                            </Modal.Footer>
+                                        </Modal.Body>
+                                    </Modal> */}
+                                </div>
+                                <div style={{float: "right", marginRight: "6%", marginTop: "5.5%"}}>
+                                    <Card.Text><b>Post(s):</b> {usersPosts.length}</Card.Text>
+                                    <Card.Text><b>Commented Post(s):</b> {commentsPosts.length}</Card.Text>
+                                    <Card.Text><b>Favourite(s):</b> {favouritePosts.length}</Card.Text>
+                                </div>
+                            </Container>
+                        </Card.Body>
+                    </Card>
+                </Row>
                 <Row style={{marginTop: "2%"}}>
                     <Card className="shadow lg"style={{marginLeft: "2%", width: "30%", borderRadius: "25px"}}>
                         <Card.Header style={{textAlign: "center", borderTopRightRadius: "25px", borderTopLeftRadius: "25px", width:"106%", marginLeft: "-3%", backgroundColor: "lightgray"}}><b>Posts made by me</b></Card.Header>

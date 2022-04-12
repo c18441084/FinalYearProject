@@ -3,8 +3,10 @@ import { Map, Marker, GoogleApiWrapper } from 'google-maps-react';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng} from 'react-places-autocomplete';
 import { googleAPIkey, geocodeAPIkey } from '../../keys';
 import { latitude, longitude, animalType } from '../GlobalState/states';
-import googleMapsMarkerIconDog from './GoogleMapsMarkers/googleMapsMarkerIconDog.png'
-import googleMapsMarkerIconCat from './GoogleMapsMarkers/googleMapsMarkerIconCat.png'
+import googleMapsMarkerIconDog from './GoogleMapsMarkers/googleMapsMarkerIconDog.png';
+import googleMapsMarkerIconCat from './GoogleMapsMarkers/googleMapsMarkerIconCat.png';
+import googleMapsMarkerIconPaw from './GoogleMapsMarkers/googleMapsMarkerIconPaw.png';
+
 
 const style = {
     maxWidth: "90%",
@@ -35,8 +37,11 @@ export class MapContainer extends Component {
       if(animalType.value === "Cat"){
         urlPic = googleMapsMarkerIconCat
       }
-      else{
+      else if(animalType.value === "Dog"){
         urlPic = googleMapsMarkerIconDog
+      }
+      else{
+        urlPic = googleMapsMarkerIconPaw;
       }
       return (
         <div id="googleMap">

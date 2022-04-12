@@ -10,7 +10,7 @@ import DogWardenService from './Components/DogWardenService/DogWardenService';
 import PostInfo from './Components/PostInfo/PostInfo'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from "./firebaseconfig";
+import { auth, logout } from "./firebaseconfig";
 
 function App() {
 
@@ -26,6 +26,7 @@ function App() {
       </Routes>
       :
       <Routes>
+        <Route path = "/FindMyOwner/*" element = {<Homepage />} />
         <Route path = "/FindMyOwner/home" element = {<Homepage />} />
         <Route path = "/FindMyOwner/found" element = {<Found />} />
         <Route path = "/FindMyOwner/lost" element = {<Lost />} />

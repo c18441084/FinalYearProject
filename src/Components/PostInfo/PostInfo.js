@@ -3,9 +3,8 @@ import Geocode from 'react-geocode';
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from "react";
 import './PostInfo.css';
-import settingsIcon from "../../SettingsIcon.png";
 import { Card, Dropdown, Container, Button, Modal, Image } from 'react-bootstrap';
-import db2, {logout, auth, storage} from '../../firebaseconfig';
+import db2, { auth, storage, getUserInfo } from '../../firebaseconfig';
 import Icon from '@mdi/react';
 import { mdiCommentText } from '@mdi/js';
 import { mdiDeleteEmptyOutline } from '@mdi/js';
@@ -16,10 +15,10 @@ import Wallpaper from '../../Wallpaper.jpg';
 import {latitude, longitude, animalType} from '../GlobalState/states';
 import { mdiMapMarker } from '@mdi/js';
 import {mdiTrashCanOutline} from '@mdi/js';
-import { mdiShare } from '@mdi/js';
 import GoogleMap from './GoogleMapsShowLocation';
 import FindMyOwner from '../Login/loginPictures/FindMyOwner.png';
 import { TwitterIcon, TwitterShareButton, WhatsappIcon, WhatsappShareButton } from 'react-share';
+import { Settings } from '../Settings/Settings';
 
 export default function Homepage(){
 
@@ -35,10 +34,6 @@ export default function Homepage(){
     const [showMap, setShowMap] = useState(false);
     const [closeMap, setCloseMap] = useState(true);
     const [url, setUrl] = useState();
-
-    function myAccount(){
-        window.location = "/FindMyOwner/account";
-    }
 
     useEffect(() =>{
         let address = "";
@@ -59,8 +54,13 @@ export default function Homepage(){
         dbcomments.on("value", (snapshot) => {
             const commentsFromDatabase = snapshot.val();
             let commentsArray = []
-            for(let id in commentsFromDatabase){
-                commentsArray.push({id, ...commentsFromDatabase[id]});
+            for(let i in commentsFromDatabase){
+                commentsArray.push({i, ...commentsFromDatabase[i]});
+                let newRef = db2.ref(`Posts/${id}/comments/${i}`);
+                newRef.on("value", (snapshot) => {
+                    const commentInfo = snapshot.val();
+                    getUserInfo(commentInfo.email);
+                })
             }
             setPostInfoComments(commentsArray/*.reverse()*/);
         })
@@ -114,6 +114,7 @@ export default function Homepage(){
         })
         const commenterName = auth.currentUser.displayName;
         const email = auth.currentUser.email;
+        const commenterPhoto = auth.currentUser.photoURL;
         const date = Date().toLocaleString();
         const datesplit = date.split(" ");
         const day = datesplit[2];
@@ -128,6 +129,7 @@ export default function Homepage(){
             comment,
             commentTime,
             postID,
+            commenterPhoto,
         }
         await dbcomments.push(submit);
         handleClose();
@@ -230,17 +232,7 @@ export default function Homepage(){
                 </Dropdown> 
 
                 <Image id="titleName" onClick={home} src={FindMyOwner} style={{marginLeft: "33%"}}></Image>
-                <Dropdown id="SettingsButton">
-                    <Dropdown.Toggle variant="warning" size="lg">
-                        <img id="imageSettingsIcon" src={settingsIcon}></img>
-                    </Dropdown.Toggle>
-
-                    <Dropdown.Menu variant="dark">
-                        <Dropdown.Item href="#" onClick={myAccount}>My Account</Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item href="#" onClick={logout}>Logout</Dropdown.Item>
-                    </Dropdown.Menu>
-                </Dropdown>
+                <Settings />
             </div>
 
             <Card id="PostInfoPostBox" className="shadow-lg">
@@ -268,11 +260,14 @@ export default function Homepage(){
                             </Button>
                             <ReactTooltip id="showMaps" place="top" effect="solid">Show location on map</ReactTooltip>
                             <Modal show={showMap} onHide={closeMap}>
+                                <Modal.Header id="PostInfoModalHeader">
+                                    <Modal.Title>Post Location</Modal.Title>
+                                </Modal.Header>
                                 <Modal.Body style={{height: "50vh", width:"60vh", marginBottom: "5%"}}>
                                     <GoogleMap id = "googleMap" />
                                 </Modal.Body>
-                                <Modal.Footer>
-                                    <Button onClick={() => (setCloseMap(true), setShowMap(false))}>Close Map</Button>
+                                <Modal.Footer id="PostInfoModalFooter">
+                                    <Button variant="warning" onClick={() => (setCloseMap(true), setShowMap(false))}>Close Map</Button>
                                 </Modal.Footer>
                             </Modal>
                             <Card.Text id="PostInfoFavouritesAmount" data-tip data-for="viewFavs"><b>Favourited By: </b>{favsAmount} user(s)</Card.Text>
@@ -339,18 +334,20 @@ export default function Homepage(){
                     <h1>No comments</h1> 
                     :
                         postInfoComments.map(function(element){
+                            console.log(element.i)
                             return(
                                 <Container id="PostInfoCommentContainer">
+                                    <Card.Img id="PostInfoCommenterPicture" className="rounded-circle" src={element.commenterPhoto}/>
+                                    <Card.Text id="PostInfoCommenterName"><b>{element.commenterName}</b></Card.Text>
+                                    <Card.Text id="PostInfoCommentTime">{element.commentTime}</Card.Text>
                                     {auth.currentUser.email === element.email? 
-                                        <div>
-                                            <Button id="PostInfoDeleteCommentButton" data-tip data-for="deleteButton" variant="outline-danger" onClick={() => deleteComment(element.id)}>
+                                        <div id="PostInfoDeleteCommentButton">
+                                            <Button data-tip data-for="deleteButton" variant="outline-danger" onClick={() => deleteComment(element.i)}>
                                                 <Icon path={mdiDeleteEmptyOutline} size={1}></Icon>
                                             </Button>
                                             <ReactTooltip id="deleteButton" place="top" effect="solid">Delete Comment</ReactTooltip>
                                         </div> 
                                     :null}
-                                    <Card.Text id="PostInfoCommenterName"><b>{element.commenterName}</b></Card.Text>
-                                    <Card.Text id="PostInfoCommentTime">{element.commentTime}</Card.Text>
                                     <Card.Text id="PostInfoComment">{element.comment}</Card.Text>
                                 </Container>
                             )

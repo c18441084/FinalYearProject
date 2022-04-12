@@ -116,3 +116,7 @@
     font-size: small;
     margin-left: 30%;
 }
+
+#profilePic:hover{
+    opacity: 0.5;
+}
