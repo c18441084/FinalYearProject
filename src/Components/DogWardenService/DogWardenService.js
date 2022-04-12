@@ -1,7 +1,7 @@
 import { mdiNoteMultipleOutline } from "@mdi/js";
 import { useState, useEffect } from "react";
 import { Button, Modal, Dropdown, Image, Card, Form, Col, Row, Container } from "react-bootstrap";
-import settingsIcon from "../../SettingsIcon.png";
+import { Settings } from '../Settings/Settings'
 import { logout } from "../../firebaseconfig";
 import { mdiMicrosoftXboxControllerMenu } from '@mdi/js';
 import Icon from '@mdi/react'
@@ -122,17 +122,7 @@ export default function DogWardenService(){
                     </Dropdown.Menu>
                 </Dropdown> 
                 <Image id="titleName" onClick={home} src={FindMyOwner} style={{marginLeft: "33%"}}></Image>
-                <Dropdown id="SettingsButton">
-                    <Dropdown.Toggle variant="warning" size="lg">
-                        <img id="imageSettingsIcon" src={settingsIcon}></img>
-                    </Dropdown.Toggle>
-
-                    <Dropdown.Menu variant="dark">
-                        <Dropdown.Item href="#" onClick={myAccount}>My Account</Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item href="#" onClick={logout}>Logout</Dropdown.Item>
-                    </Dropdown.Menu>
-                </Dropdown>
+                <Settings />
             </div>
             
             <Row>

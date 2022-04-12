@@ -1,18 +1,17 @@
-import db2, {logout, auth } from "../../firebaseconfig";
+import db2, { auth } from "../../firebaseconfig";
 import './Lost.css'
 import { useState, useEffect } from "react";
 import { Button, Dropdown, Card, Col, Row, Nav, Navbar, NavDropdown, Container, Form, Image, ListGroup } from "react-bootstrap";
 import {Link} from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import settingsIcon from "../../SettingsIcon.png";
 import { mdiCardsHeartOutline } from '@mdi/js';
 import { mdiPageNextOutline } from '@mdi/js';
 import { mdiMicrosoftXboxControllerMenu } from '@mdi/js';
 import Wallpaper from '../../Wallpaper.jpg';
 import Icon from '@mdi/react';
-import FindMyOwner from '../Login/loginPictures/FindMyOwner.png'
-
+import FindMyOwner from '../Login/loginPictures/FindMyOwner.png';
+import { Settings } from '../Settings/Settings';
 
 export default function Found(){
 
@@ -72,10 +71,6 @@ export default function Found(){
 
     function home(){
         window.location = "/FindMyOwner/home";
-    }
-
-    function myAccount(){
-        window.location = "/FindMyOwner/account";
     }
 
     function found(){
@@ -188,6 +183,12 @@ export default function Found(){
                             const type = db2.ref(`Posts/${id}/type`)
                             type.on("value", (snap) => {
                                 const typeValue = snap.val();
+                                console.log(filterSearch[i], typeValue)
+                                if((!(typeValue === "Dog") && !(typeValue === "Cat"))){
+                                    if(!(filterSearch[i] === "Dog") && !(filterSearch[i] === "Cat")){
+                                        filteredArray.push({id, ...postsFromDatabase[id]})
+                                    }
+                                }
                                 if(typeValue == filterSearch[i]){
                                     filteredArray.push({id, ...postsFromDatabase[id]})
                                 }
@@ -359,7 +360,7 @@ export default function Found(){
     }
 
     return(
-        <div style= {{backgroundImage: `url(${Wallpaper})`, height: "auto"}}>
+        <div style= {{backgroundImage: `url(${Wallpaper})`, height: "auto", minHeight: "100vh"}}>
             <title>FindMyOwner</title>
             <div id = "LostTitle">
                 <Dropdown id="MenuButton">
@@ -378,17 +379,7 @@ export default function Found(){
                 </Dropdown> 
 
                 <Image id="titleName" onClick={home} src={FindMyOwner} style={{marginLeft: "33%"}}></Image>
-                <Dropdown id="SettingsButton">
-                    <Dropdown.Toggle variant="warning" size="lg">
-                        <img id="imageSettingsIcon" src={settingsIcon}></img>
-                    </Dropdown.Toggle>
-
-                    <Dropdown.Menu variant="dark">
-                        <Dropdown.Item href="#" onClick={myAccount}>My Account</Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item href="#" onClick={logout}>Logout</Dropdown.Item>
-                    </Dropdown.Menu>
-                </Dropdown>
+                <Settings />
             </div>
 
             <div>
@@ -523,7 +514,8 @@ export default function Found(){
 
             <div>
                 <Row>
-                {posts.map(function(post){
+                {posts.length > 0?
+                posts.map(function(post){
                     return(
                         <Col className="col-sm-4 ml-20" id="LostColumn">
                         <Card className="shadow-lg" id="LostCard" border="info">
@@ -555,7 +547,7 @@ export default function Found(){
                         </Card>
                     </Col>
                     )
-                })}
+                }): <Col className="col-sm-12" style={{textAlign: "center"}}><Card style={{marginLeft: "30%", marginRight: "30%"}}><h1>No Posts Found</h1></Card></Col>}
                 </Row>
             </div>
         </div>

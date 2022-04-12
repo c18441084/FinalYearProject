@@ -6,6 +6,7 @@ import "firebase/compat/auth";
 import "firebase/compat/firestore";
 import { signInWithPopup, FacebookAuthProvider} from "firebase/auth";
 import { firebaseAPIkey } from "./keys";
+import DefaultProfilePicture from "./DefaultProfilePicture.jpg";
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
@@ -106,15 +107,53 @@ const registerWithEmailAndPassword = async (name, email, password) => {
     alert(err.message);
   }
 };
-const updateDisplayName = async (name) => {
+const updateDisplayName = async (name, check) => {
   const update = {
     displayName: name,
   };
-  console.log(auth);
   await auth.currentUser.updateProfile(update);
   console.log("finished");
-  alert("Account created. Welcome "+name);
-  window.location = ("/FindMyOwner/home");
+  //alert("Account created. Welcome "+name);
+  // window.location = ("/FindMyOwner/home");
+  const checks = 1;
+  storage.ref("ProfilePictures/DefaultProfilePicture.jpg").getDownloadURL()
+  .then((url) =>{
+    console.log(url);
+    updateProfilePic(url, checks)
+  })
+}
+
+const updateProfilePic = async (photo, check) => {
+  console.log(photo)
+  const update = {
+    photoURL: photo,
+  }
+  await auth.currentUser.updateProfile(update);
+  if(!(check === 1)){
+    alert("Photo Uploaded");
+    window.location.reload(false);
+    console.log(auth);
+    const db3 = db2.ref("Posts");
+    db3.on("value", (snap) => {
+        const postsFromDatabase = snap.val();
+        for(let id in postsFromDatabase){
+            const newRef = db2.ref(`Posts/${id}/comments`);
+            newRef.on("value", (snap) => {
+                const moreValues = snap.val();
+                for(let commentid in moreValues){
+                    const newRef2 = db2.ref(`Posts/${id}/comments/${commentid}`);
+                    newRef2.on("value", (snap) => {
+                        const commentinfo = snap.val();
+                        if(commentinfo.email === auth.currentUser.email){
+                            console.log(auth.currentUser.photoURL);
+                            db2.ref(`Posts/${id}/comments/${commentid}/`).update({"commenterPhoto": auth.currentUser.photoURL})
+                        }
+                    })
+                }
+            })
+        }
+    })
+  }
 }
 
 const sendPasswordResetEmail = async (email) => {
@@ -130,6 +169,17 @@ const sendPasswordResetEmail = async (email) => {
     }
   }
 };
+
+const getUserInfo = async (email) => {
+  await auth.getUserByEmail(email)
+  .then(function(records){
+    console.log('Successfully fetched user data:', records.toJSON());
+  })
+  .catch(function(error){
+    console.log('Error fetching user data: ' + error);
+  })
+}
+
 const logout = () => {
   auth.signOut();
   window.location = ("/FindMyOwner/login");
@@ -146,6 +196,8 @@ export {
   getDownloadURL,
   storage,
   ref,
+  updateProfilePic,
+  getUserInfo,
 };
 
 export default db2;

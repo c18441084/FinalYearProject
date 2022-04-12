@@ -6,6 +6,7 @@ import { googleMapsState, animalType } from '../GlobalState/states';
 import Geocode from "react-geocode";
 import googleMapsMarkerIconDog from './GoogleMapsMarkers/googleMapsMarkerIconDog.png'
 import googleMapsMarkerIconCat from './GoogleMapsMarkers/googleMapsMarkerIconCat.png'
+import googleMapsMarkerIconPaw from './GoogleMapsMarkers/googleMapsMarkerIconPaw.png'
 
 const style = {
   maxWidth: "90%",
@@ -25,7 +26,7 @@ export class MapContainer extends Component {
     showingInfoWindow: false,
     activeMarker: {},
     selectedPlace: {},
-    address: " ",
+    address: "",
     mapCenter: {
       lat: googleMapsState.mapCenter.lat, 
       lng: googleMapsState.mapCenter.lng
@@ -77,8 +78,11 @@ export class MapContainer extends Component {
     if(animalType.value === "Cat"){
       urlPic = googleMapsMarkerIconCat
     }
-    else{
+    else if(animalType.value === "Dog"){
       urlPic = googleMapsMarkerIconDog
+    }
+    else{
+      urlPic = googleMapsMarkerIconPaw;
     }
     return (
       <div id="googleMap">
