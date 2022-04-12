@@ -6,7 +6,6 @@ import "firebase/compat/auth";
 import "firebase/compat/firestore";
 import { signInWithPopup, FacebookAuthProvider} from "firebase/auth";
 import { firebaseAPIkey } from "./keys";
-import DefaultProfilePicture from "./DefaultProfilePicture.jpg";
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";

@@ -15,7 +15,6 @@ import Wallpaper from '../../Wallpaper.jpg';
 import FindMyOwner from '../Login/loginPictures/FindMyOwner.png';
 import { Settings } from '../Settings/Settings';
 import { uploadBytesResumable } from "firebase/storage";
-import DefaultProfilePicture from '../../DefaultProfilePicture.jpg'
 
 export default function MyAccount(){
 
