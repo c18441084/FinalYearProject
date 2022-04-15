@@ -110,9 +110,8 @@
 #PostInfoPosterName{
     display: inline;
     position: absolute;
-    font-size: large;
-    margin-left: 30%;
-    margin-top: 17%;
+    margin-left: 64%;
+    margin-top: -8.5%;
 }
 
 #PostInfoAddCommentButton{
