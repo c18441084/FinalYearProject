@@ -172,7 +172,6 @@ export default function Homepage(){
             db2.ref(`Posts/${id}/comments/${commentID}`).remove();
             alert("Comment deleted successfully");
         }
-        //setCommentShowCounter(1);
     }
 
     async function deletePosts(){

@@ -2,7 +2,7 @@
 import './Homepage.css';
 import { useState, useEffect } from 'react';
 import db2, { auth } from "../../firebaseconfig";
-import { Dropdown, Nav, Button, Col, Row, Card, Image, Modal } from "react-bootstrap";
+import { Nav, Button, Col, Row, Card, Image, Modal } from "react-bootstrap";
 import ReactTooltip from 'react-tooltip';
 import Map from './GoogleMapsAllPosts';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -12,6 +12,7 @@ import FindMyOwner from '../Login/loginPictures/FindMyOwner.png'
 import { geocodeAPIkey } from '../../keys';
 import Geocode from 'react-geocode';
 import Icon from '@mdi/react';
+import { mdiMapMarker } from '@mdi/js';
 import { mdiCardsHeartOutline } from '@mdi/js';
 import { mdiPageNextOutline } from '@mdi/js';
 import { mdiMagnify } from '@mdi/js';
@@ -32,14 +33,7 @@ export default function Homepage(){
     const [nearPosts, setNearPosts] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [closeModal, setCloseModal] = useState(true);
-    const [showTerms, setShowTerms] = useState(false);
-    const [closeTerms, setCloseTerms] = useState(true);
-    const [showPrivacy, setShowPrivacy] = useState(false);
-    const [closePrivacy, setClosePrivacy] = useState(true);
-
-    function myAccount(){
-        window.location = "/FindMyOwner/account";
-    }
+    const [miles, setMiles] = useState(10);
 
     function found(){
         window.location = "/FindMyOwner/found";
@@ -78,7 +72,7 @@ export default function Homepage(){
         let distance = 0;
         latitude.value = (position.coords.latitude);
         longitude.value = (position.coords.longitude);
-        // Geocode.setApiKey(geocodeAPIkey);
+        Geocode.setApiKey(geocodeAPIkey);
 
         db.on("value", (snap) => {
             const postsFromDatabase = snap.val();
@@ -87,19 +81,19 @@ export default function Homepage(){
                 let locationRef = db2.ref(`Posts/${id}/address`);
                 locationRef.on("value", (snap) =>{
                     let address = snap.val();
-                    // Geocode.fromAddress(address).then(
-                    //     async (response) => {
-                    //         const { lat, lng } = await response.results[0].geometry.location;
-                    //         address = `${lat},${lng}`;
-                    //         distance = gettingDistance(latitude.value, longitude.value, address);
-                    //         if(distance < 10){
-                    //             postsArray.push({id, ...postsFromDatabase[id]});
-                    //         }
-                    //     },
-                    //     (error) => {
-                    //         console.error(error);
-                    //     }
-                    // );
+                    Geocode.fromAddress(address).then(
+                        async (response) => {
+                            const { lat, lng } = await response.results[0].geometry.location;
+                            address = `${lat},${lng}`;
+                            distance = gettingDistance(latitude.value, longitude.value, address);
+                            if(distance < 10){
+                                postsArray.push({id, ...postsFromDatabase[id]});
+                            }
+                        },
+                        (error) => {
+                            console.error(error);
+                        }
+                    );
                 })
             }
             setTimeout(() =>{
@@ -155,12 +149,13 @@ export default function Homepage(){
 
     function changeMileRadius(miles){
         let mileRadius = miles;
+        setMiles(miles);
         navigator.geolocation.getCurrentPosition(changePosition);
         function changePosition(position){
             let distance = 0;
             latitude.value = (position.coords.latitude);
             longitude.value = (position.coords.longitude);
-           //Geocode.setApiKey(geocodeAPIkey);
+           Geocode.setApiKey(geocodeAPIkey);
     
             db.on("value", (snap) => {
                 const postsFromDatabase = snap.val();
@@ -169,20 +164,20 @@ export default function Homepage(){
                     let locationRef = db2.ref(`Posts/${id}/address`);
                     locationRef.on("value", (snap) =>{
                         let address = snap.val();
-                        // Geocode.fromAddress(address).then(
-                        //     async (response) => {
-                        //         const { lat, lng } = await response.results[0].geometry.location;
-                        //         address = `${lat},${lng}`;
-                        //         distance = gettingDistance(latitude.value, longitude.value, address);
-                        //         console.log(mileRadius);
-                        //         if(distance < mileRadius){
-                        //             postsArray.push({id, ...postsFromDatabase[id]});
-                        //         }
-                        //     },
-                        //     (error) => {
-                        //     console.error(error);
-                        //     }
-                        // );
+                        Geocode.fromAddress(address).then(
+                            async (response) => {
+                                const { lat, lng } = await response.results[0].geometry.location;
+                                address = `${lat},${lng}`;
+                                distance = gettingDistance(latitude.value, longitude.value, address);
+                                console.log(mileRadius);
+                                if(distance < mileRadius){
+                                    postsArray.push({id, ...postsFromDatabase[id]});
+                                }
+                            },
+                            (error) => {
+                            console.error(error);
+                            }
+                        );
                     })
                 }
                 setTimeout(() =>{
@@ -221,18 +216,21 @@ export default function Homepage(){
             </Nav>
             <div id = "topbar">
                 <h3 id = "RP">Recent Posts <Icon path ={mdiHistory} size={1}></Icon></h3>
-                <Button onClick={() => showAllPosts()}>Hit</Button>
+                <Button id="AllPostMapButton" data-tip data-for="showMap" onClick={() => showAllPosts()}>
+                    <Icon path={mdiMapMarker} size={1}></Icon>
+                </Button>
+                <ReactTooltip id="showMap" place="top" effect="solid">All Posts Map</ReactTooltip>
                 <h3 id = "PNM">Posts near me <Icon path ={mdiNearMe} size={1}></Icon></h3>
             </div>
             <Modal  show={showModal} close={closeModal}>
-                <Modal.Header>
+                <Modal.Header style={{backgroundColor: "#00bfFF", color: "white"}}>
                     <Modal.Title>Posts Around The World</Modal.Title>
                 </Modal.Header>
                 <Modal.Body style={{height: "50vh", width:"60vh", marginBottom: "7%"}}>
                     <Map />
                 </Modal.Body>
-                <Modal.Footer>
-                    <Button onClick={() => (setShowModal(false), setCloseModal(true))}>Close</Button>
+                <Modal.Footer style={{backgroundColor: "#00bfFF"}}>
+                    <Button variant="warning" onClick={() => (setShowModal(false), setCloseModal(true))}>Close</Button>
                 </Modal.Footer>
             </Modal>
             <div style={{backgroundImage: `url(${Wallpaper})`}}>
@@ -282,7 +280,7 @@ export default function Homepage(){
                                         <option value="20">20 miles</option>
                                         <option value="50">50 miles</option>
                                     </select>
-                        {nearPosts.length === 0? <h1>No Posts Within Region of 10 miles</h1> :
+                        {nearPosts.length === 0? <h1>No Posts Within Region of {miles} miles</h1> :
                         nearPosts.map(function(post){
                             return(
                                 <Col className="col-sm-9" style={{ textAlign: "center", marginLeft: "10%", marginTop: "3%" }}>

@@ -6,16 +6,10 @@ import "firebase/compat/auth";
 import "firebase/compat/firestore";
 import { signInWithPopup, FacebookAuthProvider} from "firebase/auth";
 import { firebaseAPIkey } from "./keys";
-
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getDownloadURL } from "firebase/storage";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: `${firebaseAPIkey}`,
   authDomain: "findmyowner-6abcb.firebaseapp.com",
@@ -27,7 +21,6 @@ const firebaseConfig = {
   databaseURL: "https://findmyowner-6abcb-default-rtdb.europe-west1.firebasedatabase.app"
 };
 
-// Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
 const auth = app.auth();
 const db = app.firestore();
@@ -112,7 +105,7 @@ const updateDisplayName = async (name, check) => {
   };
   await auth.currentUser.updateProfile(update);
   console.log("finished");
-  //alert("Account created. Welcome "+name);
+  alert("Account created. Welcome "+name);
   // window.location = ("/FindMyOwner/home");
   const checks = 1;
   storage.ref("ProfilePictures/DefaultProfilePicture.jpg").getDownloadURL()
