@@ -62,23 +62,23 @@ setTimeout(() => {
         );
     })
 
-    let address = postsArray[0].address;
-    Geocode.setApiKey(geocodeAPIkey)
-    Geocode.fromAddress(address).then(
-        async (response) => {
-            const { lat, lng } = await response.results[0].geometry.location;
-            if(postsArray[0].type === "Cat"){
-                urlPic = googleMapsMarkerIconCat;
-            }
-            else if(postsArray[0].type === "Dog"){
-                urlPic = googleMapsMarkerIconDog;
-            }
-            else if(!(postsArray[0].type === "Dog") && !(postsArray[0].type === "Cat")){
-                urlPic = googleMapsMarkerIconPaw;
-            }
-            coordinates.push({ID: postsArray[0].id, position: {lat: lat, lng: lng}, icon: urlPic});
-        }
-    );
+    // let address = postsArray[0].address;
+    // Geocode.setApiKey(geocodeAPIkey)
+    // Geocode.fromAddress(address).then(
+    //     async (response) => {
+    //         const { lat, lng } = await response.results[0].geometry.location;
+    //         if(postsArray[0].type === "Cat"){
+    //             urlPic = googleMapsMarkerIconCat;
+    //         }
+    //         else if(postsArray[0].type === "Dog"){
+    //             urlPic = googleMapsMarkerIconDog;
+    //         }
+    //         else if(!(postsArray[0].type === "Dog") && !(postsArray[0].type === "Cat")){
+    //             urlPic = googleMapsMarkerIconPaw;
+    //         }
+    //         coordinates.push({ID: postsArray[0].id, position: {lat: lat, lng: lng}, icon: urlPic});
+    //     }
+    // );
 }, 2000)
 
 export class MapContainer extends Component {

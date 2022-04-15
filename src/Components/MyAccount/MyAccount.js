@@ -297,45 +297,47 @@ export default function MyAccount(){
                         </Card.Header>
                         <Card.Body>
                             <Container style={{width: "100%"}}>
-                                <div style={{float: "left"}}>
-                                    <label for="changePic">
-                                        <Card.Img id="profilePic" src={profilePicture} className="rounded-circle" style={{width: "50%", maxWidth: "50%"}} onMouseEnter={() => setShowHover(true)} onMouseLeave={() => setShowHover(false)}/>
-                                    </label>
-                                    <input style={{display: "none"}} id="changePic" type="file" onInput={(image) => profilePictureUpload(image.target.files[0])}/>
-                                    {showHover?
-                                        <a id="changeHover" style={{marginLeft: "-70%", marginTop:"11%", color: "black", opacity: "1"}} onMouseEnter={() => setShowHover(true)}>Change Picture</a>
-                                    :null}
-                                </div>
-                                <div style={{position: "absolute", marginLeft: "35%", marginTop: "5%"}}>
-                                    <Card.Text><b>User ID:</b> {auth.currentUser.uid}</Card.Text>
-                                    <Card.Text><b>Name:</b> {auth.currentUser.displayName}</Card.Text>
-                                    <Card.Text><b>Email:</b> {auth.currentUser.email}</Card.Text>
-                                    {/* <Button onClick={() => (setShowPasswordChange(true), setClosePasswordChange(false))}>Change Password</Button>
-                                    <Modal show={showPasswordChange} close={closePasswordChange}>
-                                        <Modal.Header style={{backgroundColor: "#00bfFF", color: "white"}}>
-                                            <Modal.Title>Password Change</Modal.Title>
-                                        </Modal.Header>
-                                        <Modal.Body>
-                                            <Form>
-                                                <Form.Label>Old Password</Form.Label>
-                                                <Form.Control id="old" type="password" placeholder="Enter old password" onChange={(e) => setOldPassword(e.target.value)}/>
-                                                <Form.Label>New Password</Form.Label>
-                                                <Form.Control id="new" type="password" placeholder="Enter new password" onChange={(e) => setNewPassword(e.target.value)}/>
-                                                <Form.Label>Re-enter Password</Form.Label>
-                                                <Form.Control id="new2" type="password" placeholder="Re-enter new password" onChange={(e) => setNewPassword2(e.target.value)}/>
-                                            </Form>
-                                            <Modal.Footer style={{backgroundColor: "#00bfFF", marginTop: "5%", marginBottom: "-3.5%", width: "106.8%", marginLeft: "-3.4%"}}>
-                                                <Button variant="warning" onClick={() => passwordChange()}>Submit</Button>
-                                                <Button variant="warning" onClick={() => (setShowPasswordChange(false), setClosePasswordChange(true))}>Close</Button>
-                                            </Modal.Footer>
-                                        </Modal.Body>
-                                    </Modal> */}
-                                </div>
-                                <div style={{float: "right", marginRight: "6%", marginTop: "5.5%"}}>
-                                    <Card.Text><b>Post(s):</b> {usersPosts.length}</Card.Text>
-                                    <Card.Text><b>Commented Post(s):</b> {commentsPosts.length}</Card.Text>
-                                    <Card.Text><b>Favourite(s):</b> {favouritePosts.length}</Card.Text>
-                                </div>
+                                <Row>
+                                    <Col className="col-sm-4">
+                                        <label for="changePic">
+                                            <Card.Img id="profilePic" src={profilePicture} className="rounded-circle" style={{width: "70%", maxWidth: "70%", marginTop: "10%", marginBottom: "10%"}} onMouseEnter={() => setShowHover(true)} onMouseLeave={() => setShowHover(false)}/>
+                                        </label>
+                                        <input style={{display: "none"}} id="changePic" type="file" onInput={(image) => profilePictureUpload(image.target.files[0])}/>
+                                        {showHover?
+                                            <a id="changeHover" style={{marginLeft: "-54%", marginTop:"11%", color: "black", opacity: "1"}} onMouseEnter={() => setShowHover(true)}>Change Picture</a>
+                                        :null}
+                                    </Col>
+                                    <Col className="col-sm-4 mt-4">
+                                        <Card.Text><b>User ID:</b> {auth.currentUser.uid}</Card.Text>
+                                        <Card.Text><b>Name:</b> {auth.currentUser.displayName}</Card.Text>
+                                        <Card.Text><b>Email:</b> {auth.currentUser.email}</Card.Text>
+                                        <Button onClick={() => (setShowPasswordChange(true), setClosePasswordChange(false))}>Change Password</Button>
+                                        <Modal show={showPasswordChange} close={closePasswordChange}>
+                                            <Modal.Header style={{backgroundColor: "#00bfFF", color: "white"}}>
+                                                <Modal.Title>Password Change</Modal.Title>
+                                            </Modal.Header>
+                                            <Modal.Body>
+                                                <Form>
+                                                    <Form.Label>Old Password</Form.Label>
+                                                    <Form.Control id="old" type="password" placeholder="Enter old password" onChange={(e) => setOldPassword(e.target.value)}/>
+                                                    <Form.Label>New Password</Form.Label>
+                                                    <Form.Control id="new" type="password" placeholder="Enter new password" onChange={(e) => setNewPassword(e.target.value)}/>
+                                                    <Form.Label>Re-enter Password</Form.Label>
+                                                    <Form.Control id="new2" type="password" placeholder="Re-enter new password" onChange={(e) => setNewPassword2(e.target.value)}/>
+                                                </Form>
+                                                <Modal.Footer style={{backgroundColor: "#00bfFF", marginTop: "5%", marginBottom: "-3.5%", width: "106.8%", marginLeft: "-3.4%"}}>
+                                                    <Button variant="warning" onClick={() => passwordChange()}>Submit</Button>
+                                                    <Button variant="warning" onClick={() => (setShowPasswordChange(false), setClosePasswordChange(true))}>Close</Button>
+                                                </Modal.Footer>
+                                            </Modal.Body>
+                                        </Modal>
+                                    </Col>
+                                    <Col className="col-sm-4 mt-4">
+                                        <Card.Text><b>Post(s):</b> {usersPosts.length}</Card.Text>
+                                        <Card.Text><b>Commented Post(s):</b> {commentsPosts.length}</Card.Text>
+                                        <Card.Text><b>Favourite(s):</b> {favouritePosts.length}</Card.Text>
+                                    </Col>
+                                </Row>
                             </Container>
                         </Card.Body>
                     </Card>
