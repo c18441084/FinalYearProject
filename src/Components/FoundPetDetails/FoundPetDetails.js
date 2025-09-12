@@ -206,6 +206,7 @@ export default function FoundPetDetails(){
                 }
                 else{
                     setIdentifierData(data); 
+                    console.log(data)
                     d = data;
                 } 
             });

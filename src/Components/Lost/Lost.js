@@ -1,4 +1,3 @@
-/* Test */
 import db2, { auth } from "../../firebaseconfig";
 import './Lost.css'
 import { useState, useEffect } from "react";
